@@ -1,0 +1,4 @@
+{
+  "parent": "item/handheld",
+  "textures": { "layer0": "moremechanics:item/survival_debug_stick" }
+}

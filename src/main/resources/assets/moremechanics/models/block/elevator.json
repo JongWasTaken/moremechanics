@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube_directional",
+  "textures": {
+    "down": "moremechanics:block/elevator",
+    "east": "moremechanics:block/elevator_side_rotated",
+    "north": "moremechanics:block/elevator_side",
+    "particle": "moremechanics:block/elevator_side",
+    "south": "moremechanics:block/elevator_side",
+    "up": "moremechanics:block/elevator",
+    "west": "moremechanics:block/elevator_side_rotated"
+  }
+}

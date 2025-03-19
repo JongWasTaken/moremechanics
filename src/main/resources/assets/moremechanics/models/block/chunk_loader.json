@@ -1,0 +1,64 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "moremechanics:block/chunk_loader",
+		"particle": "moremechanics:block/chunk_loader"
+	},
+	"elements": [
+		{
+			"from": [6, 7, 6],
+			"to": [10, 11, 10],
+			"rotation": {"angle": 0, "axis": "y", "origin": [14, 5, 14]},
+			"faces": {
+				"north": {"uv": [2, 2, 6, 6], "texture": "#0"},
+				"east": {"uv": [2, 2, 6, 6], "texture": "#0"},
+				"south": {"uv": [2, 2, 6, 6], "texture": "#0"},
+				"west": {"uv": [2, 2, 6, 6], "texture": "#0"},
+				"up": {"uv": [2, 2, 6, 6], "texture": "#0"},
+				"down": {"uv": [2, 2, 6, 6], "texture": "#0"}
+			}
+		},
+		{
+			"from": [7, 0, 7],
+			"to": [9, 9, 9],
+			"rotation": {"angle": 0, "axis": "y", "origin": [7, 7, 7]},
+			"faces": {
+				"north": {"uv": [6, 2, 8, 11], "texture": "#0"},
+				"east": {"uv": [6, 2, 8, 11], "texture": "#0"},
+				"south": {"uv": [6, 2, 8, 11], "texture": "#0"},
+				"west": {"uv": [6, 2, 8, 11], "texture": "#0"},
+				"up": {"uv": [6, 2, 8, 11], "texture": "#0"},
+				"down": {"uv": [6, 2, 8, 11], "texture": "#0"}
+			}
+		}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"translation": [0, 4, -2]
+		},
+		"thirdperson_lefthand": {
+			"translation": [0, 4, -2]
+		},
+		"ground": {
+			"translation": [0, 4.25, 0]
+		},
+		"gui": {
+			"rotation": [30, 45, 0],
+			"translation": [0, 1, 0]
+		},
+		"head": {
+			"translation": [0, 14.5, 0]
+		},
+		"fixed": {
+			"translation": [0, 0, -2]
+		}
+	},
+	"groups": [
+		{
+			"name": "group",
+			"origin": [7, 7, 7],
+			"color": 0,
+			"children": [0, 1]
+		}
+	]
+}

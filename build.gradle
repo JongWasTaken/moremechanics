@@ -1,0 +1,107 @@
+plugins {
+	id 'fabric-loom' version '1.8-SNAPSHOT'
+	id 'maven-publish'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+	archivesName = project.archives_base_name
+}
+
+repositories {
+	maven { url 'https://maven.nucleoid.xyz' }
+	maven { url 'https://api.modrinth.com/maven' }
+	maven { url 'https://jitpack.io' }
+	maven { url 'https://ueaj.dev/maven' }
+	maven { url 'https://repo.bluecolored.de/releases' }
+	maven { url 'https://smto.dev/maven/releases' }
+}
+
+loom {
+    //splitEnvironmentSourceSets()
+	accessWidenerPath = file("src/main/resources/moremechanics.accesswidener")
+	mods {
+		"moremechanics" {
+			sourceSet sourceSets.main
+			//sourceSet sourceSets.client
+		}
+	}
+
+}
+
+dependencies {
+	// To change the versions see the gradle.properties file
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+	include(modImplementation("eu.pb4:polymer-core:${project.polymer_version}"))
+	include(modImplementation("eu.pb4:polymer-blocks:${project.polymer_version}"))
+	include(modImplementation("eu.pb4:polymer-resource-pack:${project.polymer_version}"))
+	modImplementation(include("eu.pb4:placeholder-api:2.5.1+1.21.3"))
+	include(modImplementation("eu.pb4:sgui:1.7.2+1.21.2"))
+	compileOnly 'de.bluecolored.bluemap:BlueMapAPI:2.7.2'
+	include(implementation "dev.smto:simpleconfig:1.1.0")
+}
+
+fabricApi {
+	configureDataGeneration()
+}
+
+processResources {
+	inputs.property "version", project.version
+	inputs.property "minecraft_version", project.minecraft_version
+	inputs.property "loader_version", project.loader_version
+	inputs.property "fabric_version", project.fabric_version
+
+	filesMatching("fabric.mod.json") {
+		expand "version": project.version,
+				"minecraft_version": project.minecraft_version,
+				"loader_version": project.loader_version,
+				"fabric_version": project.fabric_version
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.release = 21
+}
+
+java {
+	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+	// if it is present.
+	// If you remove this line, sources will not be generated.
+	//withSourcesJar()
+
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
+}
+
+jar {
+	from("LICENSE") {
+		rename { "${it}_${project.base.archivesName.get()}"}
+	}
+}
+
+// configure the maven publication
+publishing {
+	repositories {
+		maven {
+			name = "smtoDev"
+			url = "https://smto.dev/maven/private"
+			credentials(PasswordCredentials)
+			authentication {
+				basic(BasicAuthentication)
+			}
+		}
+	}
+	publications {
+		maven(MavenPublication) {
+			groupId = "dev.smto"
+			artifactId = "moremechanics"
+			version = project.mod_version
+			from components.java
+		}
+	}
+}

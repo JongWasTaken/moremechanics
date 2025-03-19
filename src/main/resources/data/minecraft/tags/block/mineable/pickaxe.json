@@ -1,0 +1,9 @@
+{
+    "replace": false,
+    "values": [
+        "moremechanics:mega_torch",
+        "moremechanics:experience_storage",
+        "moremechanics:chunk_loader",
+        "moremechanics:shape_builder"
+    ]
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "G#G",
+    "GOG",
+    "GOG"
+  ],
+  "key": {
+    "#": "minecraft:diamond_block",
+    "O": "#minecraft:logs",
+    "G": "minecraft:sculk"
+  },
+  "result": {
+    "id": "moremechanics:chunk_loader",
+    "count": 1
+  }
+}

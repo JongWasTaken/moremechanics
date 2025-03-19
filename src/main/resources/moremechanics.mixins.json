@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "dev.smto.moremechanics.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "AbstractCauldronBlockMixin",
+    "EntityMixin",
+    "LivingEntityMixin",
+    "MobEntityMixin",
+    "SpawnRestrictionMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+	}
+}

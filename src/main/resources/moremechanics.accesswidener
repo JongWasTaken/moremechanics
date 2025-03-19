@@ -1,0 +1,8 @@
+accessWidener v2 named
+
+accessible field net/minecraft/item/Item components Lnet/minecraft/component/ComponentMap;
+mutable field net/minecraft/item/Item components Lnet/minecraft/component/ComponentMap;
+accessible method net/minecraft/entity/player/PlayerEntity addTellClickEvent (Lnet/minecraft/text/MutableText;)Lnet/minecraft/text/MutableText;
+accessible method net/minecraft/block/entity/BlockEntity writeNbt (Lnet/minecraft/nbt/NbtCompound;Lnet/minecraft/registry/RegistryWrapper$WrapperLookup;)V
+accessible field net/minecraft/server/MinecraftServer favicon Lnet/minecraft/server/ServerMetadata$Favicon;
+mutable field net/minecraft/server/MinecraftServer favicon Lnet/minecraft/server/ServerMetadata$Favicon;
