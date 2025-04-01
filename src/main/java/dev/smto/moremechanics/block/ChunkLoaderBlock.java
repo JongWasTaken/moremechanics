@@ -16,11 +16,14 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import xyz.nucleoid.packettweaker.PacketContext;
+
+import java.util.List;
 
 public class ChunkLoaderBlock extends Block implements PolymerTexturedBlock, BlockEntityProvider, MoreMechanicsContent {
     private final Identifier id;
@@ -77,5 +80,11 @@ public class ChunkLoaderBlock extends Block implements PolymerTexturedBlock, Blo
     @Override
     public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
+    }
+
+    @Override
+    public void addTooltip(List<Text> tooltip) {
+        tooltip.add(Text.translatable("block.moremechanics.chunk_loader.description").formatted(MoreMechanics.getTooltipFormatting()));
+        tooltip.add(Text.translatable("block.moremechanics.chunk_loader.description.2").formatted(MoreMechanics.getTooltipFormatting()));
     }
 }

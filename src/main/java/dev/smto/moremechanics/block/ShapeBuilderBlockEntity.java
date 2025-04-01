@@ -183,13 +183,13 @@ public class ShapeBuilderBlockEntity extends BlockEntity {
         if (hit.getSide().equals(Direction.UP)) {
             ShapeSelectionGui.open(player, this);
         } else SizeSelectionGui.open(player, this);
-        return ActionResult.PASS;
+        return ActionResult.CONSUME;
     }
 
-    public ActionResult onUseWithItem(ServerPlayerEntity player, ItemStack stack) {
+    public ActionResult onUseWithItem(ServerPlayerEntity player, ItemStack stack, BlockHitResult hit) {
         if (this.world == null) return ActionResult.PASS;
         if (stack.getItem() instanceof BlockItem b) {
-            if (this.targetPositions == null) return ActionResult.PASS;
+            if (this.targetPositions == null) return ActionResult.CONSUME;
             for (BlockPos blockPos : this.targetPositions) {
                 if (this.world.isAir(blockPos) && player.canModifyAt((ServerWorld) this.world, blockPos)) {
                     if (this.world.setBlockState(blockPos, b.getBlock().getDefaultState())) {
@@ -208,12 +208,12 @@ public class ShapeBuilderBlockEntity extends BlockEntity {
                                                 g.volume, g.pitch, this.world.random.nextInt()
                                         )
                                 );
-                        if (!player.isSneaking()) return ActionResult.SUCCESS;
+                        return ActionResult.SUCCESS_SERVER;
                     }
                 }
             }
-        }
-        return ActionResult.SUCCESS;
+        } else return this.onUse(player, hit);
+        return ActionResult.CONSUME;
     }
 
     private void displayModeChange(PlayerEntity player) {

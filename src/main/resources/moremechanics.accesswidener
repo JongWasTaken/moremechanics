@@ -6,3 +6,4 @@ accessible method net/minecraft/entity/player/PlayerEntity addTellClickEvent (Ln
 accessible method net/minecraft/block/entity/BlockEntity writeNbt (Lnet/minecraft/nbt/NbtCompound;Lnet/minecraft/registry/RegistryWrapper$WrapperLookup;)V
 accessible field net/minecraft/server/MinecraftServer favicon Lnet/minecraft/server/ServerMetadata$Favicon;
 mutable field net/minecraft/server/MinecraftServer favicon Lnet/minecraft/server/ServerMetadata$Favicon;
+accessible method net/minecraft/item/BlockItem getPlacementState (Lnet/minecraft/item/ItemPlacementContext;)Lnet/minecraft/block/BlockState;

@@ -1,13 +1,14 @@
 package dev.smto.moremechanics.block;
 
 import dev.smto.moremechanics.MoreMechanics;
+import dev.smto.moremechanics.util.Degrees;
+import dev.smto.moremechanics.util.DisplayTransformations;
+import dev.smto.moremechanics.util.ExperienceUtils;
+import dev.smto.moremechanics.util.Transformation;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
-import net.minecraft.entity.decoration.Brightness;
-import net.minecraft.entity.decoration.DisplayEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -15,30 +16,80 @@ import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public class ExperienceStorageBlockEntity extends BlockEntity {
+import java.text.DecimalFormat;
+import java.util.HashMap;
+
+public class ExperienceStorageBlockEntity extends BlockEntityWithDisplay implements SidedInventory {
     private static final int MAX_EXPERIENCE = Integer.MAX_VALUE;
-    private DisplayEntity.ItemDisplayEntity displayEntityBase;
-    private DisplayEntity.ItemDisplayEntity displayEntityInner;
-    private float innerYaw;
-    private boolean initialized;
+    private static final String DISPLAY_COMMAND_TAG = MoreMechanics.id("experience_storage_display").toString();
+
+    private static final HashMap<Direction, Transformation> UPPER_TEXT_TRANSFORMATIONS = new HashMap<>() {{
+        this.put(Direction.NORTH, new Transformation().setTranslation(0.5f,1.001f,0.5f).rotateX(Degrees.NINETY));
+        this.put(Direction.EAST, new Transformation().setTranslation(0.5f,1.001f,0.5f).rotateX(Degrees.NINETY).rotateZ(Degrees.NINETY));
+        this.put(Direction.SOUTH, new Transformation().setTranslation(0.5f,1.001f,0.5f).rotateX(Degrees.NINETY).rotateZ(Degrees.ONE_EIGHTY));
+        this.put(Direction.WEST, new Transformation().setTranslation(0.5f,1.001f,0.5f).rotateX(Degrees.NINETY).rotateZ(Degrees.TWO_SEVENTY));
+    }};
+
+    private static final HashMap<Direction, Transformation> LOWER_TEXT_TRANSFORMATIONS = new HashMap<>() {{
+        this.put(Direction.NORTH, new Transformation().setTranslation(0.5f,1.001f,0.7f).rotateX(Degrees.NINETY));
+        this.put(Direction.EAST, new Transformation().setTranslation(0.3f,1.001f,0.5f).rotateX(Degrees.NINETY).rotateZ(Degrees.NINETY));
+        this.put(Direction.SOUTH, new Transformation().setTranslation(0.5f,1.001f,0.3f).rotateX(Degrees.NINETY).rotateZ(Degrees.ONE_EIGHTY));
+        this.put(Direction.WEST, new Transformation().setTranslation(0.7f,1.001f,0.5f).rotateX(Degrees.NINETY).rotateZ(Degrees.TWO_SEVENTY));
+    }};
+
+    private static final HashMap<Direction, Transformation> ITEM_TRANSFORMATIONS = new HashMap<>() {{
+        this.put(Direction.NORTH, DisplayTransformations.getForItem(Direction.NORTH).addTranslation(0.0f, 0.05f, 0.0f));
+        this.put(Direction.EAST, DisplayTransformations.getForItem(Direction.EAST).addTranslation(0.0f, 0.05f, 0.0f));
+        this.put(Direction.SOUTH, DisplayTransformations.getForItem(Direction.SOUTH).addTranslation(0.0f, 0.05f, 0.0f));
+        this.put(Direction.WEST, DisplayTransformations.getForItem(Direction.WEST).addTranslation(0.0f, 0.05f, 0.0f));
+    }};
+
     public ExperienceStorageBlockEntity(BlockPos pos, BlockState state) {
         super(MoreMechanics.BlockEntities.EXPERIENCE_STORAGE_ENTITY, pos, state);
     }
 
-    public void setInitialized() {
-        this.initialized = true;
+    @Override
+    protected String getDisplayCommandTag() {
+        return ExperienceStorageBlockEntity.DISPLAY_COMMAND_TAG;
+    }
+
+    @Override
+    protected Transformation getDisplayTransformation(World world, BlockPos pos, int index, DisplayType forType) {
+        if (index == 0) return super.getDisplayTransformation(world, pos, index, forType);
+        if (index == 1) return ExperienceStorageBlockEntity.ITEM_TRANSFORMATIONS.get(this.direction);
+        if (index == 2) return ExperienceStorageBlockEntity.UPPER_TEXT_TRANSFORMATIONS.get(this.direction);
+        return ExperienceStorageBlockEntity.LOWER_TEXT_TRANSFORMATIONS.get(this.direction);
+    }
+
+    @Override
+    protected DisplayData getDisplayData(World world, BlockPos pos, int index, DisplayType forType) {
+        if (forType == DisplayType.BLOCK) return DisplayData.create(MoreMechanics.Blocks.DUMMY_EXPERIENCE_STORAGE.getDefaultState());
+        if (index == 1) return DisplayData.create(Items.EXPERIENCE_BOTTLE.getDefaultStack());
+        if (index == 2) {
+            return DisplayData.create(
+                    TextDisplayData.create(Text.literal(this.getPrettyAmount()).formatted(Formatting.GREEN), 0)
+            );
+        }
+        return DisplayData.create(
+                TextDisplayData.create(Text.literal("Levels").formatted(Formatting.GREEN), 0)
+        );
+    }
+
+    @Override
+    protected DisplayConfig[] getDisplayConfig() {
+        return new DisplayConfig[] { DisplayConfig.BLOCK, DisplayConfig.ITEM, DisplayConfig.TEXT, DisplayConfig.TEXT };
     }
 
     public static void tick(World world, BlockPos pos, ExperienceStorageBlockEntity blockEntity) {
         if (world instanceof ServerWorld w) {
-            blockEntity.initDisplayEntity(w, null);
+            blockEntity.ensureDisplay(w, pos);
             double xv = (double) world.random.nextBetween(0, 5) / 10;
             double yv = (double) world.random.nextBetween(0, 5) / 10;
             double zv = (double) world.random.nextBetween(0, 5) / 10;
@@ -53,49 +104,26 @@ public class ExperienceStorageBlockEntity extends BlockEntity {
                             world.getRegistryKey(),
                             new ParticleS2CPacket(ParticleTypes.REVERSE_PORTAL, false, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, (float) xv, (float)yv, (float) zv, 0.01f, 1)
                     );
-            /*
-            try {
-                float yaw = blockEntity.displayEntityInner.getYaw();
-                if (yaw > 360.0F) yaw = 0.0F;
-                blockEntity.displayEntityInner.setYaw(yaw + 0.4F);
-            } catch (Throwable ignored) {}
-             */
-        }
-    }
-
-    public void initDisplayEntity(ServerWorld world, @Nullable ServerPlayerEntity player) {
-        if (!this.initialized) return;
-        if (this.displayEntityBase == null) {
-            this.displayEntityBase = new DisplayEntity.ItemDisplayEntity(EntityType.ITEM_DISPLAY, world);
-            this.displayEntityBase.setItemStack(new ItemStack(MoreMechanics.Items.EXPERIENCE_STORAGE));
-            this.displayEntityBase.setBrightness(Brightness.FULL);
-            this.displayEntityBase.setShadowStrength(0.0F);
-            this.displayEntityBase.setPosition(this.getPos().toCenterPos());
-            world.spawnEntity(this.displayEntityBase);
-        }
-
-        if (this.displayEntityInner == null) {
-            this.displayEntityInner = new DisplayEntity.ItemDisplayEntity(EntityType.ITEM_DISPLAY, world);
-            this.displayEntityInner.setItemStack(new ItemStack(Items.ENDER_EYE));
-            this.displayEntityInner.setBrightness(Brightness.FULL);
-            this.displayEntityInner.setShadowStrength(0.0F);
-            this.displayEntityInner.setPosition(this.getPos().toCenterPos());
-            world.spawnEntity(this.displayEntityInner);
-            if (player != null) {
-                float yaw = player.getHeadYaw() + 180.0F;
-                if (yaw > 360.0F) {
-                    yaw -= 360.0F;
-                }
-                this.innerYaw = yaw;
-            }
-            this.displayEntityInner.setYaw(this.innerYaw);
         }
     }
 
     private int storedExperience;
+    private Direction direction = Direction.NORTH;
+
+    public void setDirection(Direction direction) {
+        this.direction = direction;
+        this.markDirty();
+    }
 
     public int getStoredAmount() {
         return this.storedExperience;
+    }
+
+    public String getPrettyAmount() {
+        String r = "";
+        var values = ExperienceUtils.getLevelsAndPoints(this.getStoredAmount());
+        if (values.getRight() != 0.0F) r = new DecimalFormat(".00").format(values.getRight());
+        return values.getLeft() + r;
     }
 
     public int addExperience(int amount) {
@@ -124,28 +152,85 @@ public class ExperienceStorageBlockEntity extends BlockEntity {
         if(tag.contains("storedExperience")) {
             this.storedExperience = tag.getInt("storedExperience");
         }
-        if(tag.contains("innerYaw")) {
-            this.innerYaw = tag.getFloat("innerYaw");
-            if (this.displayEntityInner != null) {
-                this.displayEntityInner.setYaw(this.innerYaw);
-            }
+        if(tag.contains("direction")) {
+            this.direction = Direction.byId(tag.getInt("direction"));
         }
-        this.initialized = true;
     }
 
     @Override
     public void writeNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         tag.putInt("storedExperience", this.storedExperience);
-        tag.putFloat("innerYaw", this.innerYaw);
+        if (this.direction != null) tag.putInt("direction", this.direction.getId());
         super.writeNbt(tag, DynamicRegistryManager.EMPTY);
     }
 
     @Override
-    public void markRemoved() {
-        if (this.displayEntityBase != null) this.displayEntityBase.discard();
-        if (this.displayEntityInner != null) this.displayEntityInner.discard();
-        if (this.getWorld() instanceof ServerWorld w) w.getEntitiesByClass(DisplayEntity.ItemDisplayEntity.class, new Box(this.getPos()), e -> true).forEach(Entity::discard);
-        super.markRemoved();
+    public int[] getAvailableSlots(Direction side) {
+        return new int[1];
     }
 
+    @Override
+    public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
+        return stack.isOf(MoreMechanics.Items.SOLIDIFIED_EXPERIENCE) || stack.isOf(Items.EXPERIENCE_BOTTLE);
+    }
+
+    @Override
+    public boolean canExtract(int slot, ItemStack stack, Direction dir) {
+        return false;
+    }
+
+    @Override
+    public int size() {
+        return 1;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return true;
+    }
+
+    @Override
+    public ItemStack getStack(int slot) {
+        return ItemStack.EMPTY;
+    }
+
+    @Override
+    public ItemStack removeStack(int slot, int amount) {
+        return null;
+    }
+
+    @Override
+    public ItemStack removeStack(int slot) {
+        return null;
+    }
+
+    @Override
+    public void setStack(int slot, ItemStack stack) {
+        if (slot == 0) {
+            if (stack.isOf(MoreMechanics.Items.SOLIDIFIED_EXPERIENCE)) {
+                this.addExperience(10 * stack.getCount());
+                stack.setCount(0);
+                ExperienceStorageBlock.reopenMenus();
+                return;
+            }
+            if (stack.isOf(Items.EXPERIENCE_BOTTLE)) {
+                int xp = 0;
+                for (int i = 0; i < stack.getCount(); i++) {
+                    xp += 3 + this.getWorld().random.nextInt(5) + this.getWorld().random.nextInt(5);
+                }
+                this.addExperience(xp);
+                stack.setCount(0);
+                ExperienceStorageBlock.reopenMenus();
+                return;
+            }
+        }
+    }
+
+    @Override
+    public boolean canPlayerUse(PlayerEntity player) {
+        return false;
+    }
+
+    @Override
+    public void clear() {}
 }

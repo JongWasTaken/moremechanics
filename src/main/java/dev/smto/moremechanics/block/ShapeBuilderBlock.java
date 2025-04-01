@@ -18,13 +18,17 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import xyz.nucleoid.packettweaker.PacketContext;
+
+import java.util.List;
 
 public class ShapeBuilderBlock extends Block implements PolymerTexturedBlock, BlockEntityProvider, MoreMechanicsContent {
     private final Identifier id;
@@ -88,21 +92,27 @@ public class ShapeBuilderBlock extends Block implements PolymerTexturedBlock, Bl
         return ActionResult.PASS;
     }
 
-    /*
     @Override
     protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (stack.isEmpty()) return this.onUse(state, world, pos, player, hit);
         if (world.isClient()) return ActionResult.PASS;
+        //if (player.isSneaking()) return this.onUse(state, world, pos, player, hit);
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof ShapeBuilderBlockEntity s) {
-            return s.onUseWithItem((ServerPlayerEntity) player, stack);
+            return s.onUseWithItem((ServerPlayerEntity) player, stack, hit);
         }
         return ActionResult.PASS;
     }
-     */
 
     @Override
     public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
+    }
+
+    @Override
+    public void addTooltip(List<Text> tooltip) {
+        tooltip.add(Text.translatable("block.moremechanics.shape_builder.description").formatted(MoreMechanics.getTooltipFormatting()));
+        tooltip.add(Text.translatable("block.moremechanics.shape_builder.description.2").formatted(MoreMechanics.getTooltipFormatting()));
+        tooltip.add(Text.translatable("block.moremechanics.shape_builder.description.3").formatted(MoreMechanics.getTooltipFormatting()));
     }
 }

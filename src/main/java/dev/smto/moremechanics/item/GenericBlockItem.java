@@ -1,8 +1,6 @@
 package dev.smto.moremechanics.item;
 
 import dev.smto.moremechanics.api.MoreMechanicsContent;
-import dev.smto.moremechanics.block.ChunkLoaderBlock;
-import dev.smto.moremechanics.block.ShapeBuilderBlock;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -52,14 +50,6 @@ public class GenericBlockItem extends BlockItem implements eu.pb4.polymer.core.a
 
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        if (this.target instanceof ChunkLoaderBlock) {
-            tooltip.add(Text.translatable("block.moremechanics.chunk_loader.description"));
-            tooltip.add(Text.translatable("block.moremechanics.chunk_loader.description.2"));
-        }
-        if (this.target instanceof ShapeBuilderBlock) {
-            tooltip.add(Text.translatable("block.moremechanics.shape_builder.description"));
-            tooltip.add(Text.translatable("block.moremechanics.shape_builder.description.2"));
-            tooltip.add(Text.translatable("block.moremechanics.shape_builder.description.3"));
-        }
+        if (this.target instanceof MoreMechanicsContent m) m.addTooltip(tooltip);
     }
 }

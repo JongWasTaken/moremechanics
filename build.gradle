@@ -40,7 +40,7 @@ dependencies {
 	include(modImplementation("eu.pb4:polymer-core:${project.polymer_version}"))
 	include(modImplementation("eu.pb4:polymer-blocks:${project.polymer_version}"))
 	include(modImplementation("eu.pb4:polymer-resource-pack:${project.polymer_version}"))
-	modImplementation(include("eu.pb4:placeholder-api:2.5.1+1.21.3"))
+	include(modImplementation("eu.pb4:polymer-autohost:${project.polymer_version}"))
 	include(modImplementation("eu.pb4:sgui:1.7.2+1.21.2"))
 	compileOnly 'de.bluecolored.bluemap:BlueMapAPI:2.7.2'
 	include(implementation "dev.smto:simpleconfig:1.1.0")

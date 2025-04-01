@@ -5,6 +5,8 @@ import eu.pb4.polymer.core.api.item.PolymerItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.WallBlock;
+import net.minecraft.block.enums.WallShape;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.DebugStickStateComponent;
 import net.minecraft.entity.player.PlayerEntity;
@@ -20,7 +22,9 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.Property;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -42,7 +46,7 @@ public class SurvivalDebugStickItem extends DebugStickItem implements PolymerIte
 
     @Override
     public Item getPolymerItem(ItemStack itemStack, PacketContext context) {
-        return Items.DEBUG_STICK;
+        return Items.STICK;
     }
 
     @Override
@@ -64,9 +68,11 @@ public class SurvivalDebugStickItem extends DebugStickItem implements PolymerIte
     public boolean hasGlint(ItemStack stack) {
         return true;
     }
+
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        //TranslationUtils.setTooltipText(tooltip, stack, 1, 2);
+        tooltip.add(Text.translatable("item.moremechanics.survival_debug_stick.description").formatted(MoreMechanics.getTooltipFormatting()));
+        tooltip.add(Text.translatable("item.moremechanics.survival_debug_stick.description.2").formatted(MoreMechanics.getTooltipFormatting()));
     }
 
     private boolean use(PlayerEntity player, BlockState state, WorldAccess world, BlockPos pos, ItemStack stack) {
@@ -74,7 +80,6 @@ public class SurvivalDebugStickItem extends DebugStickItem implements PolymerIte
         StateManager<Block, BlockState> stateManager = block.getStateManager();
         Collection<Property<?>> collection = stateManager.getProperties();
 
-        // check if block is modifiable by the config
         if (!this.isBlockAllowedToModify(state.getBlock()) || collection.isEmpty()) {
             SurvivalDebugStickItem.sendMessage(player, Text.translatable("item.moremechanics.survival_debug_stick.invalid"));
             return false;
@@ -86,42 +91,25 @@ public class SurvivalDebugStickItem extends DebugStickItem implements PolymerIte
         var blockName = Registries.BLOCK.getEntry(block);
         Property<?> property = compound.get(blockName);
 
-        if (player.isSneaking()) { // player.getOffHandStack().isOf(this)
-            // select next property
-            property = this.getNextProperty(collection, property, block);
-            // save chosen property in the NBT data of Debug Stick
+        if (player.isSneaking()) {
+            property = this.getNextProperty(collection, property, state);
             compound.put(blockName, property);
-            //nbtCompound.putString(blockName, property.getName());
-            //player.getInventory().markDirty();
-
-            // send the player a message of successful selecting
             SurvivalDebugStickItem.sendMessage(player,
-                Text.translatable("item.moremechanics.survival_debug_stick.selected.1")
-                    .append(Text.literal(" «"))
-                    .append(Text.of(property.getName()))
-                    .append(Text.literal("» "))
-                    .append(Text.translatable("item.moremechanics.survival_debug_stick.selected.2"))
-                    .append(Text.literal(" ("))
-                    .append(Text.of(SurvivalDebugStickItem.getValueString(state, property)))
-                    .append(Text.literal(")."))
+                    MutableText.of(new TranslatableTextContent("item.moremechanics.survival_debug_stick.selected", null,
+                            List.of(property.getName(), SurvivalDebugStickItem.getValueString(state, property)).toArray(new String[0]))
+                    )
                 );
         } else {
             // change value of property
             if (property == null) {
-                property = this.getNextProperty(collection, null, block);
+                property = this.getNextProperty(collection, null, state);
             }
 
-            // generate new state of chosen block with modified property
             BlockState newState = SurvivalDebugStickItem.cycle(state, property);
-            // update chosen block with its new state
             world.setBlockState(pos, newState, 18);
-            // send the player a message of successful modifying
-            SurvivalDebugStickItem.sendMessage(player, Text.of(
-                            String.format(
-                                    "Property «%s» was modified (%s).",
-                                    property.getName(),
-                                    SurvivalDebugStickItem.getValueString(newState, property)
-                            )
+            SurvivalDebugStickItem.sendMessage(player,
+                    MutableText.of(new TranslatableTextContent("item.moremechanics.survival_debug_stick.modified", null,
+                            List.of(property.getName(), SurvivalDebugStickItem.getValueString(state, property)).toArray(new String[0]))
                     )
             );
         }
@@ -130,7 +118,10 @@ public class SurvivalDebugStickItem extends DebugStickItem implements PolymerIte
     }
 
     private static <T extends Comparable<T>> BlockState cycle(BlockState state, Property<T> property) {
-        return state.with(property, SurvivalDebugStickItem.cycle(property.getValues(), state.get(property)));
+        T next = SurvivalDebugStickItem.cycle(property.getValues(), state.get(property));
+        // WallBlocks with UP=FALSE and all properties set to NONE will literally become invisible, so we restrict UP to never be FALSE
+        if (property.equals(Properties.UP) && next.equals(Boolean.FALSE)) next = (T) Boolean.TRUE;
+        return state.with(property, next);
     }
 
     private static <T> T cycle(Iterable<T> elements, @Nullable T current) {
@@ -145,39 +136,25 @@ public class SurvivalDebugStickItem extends DebugStickItem implements PolymerIte
         return property.name(state.get(property));
     }
 
-    /**
-     * Choose next property that is appropriate for the configuration file
-     * */
-    private Property<?> getNextProperty(Collection<Property<?>> collection, @Nullable Property<?> property, @Nullable Block block) {
+    private Property<?> getNextProperty(Collection<Property<?>> collection, @Nullable Property<?> property, BlockState state) {
         int len = collection.size();
-        do { // simply scrolling through the list of properties until suitable is found
+        do {
             property = Util.next(collection, property);
             len--;
-        } while (len > 0 && !this.isPropertyModifiable(property, block));
+        } while (len > 0 && !this.isPropertyModifiable(property, state));
         return property;
     }
 
-    /**
-     * Check via config if chosen property is able to be modified in survival
-     * */
-    private boolean isPropertyModifiable(Property<?> property, @Nullable Block block) {
+    private boolean isPropertyModifiable(Property<?> property, BlockState state) {
         if(property.equals(Properties.WATERLOGGED)) return false;
         if(property.equals(Properties.STAGE)) return false;
-        return this.isBlockAllowedToModify(block);
+
+        return this.isBlockAllowedToModify(state.getBlock());
     }
 
-    private static final List<Block> ALLOWED_BLOCKS = List.of(
-            Blocks.TERRACOTTA,
-            Blocks.LIGHTNING_ROD,
-            Blocks.END_ROD
-    );
-
-    /**
-     * Check via config if chosen block is able to be modified in survival
-     * */
     private boolean isBlockAllowedToModify(Block block) {
         if (block != null) {
-            if(SurvivalDebugStickItem.ALLOWED_BLOCKS.contains(block)) {
+            if(MoreMechanics.Config.survivalDebugStickBlockWhitelist.stream().map(i -> Registries.BLOCK.get(Identifier.tryParse(i))).toList().contains(block)) {
                 return true;
             } else {
                 for (TagKey<Block> tag : MoreMechanics.Config.survivalDebugStickBlockTagWhitelist.stream().map(x -> TagKey.of(Registries.BLOCK.getKey(), Identifier.tryParse(x))).toList()) {

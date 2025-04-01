@@ -1,8 +1,13 @@
 package dev.smto.moremechanics.api;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.registry.Registry;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import dev.smto.moremechanics.MoreMechanics;
+
+import java.util.List;
 
 public interface MoreMechanicsContent {
     default Identifier getIdentifier() {
@@ -38,4 +43,11 @@ public interface MoreMechanicsContent {
         }
         this._register(target);
     }
+
+    default void addTooltip(List<Text> tooltip) {}
+
+    default Block getDummyBlock() {
+        return Blocks.AIR;
+    }
+
 }

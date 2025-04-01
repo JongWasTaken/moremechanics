@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "moremechanics:block/red_multi_door_block"
+  }
+}
