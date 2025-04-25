@@ -2,6 +2,7 @@ package dev.smto.moremechanics.block;
 
 import dev.smto.moremechanics.MoreMechanics;
 import dev.smto.moremechanics.api.MoreMechanicsContent;
+import dev.smto.moremechanics.block.entity.ShapeBuilderBlockEntity;
 import eu.pb4.polymer.blocks.api.BlockModelType;
 import eu.pb4.polymer.blocks.api.PolymerBlockModel;
 import eu.pb4.polymer.blocks.api.PolymerBlockResourceUtils;
@@ -110,7 +111,7 @@ public class ShapeBuilderBlock extends Block implements PolymerTexturedBlock, Bl
     }
 
     @Override
-    public void addTooltip(List<Text> tooltip) {
+    public void addTooltip(ItemStack stack, List<Text> tooltip) {
         tooltip.add(Text.translatable("block.moremechanics.shape_builder.description").formatted(MoreMechanics.getTooltipFormatting()));
         tooltip.add(Text.translatable("block.moremechanics.shape_builder.description.2").formatted(MoreMechanics.getTooltipFormatting()));
         tooltip.add(Text.translatable("block.moremechanics.shape_builder.description.3").formatted(MoreMechanics.getTooltipFormatting()));

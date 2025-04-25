@@ -3,7 +3,7 @@ package dev.smto.moremechanics.block;
 import dev.smto.moremechanics.MoreMechanics;
 import dev.smto.moremechanics.api.MoreMechanicsContent;
 import dev.smto.moremechanics.block.entity.ManagedDisplayBlockEntity;
-import dev.smto.moremechanics.block.entity.VacuumHopperBlockEntity;
+import dev.smto.moremechanics.block.entity.ExperienceDrainBlockEntity;
 import eu.pb4.polymer.blocks.api.PolymerTexturedBlock;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
@@ -20,7 +20,9 @@ import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.text.Text;
-import net.minecraft.util.*;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -30,11 +32,11 @@ import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.List;
 
-public class VacuumHopperBlock extends Block implements PolymerTexturedBlock, BlockEntityProvider, MoreMechanicsContent {
+public class ExperienceDrainBlock extends Block implements PolymerTexturedBlock, BlockEntityProvider, MoreMechanicsContent {
     private final Identifier id;
 
-    public VacuumHopperBlock(Identifier id) {
-        super(Settings.copy(Blocks.HOPPER).registryKey(RegistryKey.of(RegistryKeys.BLOCK, id)));
+    public ExperienceDrainBlock(Identifier id) {
+        super(Settings.copy(Blocks.WHITE_CARPET).registryKey(RegistryKey.of(RegistryKeys.BLOCK, id)));
         this.id = id;
     }
 
@@ -50,7 +52,7 @@ public class VacuumHopperBlock extends Block implements PolymerTexturedBlock, Bl
 
     @Override
     public BlockEntity createBlockEntity(BlockPos blockPos, BlockState blockState) {
-        return new VacuumHopperBlockEntity(blockPos, blockState);
+        return new ExperienceDrainBlockEntity(blockPos, blockState);
     }
 
     @Override
@@ -84,8 +86,8 @@ public class VacuumHopperBlock extends Block implements PolymerTexturedBlock, Bl
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> blockEntityType) {
         return (wo, pos, s, te) -> {
-            if (te instanceof VacuumHopperBlockEntity) {
-                VacuumHopperBlockEntity.tick(world, pos, (VacuumHopperBlockEntity) te);
+            if (te instanceof ExperienceDrainBlockEntity) {
+                ExperienceDrainBlockEntity.tick(world, pos, (ExperienceDrainBlockEntity) te);
             }
         };
     }
@@ -94,9 +96,10 @@ public class VacuumHopperBlock extends Block implements PolymerTexturedBlock, Bl
     public final ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
         return new ItemStack(this);
     }
+
     @Override
     public BlockState getPolymerBlockState(BlockState state, PacketContext context) {
-        return Blocks.BARRIER.getDefaultState();
+        return Blocks.WHITE_CARPET.getDefaultState();
     }
 
     @Override
@@ -121,6 +124,7 @@ public class VacuumHopperBlock extends Block implements PolymerTexturedBlock, Bl
 
     @Override
     public void addTooltip(ItemStack stack, List<Text> tooltip) {
-        tooltip.add(Text.translatable("block.moremechanics.vacuum_hopper.description").formatted(MoreMechanics.getTooltipFormatting()));
+        tooltip.add(Text.translatable("block.moremechanics.experience_drain.description").formatted(MoreMechanics.getTooltipFormatting()));
+        tooltip.add(Text.translatable("block.moremechanics.experience_drain.description.2").formatted(MoreMechanics.getTooltipFormatting()));
     }
 }

@@ -1,5 +1,6 @@
 package dev.smto.moremechanics;
 
+import dev.smto.moremechanics.block.entity.*;
 import dev.smto.moremechanics.item.SolidifiedExperienceItem;
 import dev.smto.simpleconfig.SimpleConfig;
 import dev.smto.simpleconfig.api.ConfigAnnotations;
@@ -102,6 +103,7 @@ public class MoreMechanics implements ModInitializer {
 				}
 			} catch (Throwable ignored) {
                 MoreMechanics.LOGGER.error("Failed to register block: {}", field.getName());
+				MoreMechanics.LOGGER.warn(ignored.getMessage());
 			}
 		}
 
@@ -169,15 +171,17 @@ public class MoreMechanics implements ModInitializer {
 	}
 
 	public static class Blocks {
-		public static Block DUMMY_CAMOUFLAGE_BLOCK = new DummyBlock(MoreMechanics.id("dummy_camouflage_block"), MoreMechanics.id("block/camouflage_block"));
-		public static Block DUMMY_ELEVATOR = new DummyBlock(MoreMechanics.id("dummy_elevator"), MoreMechanics.id("block/elevator"));
-		public static Block DUMMY_EXPERIENCE_STORAGE = new DummyBlock(MoreMechanics.id("dummy_experience_storage"), MoreMechanics.id("block/experience_storage"));
-		public static Block DUMMY_MECHANICAL_PLACER = new DummyBlock(MoreMechanics.id("dummy_mechanical_placer"), MoreMechanics.id("block/mechanical_placer"));
-		public static Block DUMMY_MECHANICAL_BREAKER = new DummyBlock(MoreMechanics.id("dummy_mechanical_breaker"), MoreMechanics.id("block/mechanical_breaker"));
+		public static Block DUMMY_CAMOUFLAGE_BLOCK = new DummyBlock(MoreMechanics.id("dummy_camouflage_block"), MoreMechanics.id("item/camouflage_block"));
+		public static Block DUMMY_ELEVATOR = new DummyBlock(MoreMechanics.id("dummy_elevator"), MoreMechanics.id("item/elevator"));
+		public static Block DUMMY_EXPERIENCE_STORAGE = new DummyBlock(MoreMechanics.id("dummy_experience_storage"), MoreMechanics.id("item/experience_storage"));
+		public static Block DUMMY_MECHANICAL_PLACER = new DummyBlock(MoreMechanics.id("dummy_mechanical_placer"), MoreMechanics.id("item/mechanical_placer"));
+		public static Block DUMMY_MECHANICAL_BREAKER = new DummyBlock(MoreMechanics.id("dummy_mechanical_breaker"), MoreMechanics.id("item/mechanical_breaker"));
+		public static Block DUMMY_TANK = new DummyBlock(MoreMechanics.id("dummy_tank"), MoreMechanics.id("item/tank"));
 
 		public static Block ELEVATOR = new ElevatorBlock(MoreMechanics.id("elevator"));
 		public static Block PEACE_BEACON = new PeaceBeaconBlock(MoreMechanics.id("peace_beacon"));
 		public static Block EXPERIENCE_STORAGE = new ExperienceStorageBlock(MoreMechanics.id("experience_storage"));
+		public static Block EXPERIENCE_DRAIN = new ExperienceDrainBlock(MoreMechanics.id("experience_drain"));
 		public static Block CHUNK_LOADER = new ChunkLoaderBlock(MoreMechanics.id("chunk_loader"));
 		public static Block SHAPE_BUILDER = new ShapeBuilderBlock(MoreMechanics.id("shape_builder"));
 		public static Block MECHANICAL_PLACER = new MechanicalPlacerBlock(MoreMechanics.id("mechanical_placer"));
@@ -188,6 +192,7 @@ public class MoreMechanics implements ModInitializer {
 		public static Block GREEN_MULTI_DOOR_BLOCK = new MultiDoorBlock(MoreMechanics.id("green_multi_door_block"));
 		public static Block BLUE_MULTI_DOOR_BLOCK = new MultiDoorBlock(MoreMechanics.id("blue_multi_door_block"));
 		public static Block YELLOW_MULTI_DOOR_BLOCK = new MultiDoorBlock(MoreMechanics.id("yellow_multi_door_block"));
+		public static Block TANK = new TankBlock(MoreMechanics.id("tank"));
 	}
 
 	@SuppressWarnings("unused")
@@ -195,6 +200,7 @@ public class MoreMechanics implements ModInitializer {
 		public static BlockItem ELEVATOR = new GenericBlockItem(MoreMechanics.id("elevator"), Blocks.ELEVATOR, Rarity.COMMON);
 		public static BlockItem PEACE_BEACON = new GenericBlockItem(MoreMechanics.id("peace_beacon"), Blocks.PEACE_BEACON, Rarity.COMMON);
 		public static BlockItem EXPERIENCE_STORAGE = new GenericBlockItem(MoreMechanics.id("experience_storage"), Blocks.EXPERIENCE_STORAGE, Rarity.COMMON);
+		public static BlockItem EXPERIENCE_DRAIN = new GenericBlockItem(MoreMechanics.id("experience_drain"), Blocks.EXPERIENCE_DRAIN, Rarity.COMMON);
 		public static BlockItem CHUNK_LOADER = new GenericBlockItem(MoreMechanics.id("chunk_loader"), Blocks.CHUNK_LOADER, Rarity.COMMON);
 		public static BlockItem SHAPE_BUILDER = new GenericBlockItem(MoreMechanics.id("shape_builder"), Blocks.SHAPE_BUILDER, Rarity.COMMON);
 		public static Item SURVIVAL_DEBUG_STICK = new SurvivalDebugStickItem(MoreMechanics.id("survival_debug_stick"));
@@ -208,25 +214,31 @@ public class MoreMechanics implements ModInitializer {
 		public static BlockItem GREEN_MULTI_DOOR_BLOCK = new GenericBlockItem(MoreMechanics.id("green_multi_door_block"), Blocks.GREEN_MULTI_DOOR_BLOCK, Rarity.COMMON);
 		public static BlockItem BLUE_MULTI_DOOR_BLOCK = new GenericBlockItem(MoreMechanics.id("blue_multi_door_block"), Blocks.BLUE_MULTI_DOOR_BLOCK, Rarity.COMMON);
 		public static BlockItem YELLOW_MULTI_DOOR_BLOCK = new GenericBlockItem(MoreMechanics.id("yellow_multi_door_block"), Blocks.YELLOW_MULTI_DOOR_BLOCK, Rarity.COMMON);
+		public static BlockItem TANK = new GenericBlockItem(MoreMechanics.id("tank"), Blocks.TANK, Rarity.COMMON);
 	}
 
 	public static class BlockEntities {
-		public static BlockEntityType<ExperienceStorageBlockEntity> EXPERIENCE_STORAGE_ENTITY = FabricBlockEntityTypeBuilder
+		public static BlockEntityType<ExperienceStorageBlockEntity> EXPERIENCE_STORAGE = FabricBlockEntityTypeBuilder
 				.create(ExperienceStorageBlockEntity::new, Blocks.EXPERIENCE_STORAGE).build();
-		public static BlockEntityType<MechanicalPlacerBlockEntity> MECHANICAL_PLACER_ENTITY = FabricBlockEntityTypeBuilder
+		public static BlockEntityType<MechanicalPlacerBlockEntity> MECHANICAL_PLACER = FabricBlockEntityTypeBuilder
 				.create(MechanicalPlacerBlockEntity::new, Blocks.MECHANICAL_PLACER).build();
-		public static BlockEntityType<MechanicalBreakerBlockEntity> MECHANICAL_BREAKER_ENTITY = FabricBlockEntityTypeBuilder
+		public static BlockEntityType<MechanicalBreakerBlockEntity> MECHANICAL_BREAKER = FabricBlockEntityTypeBuilder
 				.create(MechanicalBreakerBlockEntity::new, Blocks.MECHANICAL_BREAKER).build();
-		public static BlockEntityType<ChunkLoaderBlockEntity> CHUNK_LOADER_ENTITY = FabricBlockEntityTypeBuilder
+		public static BlockEntityType<ChunkLoaderBlockEntity> CHUNK_LOADER = FabricBlockEntityTypeBuilder
 				.create(ChunkLoaderBlockEntity::new, Blocks.CHUNK_LOADER).build();
-		public static BlockEntityType<ShapeBuilderBlockEntity> SHAPE_BUILDER_ENTITY = FabricBlockEntityTypeBuilder
+		public static BlockEntityType<ShapeBuilderBlockEntity> SHAPE_BUILDER = FabricBlockEntityTypeBuilder
 				.create(ShapeBuilderBlockEntity::new, Blocks.SHAPE_BUILDER).build();
-		public static BlockEntityType<VacuumHopperBlockEntity> VACUUM_HOPPER_ENTITY = FabricBlockEntityTypeBuilder
+		public static BlockEntityType<VacuumHopperBlockEntity> VACUUM_HOPPER = FabricBlockEntityTypeBuilder
 				.create(VacuumHopperBlockEntity::new, Blocks.VACUUM_HOPPER).build();
+		public static BlockEntityType<ExperienceDrainBlockEntity> EXPERIENCE_DRAIN = FabricBlockEntityTypeBuilder
+				.create(ExperienceDrainBlockEntity::new, Blocks.EXPERIENCE_DRAIN).build();
+		public static BlockEntityType<TankBlockEntity> TANK = FabricBlockEntityTypeBuilder
+				.create(TankBlockEntity::new, Blocks.TANK).build();
 	}
 
 	public static class DataComponentTypes {
 		public static ComponentType<NbtComponent> STORED_ENTITY = ComponentType.<NbtComponent>builder().codec(NbtComponent.CODEC).build();
+		public static ComponentType<TankContents> TANK_CONTENTS = ComponentType.<TankContents>builder().codec(TankContents.CODEC).build();
 	}
 
 	public static class Config {

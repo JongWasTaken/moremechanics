@@ -2,6 +2,7 @@ package dev.smto.moremechanics.api;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -44,7 +45,7 @@ public interface MoreMechanicsContent {
         this._register(target);
     }
 
-    default void addTooltip(List<Text> tooltip) {}
+    default void addTooltip(ItemStack stack, List<Text> tooltip) {}
 
     default Block getDummyBlock() {
         return Blocks.AIR;

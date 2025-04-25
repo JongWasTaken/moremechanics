@@ -2,6 +2,8 @@ package dev.smto.moremechanics.block;
 
 import dev.smto.moremechanics.MoreMechanics;
 import dev.smto.moremechanics.api.MoreMechanicsContent;
+import dev.smto.moremechanics.block.entity.ManagedDisplayBlockEntity;
+import dev.smto.moremechanics.block.entity.ExperienceStorageBlockEntity;
 import dev.smto.moremechanics.util.ExperienceUtils;
 import eu.pb4.polymer.blocks.api.PolymerTexturedBlock;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
@@ -50,7 +52,7 @@ public class ExperienceStorageBlock extends Block implements PolymerTexturedBloc
     }
 
     @Override
-    public void addTooltip(List<Text> tooltip) {
+    public void addTooltip(ItemStack stack, List<Text> tooltip) {
         tooltip.add(Text.translatable("block.moremechanics.experience_storage.description").formatted(MoreMechanics.getTooltipFormatting()));
     }
 
@@ -82,7 +84,7 @@ public class ExperienceStorageBlock extends Block implements PolymerTexturedBloc
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
         super.onPlaced(world, pos, state, placer, itemStack);
-        BlockEntityWithDisplay.onPlacedBlock(world, pos, state, placer, itemStack);
+        ManagedDisplayBlockEntity.onPlacedBlock(world, pos, state, placer, itemStack);
         if (placer instanceof ServerPlayerEntity player) {
             if (world.getBlockEntity(pos) instanceof ExperienceStorageBlockEntity e) {
                 e.setDirection(player.getHorizontalFacing());

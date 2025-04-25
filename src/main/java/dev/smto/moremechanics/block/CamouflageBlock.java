@@ -132,7 +132,7 @@ public class CamouflageBlock extends Block implements PolymerTexturedBlock, More
     }
 
     @Override
-    public void addTooltip(List<Text> tooltip) {
+    public void addTooltip(ItemStack stack, List<Text> tooltip) {
         tooltip.add(Text.translatable("block.moremechanics.camouflage_block.description").formatted(MoreMechanics.getTooltipFormatting()));
     }
 

@@ -198,7 +198,7 @@ public class ElevatorBlock extends Block implements PlayerMovementListener, Poly
     }
 
     @Override
-    public void addTooltip(List<Text> tooltip) {
+    public void addTooltip(ItemStack stack, List<Text> tooltip) {
         tooltip.add(Text.translatable("block.moremechanics.elevator.description").formatted(MoreMechanics.getTooltipFormatting()));
         tooltip.add(Text.translatable("block.moremechanics.elevator.description.2").formatted(MoreMechanics.getTooltipFormatting()));
     }

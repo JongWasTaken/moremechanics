@@ -2,22 +2,25 @@ package dev.smto.moremechanics.block;
 
 import dev.smto.moremechanics.MoreMechanics;
 import dev.smto.moremechanics.api.MoreMechanicsContent;
-import dev.smto.moremechanics.block.entity.ManagedDisplayBlockEntity;
-import dev.smto.moremechanics.block.entity.VacuumHopperBlockEntity;
+import dev.smto.moremechanics.block.entity.TankBlockEntity;
 import eu.pb4.polymer.blocks.api.PolymerTexturedBlock;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BucketItem;
+import net.minecraft.item.GlassBottleItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.PotionItem;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
@@ -30,11 +33,11 @@ import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.List;
 
-public class VacuumHopperBlock extends Block implements PolymerTexturedBlock, BlockEntityProvider, MoreMechanicsContent {
+public class TankBlock extends Block implements PolymerTexturedBlock, BlockEntityProvider, MoreMechanicsContent {
     private final Identifier id;
 
-    public VacuumHopperBlock(Identifier id) {
-        super(Settings.copy(Blocks.HOPPER).registryKey(RegistryKey.of(RegistryKeys.BLOCK, id)));
+    public TankBlock(Identifier id) {
+        super(Settings.copy(Blocks.GLASS).registryKey(RegistryKey.of(RegistryKeys.BLOCK, id)));
         this.id = id;
     }
 
@@ -50,7 +53,7 @@ public class VacuumHopperBlock extends Block implements PolymerTexturedBlock, Bl
 
     @Override
     public BlockEntity createBlockEntity(BlockPos blockPos, BlockState blockState) {
-        return new VacuumHopperBlockEntity(blockPos, blockState);
+        return new TankBlockEntity(blockPos, blockState);
     }
 
     @Override
@@ -58,25 +61,49 @@ public class VacuumHopperBlock extends Block implements PolymerTexturedBlock, Bl
         if (!state.isOf(newState.getBlock())) {
             ItemScatterer.onStateReplaced(state, newState, world, pos);
             world.removeBlockEntity(pos);
-            world.addBlockBreakParticles(pos, Blocks.HOPPER.getDefaultState());
         }
     }
 
     @Override
-    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        if (world.isClient()) return ActionResult.PASS;
-        BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (blockEntity instanceof NamedScreenHandlerFactory s) {
-            player.openHandledScreen(s);
+    public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        if (!player.isCreative()) {
+            if (world.getBlockEntity(pos) instanceof TankBlockEntity t) {
+                world.spawnEntity(new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, t.getAsStack()));
+            }
         }
-        return ActionResult.CONSUME;
+        return super.onBreak(world, pos, state, player);
+    }
+
+    @Override
+    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+        if (player.getMainHandStack().isEmpty()) {
+            if (world.getBlockEntity(pos) instanceof TankBlockEntity t) {
+                return t.onUse((ServerPlayerEntity) player);
+            }
+        }
+        return super.onUse(state, world, pos, player, hit);
+    }
+
+    @Override
+    protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if (world.isClient) return ActionResult.FAIL;
+        if (world.getBlockEntity(pos) instanceof TankBlockEntity t) {
+            if (stack.getItem() instanceof BucketItem) {
+                return t.interactBucket((ServerPlayerEntity) player, stack);
+            }
+            if (stack.getItem() instanceof PotionItem || stack.getItem() instanceof GlassBottleItem) {
+                return t.interactBottle((ServerPlayerEntity) player, stack);
+            }
+        }
+        return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
     }
 
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
         if (world.isClient()) return;
-        if (world.getBlockEntity(pos) instanceof ManagedDisplayBlockEntity ent) {
+        if (world.getBlockEntity(pos) instanceof TankBlockEntity ent) {
             ent.ensureDisplay(world, pos);
+            ent.loadStack(itemStack);
         }
         super.onPlaced(world, pos, state, placer, itemStack);
     }
@@ -84,14 +111,17 @@ public class VacuumHopperBlock extends Block implements PolymerTexturedBlock, Bl
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> blockEntityType) {
         return (wo, pos, s, te) -> {
-            if (te instanceof VacuumHopperBlockEntity) {
-                VacuumHopperBlockEntity.tick(world, pos, (VacuumHopperBlockEntity) te);
+            if (te instanceof TankBlockEntity) {
+                TankBlockEntity.tick(world, pos, (TankBlockEntity) te);
             }
         };
     }
 
     @Override
     public final ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
+        if (world.getBlockEntity(pos) instanceof TankBlockEntity t) {
+            return t.getAsStack();
+        }
         return new ItemStack(this);
     }
     @Override
@@ -121,6 +151,10 @@ public class VacuumHopperBlock extends Block implements PolymerTexturedBlock, Bl
 
     @Override
     public void addTooltip(ItemStack stack, List<Text> tooltip) {
-        tooltip.add(Text.translatable("block.moremechanics.vacuum_hopper.description").formatted(MoreMechanics.getTooltipFormatting()));
+        tooltip.add(Text.translatable("block.moremechanics.tank.description").formatted(MoreMechanics.getTooltipFormatting()));
+        if (stack.contains(MoreMechanics.DataComponentTypes.TANK_CONTENTS)) {
+            var info = stack.get(MoreMechanics.DataComponentTypes.TANK_CONTENTS);
+            tooltip.add(Text.translatable("block.minecraft." + Registries.FLUID.getId(info.fluid()).getPath()).append(Text.literal(": " + info.amount() + "mB")).formatted(Formatting.BLUE));
+        }
     }
 }

@@ -1,7 +1,8 @@
-package dev.smto.moremechanics.block;
+package dev.smto.moremechanics.block.entity;
 
 import com.mojang.authlib.GameProfile;
 import dev.smto.moremechanics.MoreMechanics;
+import dev.smto.moremechanics.block.MechanicalPlacerBlock;
 import dev.smto.moremechanics.util.DisplayTransformations;
 import dev.smto.moremechanics.util.Transformation;
 import net.fabricmc.fabric.api.entity.FakePlayer;
@@ -28,14 +29,14 @@ import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public class MechanicalPlacerBlockEntity extends BlockEntityWithDisplay implements SidedInventory, NamedScreenHandlerFactory {
+public class MechanicalPlacerBlockEntity extends ManagedDisplayBlockEntity implements SidedInventory, NamedScreenHandlerFactory {
     private static final String DISPLAY_COMMAND_TAG = MoreMechanics.id("mechanical_placer_display").toString();
 
     protected DefaultedList<ItemStack> inventory = DefaultedList.ofSize(9, ItemStack.EMPTY);
     private FakePlayer fakePlayer;
 
     public MechanicalPlacerBlockEntity(BlockPos pos, BlockState state) {
-        super(MoreMechanics.BlockEntities.MECHANICAL_PLACER_ENTITY, pos, state);
+        super(MoreMechanics.BlockEntities.MECHANICAL_PLACER, pos, state);
     }
 
     @Override
@@ -48,9 +49,11 @@ public class MechanicalPlacerBlockEntity extends BlockEntityWithDisplay implemen
         return DisplayData.create(MoreMechanics.Blocks.DUMMY_MECHANICAL_PLACER.getDefaultState());
     }
 
+    private static final DisplaySpec[] DISPLAY_SPECS = { DisplaySpec.BLOCK };
+
     @Override
-    protected DisplayConfig[] getDisplayConfig() {
-        return new DisplayConfig[] { DisplayConfig.BLOCK };
+    protected DisplaySpec[] getDisplaySpec() {
+        return MechanicalPlacerBlockEntity.DISPLAY_SPECS;
     }
 
     @Override

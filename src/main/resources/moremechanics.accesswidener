@@ -7,3 +7,4 @@ accessible method net/minecraft/block/entity/BlockEntity writeNbt (Lnet/minecraf
 accessible field net/minecraft/server/MinecraftServer favicon Lnet/minecraft/server/ServerMetadata$Favicon;
 mutable field net/minecraft/server/MinecraftServer favicon Lnet/minecraft/server/ServerMetadata$Favicon;
 accessible method net/minecraft/item/BlockItem getPlacementState (Lnet/minecraft/item/ItemPlacementContext;)Lnet/minecraft/block/BlockState;
+accessible field net/minecraft/item/BucketItem fluid Lnet/minecraft/fluid/Fluid;

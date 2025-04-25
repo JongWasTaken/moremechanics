@@ -7,6 +7,7 @@ import eu.pb4.polymer.blocks.api.PolymerBlockModel;
 import eu.pb4.polymer.blocks.api.PolymerBlockResourceUtils;
 import eu.pb4.polymer.blocks.api.PolymerTexturedBlock;
 import eu.pb4.polymer.core.api.block.PolymerBlock;
+import eu.pb4.polymer.core.api.block.PolymerBlockUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -25,8 +26,15 @@ public class DummyBlock extends Block implements PolymerTexturedBlock, MoreMecha
     public DummyBlock(Identifier id, Identifier model) {
         super(Settings.copy(Blocks.BEDROCK).registryKey(RegistryKey.of(RegistryKeys.BLOCK, id)));
         this.id = id;
+        BlockModelType b = BlockModelType.BIOME_PLANT_BLOCK;
+        if (PolymerBlockResourceUtils.getBlocksLeft(b) == 0) {
+            b = BlockModelType.PLANT_BLOCK;
+        }
+        if (PolymerBlockResourceUtils.getBlocksLeft(b) == 0) {
+            throw new RuntimeException("Out of block models!");
+        }
         this.polymerBlockState = PolymerBlockResourceUtils.requestBlock(
-                BlockModelType.PLANT_BLOCK,
+                b,
                 PolymerBlockModel.of(model)
         );
     }

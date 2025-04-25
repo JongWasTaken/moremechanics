@@ -2,6 +2,8 @@ package dev.smto.moremechanics.block;
 
 import dev.smto.moremechanics.MoreMechanics;
 import dev.smto.moremechanics.api.MoreMechanicsContent;
+import dev.smto.moremechanics.block.entity.ManagedDisplayBlockEntity;
+import dev.smto.moremechanics.block.entity.MechanicalBreakerBlockEntity;
 import eu.pb4.polymer.blocks.api.PolymerTexturedBlock;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
@@ -85,7 +87,7 @@ public class MechanicalBreakerBlock extends Block implements PolymerTexturedBloc
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
         super.onPlaced(world, pos, state, placer, itemStack);
-        BlockEntityWithDisplay.onPlacedBlock(world, pos, state, placer, itemStack);
+        ManagedDisplayBlockEntity.onPlacedBlock(world, pos, state, placer, itemStack);
     }
 
     @Override
@@ -158,7 +160,7 @@ public class MechanicalBreakerBlock extends Block implements PolymerTexturedBloc
     }
 
     @Override
-    public void addTooltip(List<Text> tooltip) {
+    public void addTooltip(ItemStack stack, List<Text> tooltip) {
         tooltip.add(Text.translatable("block.moremechanics.mechanical_breaker.description").formatted(MoreMechanics.getTooltipFormatting()));
         tooltip.add(Text.translatable("block.moremechanics.mechanical_breaker.description.2").formatted(MoreMechanics.getTooltipFormatting()));
     }

@@ -1,4 +1,4 @@
-package dev.smto.moremechanics.block;
+package dev.smto.moremechanics.block.entity;
 
 import dev.smto.moremechanics.MoreMechanics;
 import net.fabricmc.fabric.api.entity.FakePlayer;
@@ -20,7 +20,7 @@ public class ChunkLoaderBlockEntity extends BlockEntity {
     private int counter = 100;
     private FakePlayer fakePlayer;
     public ChunkLoaderBlockEntity(BlockPos pos, BlockState state) {
-        super(MoreMechanics.BlockEntities.CHUNK_LOADER_ENTITY, pos, state);
+        super(MoreMechanics.BlockEntities.CHUNK_LOADER, pos, state);
         this.chunkPos = new ChunkPos(pos);
     }
 

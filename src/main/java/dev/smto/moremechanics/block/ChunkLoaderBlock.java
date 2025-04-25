@@ -2,6 +2,7 @@ package dev.smto.moremechanics.block;
 
 import dev.smto.moremechanics.MoreMechanics;
 import dev.smto.moremechanics.api.MoreMechanicsContent;
+import dev.smto.moremechanics.block.entity.ChunkLoaderBlockEntity;
 import eu.pb4.polymer.blocks.api.BlockModelType;
 import eu.pb4.polymer.blocks.api.PolymerBlockModel;
 import eu.pb4.polymer.blocks.api.PolymerBlockResourceUtils;
@@ -32,8 +33,15 @@ public class ChunkLoaderBlock extends Block implements PolymerTexturedBlock, Blo
     public ChunkLoaderBlock(Identifier id) {
         super(Settings.copy(Blocks.GOLD_BLOCK).registryKey(RegistryKey.of(RegistryKeys.BLOCK, id)));
         this.id = id;
+        BlockModelType b = BlockModelType.BIOME_PLANT_BLOCK;
+        if (PolymerBlockResourceUtils.getBlocksLeft(b) == 0) {
+            b = BlockModelType.PLANT_BLOCK;
+        }
+        if (PolymerBlockResourceUtils.getBlocksLeft(b) == 0) {
+            throw new RuntimeException("Out of block models!");
+        }
         this.polymerBlockState = PolymerBlockResourceUtils.requestBlock(
-                BlockModelType.PLANT_BLOCK,
+                b,
                 PolymerBlockModel.of(Identifier.of(MoreMechanics.MOD_ID, "block/" + id.getPath()))
         );
     }
@@ -83,7 +91,7 @@ public class ChunkLoaderBlock extends Block implements PolymerTexturedBlock, Blo
     }
 
     @Override
-    public void addTooltip(List<Text> tooltip) {
+    public void addTooltip(ItemStack stack, List<Text> tooltip) {
         tooltip.add(Text.translatable("block.moremechanics.chunk_loader.description").formatted(MoreMechanics.getTooltipFormatting()));
         tooltip.add(Text.translatable("block.moremechanics.chunk_loader.description.2").formatted(MoreMechanics.getTooltipFormatting()));
     }

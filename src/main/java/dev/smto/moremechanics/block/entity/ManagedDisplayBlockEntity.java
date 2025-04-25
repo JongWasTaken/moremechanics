@@ -1,4 +1,4 @@
-package dev.smto.moremechanics.block;
+package dev.smto.moremechanics.block.entity;
 
 import dev.smto.moremechanics.util.ParticleUtils;
 import dev.smto.moremechanics.util.Transformation;
@@ -21,48 +21,64 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class BlockEntityWithDisplay extends BlockEntity {
+@SuppressWarnings("unused")
+public abstract class ManagedDisplayBlockEntity extends BlockEntity {
 
-    protected BlockEntityWithDisplay(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+    private final boolean[] defaultTickBehavior;
+
+    protected ManagedDisplayBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
+        this.defaultTickBehavior = new boolean[this.getDisplaySpec().length];
     }
 
-    private DisplayEntity[] displayEntities = null;
+    private DisplayEntity[] displayEntities;
 
     protected abstract String getDisplayCommandTag();
 
     /**
      * Use this to set data for the display entities.<br>
-     * DisplayEntities call this on every tick to update themselves.
+     * DisplayEntities call this once after creation, and after on every tick to update themselves, if enabled with {@link #getDisplayTickEnabled()}.
      * @param world ServerWorld
      * @param pos BlockPos of BlockEntity
-     * @param index The index in {@link #getDisplayConfig}
+     * @param index The index in {@link #getDisplaySpec}
      * @param forType For easier comparison
-     * @return DisplayData for the given index. Use {@code DisplayData#create(..)}!
+     * @return DisplayData for the given index. Use {@link DisplayData DisplayData#create(..)}!
      */
     protected abstract DisplayData getDisplayData(World world, BlockPos pos, int index, DisplayType forType);
 
     /**
-     * Use this to set how many/which display entities should be created and managed.
+     * Use this to set how many/which display entities should be created and managed.<br><br>
+     * Example: {@code new DisplaySpec[] { DisplaySpec.BLOCK, DisplaySpec.ITEM, DisplaySpec.TEXT }; },<br>
+     * this will spawn 3 display entities: a BlockDisplay at index 0, an ItemDisplay at index 1 and a TextDisplay at index 2.
      */
-    protected abstract DisplayConfig[] getDisplayConfig();
+    protected abstract DisplaySpec[] getDisplaySpec();
+
+    /**
+     * Use this to make a display entity update itself every tick.<br><br>
+     * Example: {@code new boolean[] { false, true, true }; },<br>
+     * this will set the entity at index 1 and 2 to update every tick.<br><br>
+     * By default, all entities are set to not tick.
+     */
+    protected boolean[] getDisplayTickEnabled() {
+        return this.defaultTickBehavior;
+    };
 
     protected Transformation getDisplayTransformation(World world, BlockPos pos, int index, DisplayType forType) {
         return Transformation.DEFAULT;
     }
 
-    protected void ensureDisplay(World world, BlockPos pos) {
+    public void ensureDisplay(World world, BlockPos pos) {
         if (this.displayEntities == null) {
             // clean state
             this.cleanupDisplayEntities(this.getWorld());
-            this.displayEntities = new DisplayEntity[this.getDisplayConfig().length];
+            this.displayEntities = new DisplayEntity[this.getDisplaySpec().length];
         }
-        for (int i = 0; i < this.getDisplayConfig().length; i++) {
+        for (int i = 0; i < this.getDisplaySpec().length; i++) {
             if (this.displayEntities[i] != null) {
-                this.getDisplayConfig()[i].update(this.displayEntities[i], this, world, pos, i);
+                if (this.getDisplayTickEnabled()[i]) this.getDisplaySpec()[i].update(this.displayEntities[i], this, world, pos, i);
                 continue;
             }
-            var t = this.getDisplayConfig()[i];
+            var t = this.getDisplaySpec()[i];
             DisplayEntity ent = t.create(this, world, pos, i);
             t.update(ent, this, world, pos, i);
             if (ent != null) {
@@ -107,34 +123,34 @@ public abstract class BlockEntityWithDisplay extends BlockEntity {
         }
     }
 
-    public static void onPlacedBlock(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
+    public static void onPlacedBlock(@NotNull World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
         if (world.isClient()) return;
-        if (world.getBlockEntity(pos) instanceof BlockEntityWithDisplay ent) {
+        if (world.getBlockEntity(pos) instanceof ManagedDisplayBlockEntity ent) {
             ent.ensureDisplay(world, pos);
         }
     }
 
-    public enum DisplayConfig {
+    public enum DisplaySpec {
         BLOCK(
                 DisplayType.BLOCK,
-                (BlockEntityWithDisplay blockEntity, World world, BlockPos pos, int index) -> new DisplayEntity.BlockDisplayEntity(EntityType.BLOCK_DISPLAY, world),
-                (DisplayEntity ent, BlockEntityWithDisplay blockEntity, World world, BlockPos pos, int index) -> {
+                (ManagedDisplayBlockEntity blockEntity, World world, BlockPos pos, int index) -> new DisplayEntity.BlockDisplayEntity(EntityType.BLOCK_DISPLAY, world),
+                (DisplayEntity ent, ManagedDisplayBlockEntity blockEntity, World world, BlockPos pos, int index) -> {
                     ((DisplayEntity.BlockDisplayEntity)ent).setBlockState(blockEntity.getDisplayData(world, pos, index, DisplayType.BLOCK).blockState());
                     ent.setTransformation(blockEntity.getDisplayTransformation(world, pos, index, DisplayType.BLOCK).toVanilla());
                 }
         ),
         ITEM(
                 DisplayType.ITEM,
-                (BlockEntityWithDisplay blockEntity, World world, BlockPos pos, int index) -> new DisplayEntity.ItemDisplayEntity(EntityType.ITEM_DISPLAY, world),
-                (DisplayEntity ent, BlockEntityWithDisplay blockEntity, World world, BlockPos pos, int index) -> {
+                (ManagedDisplayBlockEntity blockEntity, World world, BlockPos pos, int index) -> new DisplayEntity.ItemDisplayEntity(EntityType.ITEM_DISPLAY, world),
+                (DisplayEntity ent, ManagedDisplayBlockEntity blockEntity, World world, BlockPos pos, int index) -> {
                     ((DisplayEntity.ItemDisplayEntity)ent).setItemStack(blockEntity.getDisplayData(world, pos, index, DisplayType.ITEM).itemStack());
                     ent.setTransformation(blockEntity.getDisplayTransformation(world, pos, index, DisplayType.ITEM).toVanilla());
                 }
         ),
         TEXT(
                 DisplayType.TEXT,
-                (BlockEntityWithDisplay blockEntity, World world, BlockPos pos, int index) -> new DisplayEntity.TextDisplayEntity(EntityType.TEXT_DISPLAY, world),
-                (DisplayEntity ent, BlockEntityWithDisplay blockEntity, World world, BlockPos pos, int index) -> {
+                (ManagedDisplayBlockEntity blockEntity, World world, BlockPos pos, int index) -> new DisplayEntity.TextDisplayEntity(EntityType.TEXT_DISPLAY, world),
+                (DisplayEntity ent, ManagedDisplayBlockEntity blockEntity, World world, BlockPos pos, int index) -> {
                     var textData = blockEntity.getDisplayData(world, pos, index, DisplayType.TEXT).textData();
                     ((DisplayEntity.TextDisplayEntity)ent).setText(textData.text());
                     ((DisplayEntity.TextDisplayEntity)ent).setLineWidth(textData.lineWidth());
@@ -149,7 +165,7 @@ public abstract class BlockEntityWithDisplay extends BlockEntity {
         private final DisplayCreateFunction creationFunc;
         private final DisplayUpdateFunction updateFunc;
 
-        DisplayConfig(DisplayType type, DisplayCreateFunction creationFunc, DisplayUpdateFunction updateFunc) {
+        DisplaySpec(DisplayType type, DisplayCreateFunction creationFunc, DisplayUpdateFunction updateFunc) {
             this.type = type;
             this.creationFunc = creationFunc;
             this.updateFunc = updateFunc;
@@ -159,21 +175,21 @@ public abstract class BlockEntityWithDisplay extends BlockEntity {
             return this.type;
         }
 
-        public DisplayEntity create(BlockEntityWithDisplay blockEntity, World world, BlockPos pos, int index) {
+        public DisplayEntity create(ManagedDisplayBlockEntity blockEntity, World world, BlockPos pos, int index) {
             return this.creationFunc.execute(blockEntity, world, pos, index);
         }
 
-        public void update(DisplayEntity entity, BlockEntityWithDisplay blockEntity, World world, BlockPos pos, int index) {
+        public void update(DisplayEntity entity, ManagedDisplayBlockEntity blockEntity, World world, BlockPos pos, int index) {
             this.updateFunc.execute(entity, blockEntity, world, pos, index);
         }
 
         @FunctionalInterface
         public interface DisplayCreateFunction {
-            DisplayEntity execute(BlockEntityWithDisplay blockEntity, World world, BlockPos pos, int index);
+            DisplayEntity execute(ManagedDisplayBlockEntity blockEntity, World world, BlockPos pos, int index);
         }
         @FunctionalInterface
         public interface DisplayUpdateFunction {
-            void execute(DisplayEntity ent, BlockEntityWithDisplay blockEntity, World world, BlockPos pos, int index);
+            void execute(DisplayEntity ent, ManagedDisplayBlockEntity blockEntity, World world, BlockPos pos, int index);
         }
 
     }

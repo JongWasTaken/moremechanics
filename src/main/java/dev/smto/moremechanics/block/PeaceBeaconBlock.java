@@ -7,11 +7,7 @@ import eu.pb4.polymer.blocks.api.PolymerBlockModel;
 import eu.pb4.polymer.blocks.api.PolymerBlockResourceUtils;
 import eu.pb4.polymer.blocks.api.PolymerTexturedBlock;
 import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.decoration.DisplayEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
 import net.minecraft.particle.ParticleTypes;
@@ -86,7 +82,7 @@ public class PeaceBeaconBlock extends Block implements PolymerTexturedBlock, Mor
     }
 
     @Override
-    public void addTooltip(List<Text> tooltip) {
+    public void addTooltip(ItemStack stack, List<Text> tooltip) {
         tooltip.add(MutableText.of(new TranslatableTextContent("block.moremechanics.peace_beacon.description", null, List.of(MoreMechanics.Config.peaceBeaconRadius).toArray(new Integer[0]))).formatted(MoreMechanics.getTooltipFormatting()));
     }
 

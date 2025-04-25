@@ -1,6 +1,7 @@
-package dev.smto.moremechanics.block;
+package dev.smto.moremechanics.block.entity;
 
 import dev.smto.moremechanics.MoreMechanics;
+import dev.smto.moremechanics.block.ExperienceStorageBlock;
 import dev.smto.moremechanics.util.Degrees;
 import dev.smto.moremechanics.util.DisplayTransformations;
 import dev.smto.moremechanics.util.ExperienceUtils;
@@ -26,33 +27,28 @@ import org.jetbrains.annotations.Nullable;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 
-public class ExperienceStorageBlockEntity extends BlockEntityWithDisplay implements SidedInventory {
+public class ExperienceStorageBlockEntity extends ManagedDisplayBlockEntity implements SidedInventory {
     private static final int MAX_EXPERIENCE = Integer.MAX_VALUE;
     private static final String DISPLAY_COMMAND_TAG = MoreMechanics.id("experience_storage_display").toString();
 
     private static final HashMap<Direction, Transformation> UPPER_TEXT_TRANSFORMATIONS = new HashMap<>() {{
-        this.put(Direction.NORTH, new Transformation().setTranslation(0.5f,1.001f,0.5f).rotateX(Degrees.NINETY));
-        this.put(Direction.EAST, new Transformation().setTranslation(0.5f,1.001f,0.5f).rotateX(Degrees.NINETY).rotateZ(Degrees.NINETY));
-        this.put(Direction.SOUTH, new Transformation().setTranslation(0.5f,1.001f,0.5f).rotateX(Degrees.NINETY).rotateZ(Degrees.ONE_EIGHTY));
-        this.put(Direction.WEST, new Transformation().setTranslation(0.5f,1.001f,0.5f).rotateX(Degrees.NINETY).rotateZ(Degrees.TWO_SEVENTY));
+        this.put(Direction.NORTH, new Transformation().setTranslation(0.5f,1.001f,0.5f).rotateX(Degrees.D90));
+        this.put(Direction.EAST, new Transformation().setTranslation(0.5f,1.001f,0.5f).rotateX(Degrees.D90).rotateZ(Degrees.D90));
+        this.put(Direction.SOUTH, new Transformation().setTranslation(0.5f,1.001f,0.5f).rotateX(Degrees.D90).rotateZ(Degrees.D180));
+        this.put(Direction.WEST, new Transformation().setTranslation(0.5f,1.001f,0.5f).rotateX(Degrees.D90).rotateZ(Degrees.D270));
     }};
 
     private static final HashMap<Direction, Transformation> LOWER_TEXT_TRANSFORMATIONS = new HashMap<>() {{
-        this.put(Direction.NORTH, new Transformation().setTranslation(0.5f,1.001f,0.7f).rotateX(Degrees.NINETY));
-        this.put(Direction.EAST, new Transformation().setTranslation(0.3f,1.001f,0.5f).rotateX(Degrees.NINETY).rotateZ(Degrees.NINETY));
-        this.put(Direction.SOUTH, new Transformation().setTranslation(0.5f,1.001f,0.3f).rotateX(Degrees.NINETY).rotateZ(Degrees.ONE_EIGHTY));
-        this.put(Direction.WEST, new Transformation().setTranslation(0.7f,1.001f,0.5f).rotateX(Degrees.NINETY).rotateZ(Degrees.TWO_SEVENTY));
+        this.put(Direction.NORTH, new Transformation().setTranslation(0.5f,1.001f,0.7f).rotateX(Degrees.D90));
+        this.put(Direction.EAST, new Transformation().setTranslation(0.3f,1.001f,0.5f).rotateX(Degrees.D90).rotateZ(Degrees.D90));
+        this.put(Direction.SOUTH, new Transformation().setTranslation(0.5f,1.001f,0.3f).rotateX(Degrees.D90).rotateZ(Degrees.D180));
+        this.put(Direction.WEST, new Transformation().setTranslation(0.7f,1.001f,0.5f).rotateX(Degrees.D90).rotateZ(Degrees.D270));
     }};
 
-    private static final HashMap<Direction, Transformation> ITEM_TRANSFORMATIONS = new HashMap<>() {{
-        this.put(Direction.NORTH, DisplayTransformations.getForItem(Direction.NORTH).addTranslation(0.0f, 0.05f, 0.0f));
-        this.put(Direction.EAST, DisplayTransformations.getForItem(Direction.EAST).addTranslation(0.0f, 0.05f, 0.0f));
-        this.put(Direction.SOUTH, DisplayTransformations.getForItem(Direction.SOUTH).addTranslation(0.0f, 0.05f, 0.0f));
-        this.put(Direction.WEST, DisplayTransformations.getForItem(Direction.WEST).addTranslation(0.0f, 0.05f, 0.0f));
-    }};
+    private final Transformation itemTransformation = DisplayTransformations.getForItem(Direction.NORTH).setScale(0.65f);
 
     public ExperienceStorageBlockEntity(BlockPos pos, BlockState state) {
-        super(MoreMechanics.BlockEntities.EXPERIENCE_STORAGE_ENTITY, pos, state);
+        super(MoreMechanics.BlockEntities.EXPERIENCE_STORAGE, pos, state);
     }
 
     @Override
@@ -62,8 +58,8 @@ public class ExperienceStorageBlockEntity extends BlockEntityWithDisplay impleme
 
     @Override
     protected Transformation getDisplayTransformation(World world, BlockPos pos, int index, DisplayType forType) {
-        if (index == 0) return super.getDisplayTransformation(world, pos, index, forType);
-        if (index == 1) return ExperienceStorageBlockEntity.ITEM_TRANSFORMATIONS.get(this.direction);
+        if (index == 0) return super.getDisplayTransformation(world, pos, 0, forType);
+        if (index == 1) return this.itemTransformation.rotateY(0.01f);
         if (index == 2) return ExperienceStorageBlockEntity.UPPER_TEXT_TRANSFORMATIONS.get(this.direction);
         return ExperienceStorageBlockEntity.LOWER_TEXT_TRANSFORMATIONS.get(this.direction);
     }
@@ -82,9 +78,18 @@ public class ExperienceStorageBlockEntity extends BlockEntityWithDisplay impleme
         );
     }
 
+    private static final DisplaySpec[] DISPLAY_SPECS = { DisplaySpec.BLOCK, DisplaySpec.ITEM, DisplaySpec.TEXT, DisplaySpec.TEXT };
+
     @Override
-    protected DisplayConfig[] getDisplayConfig() {
-        return new DisplayConfig[] { DisplayConfig.BLOCK, DisplayConfig.ITEM, DisplayConfig.TEXT, DisplayConfig.TEXT };
+    protected DisplaySpec[] getDisplaySpec() {
+        return ExperienceStorageBlockEntity.DISPLAY_SPECS;
+    }
+
+    private final boolean[] displayTickEnabled = { false, true, true, true};
+
+    @Override
+    protected boolean[] getDisplayTickEnabled() {
+        return this.displayTickEnabled;
     }
 
     public static void tick(World world, BlockPos pos, ExperienceStorageBlockEntity blockEntity) {
@@ -206,6 +211,7 @@ public class ExperienceStorageBlockEntity extends BlockEntityWithDisplay impleme
 
     @Override
     public void setStack(int slot, ItemStack stack) {
+        if (this.getWorld() == null) return;
         if (slot == 0) {
             if (stack.isOf(MoreMechanics.Items.SOLIDIFIED_EXPERIENCE)) {
                 this.addExperience(10 * stack.getCount());

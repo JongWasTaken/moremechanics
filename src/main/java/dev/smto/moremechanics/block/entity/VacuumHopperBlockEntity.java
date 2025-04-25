@@ -1,8 +1,10 @@
-package dev.smto.moremechanics.block;
+package dev.smto.moremechanics.block.entity;
 
 import dev.smto.moremechanics.MoreMechanics;
+import dev.smto.moremechanics.util.DisplayTransformations;
+import dev.smto.moremechanics.util.Transformation;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
@@ -30,14 +32,17 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
 
-public class VacuumHopperBlockEntity extends BlockEntity implements SidedInventory, NamedScreenHandlerFactory {
+public class VacuumHopperBlockEntity extends ManagedDisplayBlockEntity implements SidedInventory, NamedScreenHandlerFactory {
+    private static final String DISPLAY_COMMAND_TAG = MoreMechanics.id("vacuum_hopper_display").toString();
+
     private final Box checkBox;
     private final SimpleInventory inventory = new SimpleInventory(27);
     private int storedExperience = 0;
 
     public VacuumHopperBlockEntity(BlockPos pos, BlockState state) {
-        super(MoreMechanics.BlockEntities.VACUUM_HOPPER_ENTITY, pos, state);
+        super(MoreMechanics.BlockEntities.VACUUM_HOPPER, pos, state);
         this.checkBox = new Box(
                 new Vec3d(pos.getX() - 2, pos.getY() - 2, pos.getZ() - 2),
                 new Vec3d(pos.getX() + 3, pos.getY() + 3, pos.getZ() + 3)
@@ -61,6 +66,7 @@ public class VacuumHopperBlockEntity extends BlockEntity implements SidedInvento
     }
 
     public static void tick(World world, BlockPos pos, VacuumHopperBlockEntity blockEntity) {
+        blockEntity.ensureDisplay(world, pos);
         for (Entity otherEntity : world.getOtherEntities(null, blockEntity.checkBox, entity -> true)) {
             if (otherEntity instanceof ItemEntity itemEntity) {
                 var stack = itemEntity.getStack();
@@ -101,7 +107,7 @@ public class VacuumHopperBlockEntity extends BlockEntity implements SidedInvento
 
     @Override
     public int[] getAvailableSlots(Direction side) {
-        return new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26};
+        return IntStream.rangeClosed(0, 26).toArray();
     }
 
     @Override
@@ -208,5 +214,29 @@ public class VacuumHopperBlockEntity extends BlockEntity implements SidedInvento
     @Override
     public boolean canTransferTo(Inventory hopperInventory, int slot, ItemStack stack) {
         return this.inventory.canTransferTo(hopperInventory, slot, stack);
+    }
+
+    @Override
+    protected String getDisplayCommandTag() {
+        return VacuumHopperBlockEntity.DISPLAY_COMMAND_TAG;
+    }
+
+    @Override
+    protected DisplayData getDisplayData(World world, BlockPos pos, int index, DisplayType forType) {
+        return new DisplayData(Blocks.HOPPER.getDefaultState(), MoreMechanics.Items.VACUUM_HOPPER.getDefaultStack(), DisplayData.INVALID.textData());
+    }
+
+    private static final DisplaySpec[] DISPLAY_SPECS = { DisplaySpec.ITEM };
+
+    @Override
+    protected DisplaySpec[] getDisplaySpec() {
+        return VacuumHopperBlockEntity.DISPLAY_SPECS;
+    }
+
+    private static final Transformation TRANSFORMATION = DisplayTransformations.getForItem(null);
+
+    @Override
+    protected Transformation getDisplayTransformation(World world, BlockPos pos, int index, DisplayType forType) {
+        return VacuumHopperBlockEntity.TRANSFORMATION;
     }
 }

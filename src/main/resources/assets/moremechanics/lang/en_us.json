@@ -8,7 +8,7 @@
   "block.moremechanics.elevator.description": "Teleports the player up or down.",
   "block.moremechanics.elevator.description.2": "Can take the appearance of any block by right-clicking with it.",
   "block.moremechanics.experience_storage": "Experience Storage",
-  "block.moremechanics.experience_storage.description": "Also accepts solidified experience.",
+  "block.moremechanics.experience_storage.description": "Also accepts bottled and solidified experience.",
   "block.moremechanics.mechanical_breaker": "Mechanical Breaker",
   "block.moremechanics.mechanical_breaker.description": "Breaks blocks using the first tool in its inventory.",
   "block.moremechanics.mechanical_breaker.description.2": "Can be disabled with redstone.",
@@ -80,5 +80,11 @@
   "misc.moremechanics.shape.planes": "Planes",
   "misc.moremechanics.shape.sphere": "Sphere",
   "misc.moremechanics.shape.triangle": "Triangle",
-  "block.moremechanics.vacuum_hopper": "Vacuum Hopper"
+  "block.moremechanics.vacuum_hopper": "Vacuum Hopper",
+  "block.moremechanics.experience_drain": "Experience Drain",
+  "block.moremechanics.vacuum_hopper.description": "Sucks up any items and xp in a 3 block radius.",
+  "block.moremechanics.tank": "Tank",
+  "block.moremechanics.tank.description": "Stores up to 16 buckets of liquid.",
+  "block.moremechanics.tank.empty": "Tank is empty.",
+  "block.moremechanics.tank.emptied": "Tank emptied!"
 }

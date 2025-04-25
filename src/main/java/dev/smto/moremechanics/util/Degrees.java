@@ -1,14 +1,20 @@
 package dev.smto.moremechanics.util;
 
+@SuppressWarnings("unused")
 public enum Degrees {
-    ZERO(0.0f),
-    FORTY_FIVE((float)(-Math.PI * 0.25)),
-    NINETY((float)(-Math.PI * 0.5)),
-    ONE_TWENTY((float)(-Math.PI * 0.75)),
-    ONE_EIGHTY((float) Math.PI),
-    TWO_TWENTY_FIVE((float)(Math.PI * 0.25)),
-    TWO_SEVENTY((float)(Math.PI * 0.5)),
-    THREE_FIFTEEN((float)(Math.PI * 0.75));
+    D0(0.0f),
+    D1_125((float)(-Math.PI * 0.00625)),
+    D2_25((float)(-Math.PI * 0.0125)),
+    D4_5((float)(-Math.PI * 0.025)),
+    D9((float)(-Math.PI * 0.05)),
+    D18((float)(-Math.PI * 0.1)),
+    D45((float)(-Math.PI * 0.25)),
+    D90((float)(-Math.PI * 0.5)),
+    D120((float)(-Math.PI * 0.75)),
+    D180((float) Math.PI),
+    D225((float)(Math.PI * 0.25)),
+    D270((float)(Math.PI * 0.5)),
+    D315((float)(Math.PI * 0.75));
 
     private final float radians;
     Degrees(float radians) {

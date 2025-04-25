@@ -50,6 +50,6 @@ public class GenericBlockItem extends BlockItem implements eu.pb4.polymer.core.a
 
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        if (this.target instanceof MoreMechanicsContent m) m.addTooltip(tooltip);
+        if (this.target instanceof MoreMechanicsContent m) m.addTooltip(stack, tooltip);
     }
 }

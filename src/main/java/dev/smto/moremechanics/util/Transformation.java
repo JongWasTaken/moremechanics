@@ -51,6 +51,11 @@ public class Transformation {
         return this;
     }
 
+    public Transformation setTranslation(float all) {
+        this.translation = new Vector3f(all, all, all);
+        return this;
+    }
+
     public Transformation addTranslation(Vector3f translation) {
         this.translation.add(translation);
         return this;
@@ -58,6 +63,11 @@ public class Transformation {
 
     public Transformation addTranslation(float x, float y, float z) {
         this.translation.add(x, y, z);
+        return this;
+    }
+
+    public Transformation addTranslation(float all) {
+        this.translation.add(all, all, all);
         return this;
     }
 
@@ -85,6 +95,21 @@ public class Transformation {
         return this;
     }
 
+    public Transformation rotateX(float radians) {
+        this.leftRotation.rotateX(radians);
+        return this;
+    }
+
+    public Transformation rotateY(float radians) {
+        this.leftRotation.rotateY(radians);
+        return this;
+    }
+
+    public Transformation rotateZ(float radians) {
+        this.leftRotation.rotateZ(radians);
+        return this;
+    }
+
     public Transformation setScale(Vector3f scale) {
         this.scale = scale;
         return this;
@@ -92,6 +117,11 @@ public class Transformation {
 
     public Transformation setScale(float x, float y, float z) {
         this.scale = new Vector3f(x, y, z);
+        return this;
+    }
+
+    public Transformation setScale(float all) {
+        this.scale = new Vector3f(all, all, all);
         return this;
     }
 

@@ -1,4 +1,4 @@
-package dev.smto.moremechanics.block;
+package dev.smto.moremechanics.block.entity;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -48,7 +48,7 @@ import static dev.smto.moremechanics.util.shape.ShapeUtils.lengthSq;
 public class ShapeBuilderBlockEntity extends BlockEntity {
 
     public ShapeBuilderBlockEntity(BlockPos pos, BlockState state) {
-        super(MoreMechanics.BlockEntities.SHAPE_BUILDER_ENTITY, pos, state);
+        super(MoreMechanics.BlockEntities.SHAPE_BUILDER, pos, state);
     }
 
     private static final Comparator<BlockPos> COMPARATOR = (o1, o2) -> {
