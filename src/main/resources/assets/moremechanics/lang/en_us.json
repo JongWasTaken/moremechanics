@@ -86,5 +86,7 @@
   "block.moremechanics.tank": "Tank",
   "block.moremechanics.tank.description": "Stores up to 16 buckets of liquid.",
   "block.moremechanics.tank.empty": "Tank is empty.",
-  "block.moremechanics.tank.emptied": "Tank emptied!"
+  "block.moremechanics.tank.emptied": "Tank emptied!",
+  "block.moremechanics.experience_drain.description": "Drains experience and slowly converts it into solidified experience.",
+  "block.moremechanics.experience_drain.description.2": "Solidified experience must be removed using a hopper."
 }

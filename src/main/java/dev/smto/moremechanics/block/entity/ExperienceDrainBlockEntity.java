@@ -43,11 +43,11 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
-public class ExperienceDrainBlockEntity extends ManagedDisplayBlockEntity implements SidedInventory, NamedScreenHandlerFactory {
+public class ExperienceDrainBlockEntity extends ManagedDisplayBlockEntity implements SidedInventory {
     private static final String DISPLAY_COMMAND_TAG = MoreMechanics.id("experience_hopper_display").toString();
 
     private final Box checkBox;
-    private final SimpleInventory inventory = new SimpleInventory(9);
+    private final SimpleInventory inventory = new SimpleInventory(1);
     private int storedExperience = 0;
 
     public ExperienceDrainBlockEntity(BlockPos pos, BlockState state) {
@@ -91,7 +91,7 @@ public class ExperienceDrainBlockEntity extends ManagedDisplayBlockEntity implem
 
     public static void tick(World world, BlockPos pos, ExperienceDrainBlockEntity blockEntity) {
         blockEntity.ensureDisplay(world, pos);
-        if (blockEntity.inventory.getStack(8).getCount() != 64) {
+        //if (blockEntity.inventory.getStack(0).getCount() != 64 && blockEntity.storedExperience < 100) {
             if (!blockEntity.cooldown) {
                 for (Entity otherEntity : world.getOtherEntities(null, blockEntity.checkBox, entity -> true)) {
                     if (otherEntity instanceof ServerPlayerEntity player) {
@@ -117,7 +117,7 @@ public class ExperienceDrainBlockEntity extends ManagedDisplayBlockEntity implem
                 }
                 blockEntity.cooldown = true;
             } else blockEntity.cooldown = false;
-        }
+        //}
 
         int xpToConvert = blockEntity.storedExperience / 10;
         while(xpToConvert > 0) {
@@ -127,21 +127,12 @@ public class ExperienceDrainBlockEntity extends ManagedDisplayBlockEntity implem
             } else break;
         }
 
-        Objects.requireNonNull(world.getServer()).getPlayerManager()
-                .sendToAround(
-                        null,
-                        blockEntity.pos.getX(), blockEntity.pos.getY(), blockEntity.pos.getZ(),
-                        10,
-                        world.getRegistryKey(),
-                        new ParticleS2CPacket(ParticleTypes.REVERSE_PORTAL, false, blockEntity.pos.getX() + 0.5, blockEntity.pos.getY() + 0.65, blockEntity.pos.getZ() + 0.5, 0, 0, 0, 0.01f, 1)
-                );
-
         blockEntity.markDirty();
     }
 
     @Override
     public int[] getAvailableSlots(Direction side) {
-        return IntStream.rangeClosed(0, 26).toArray();
+        return new int[] { 0 };
     }
 
     @Override
@@ -152,7 +143,6 @@ public class ExperienceDrainBlockEntity extends ManagedDisplayBlockEntity implem
     @Override
     public boolean canExtract(int slot, ItemStack stack, Direction dir) {
         return true;
-        //return !this.getStack(slot).isEmpty();
     }
 
     @Override
@@ -193,16 +183,6 @@ public class ExperienceDrainBlockEntity extends ManagedDisplayBlockEntity implem
     @Override
     public void clear() {
         this.inventory.clear();
-    }
-
-    @Override
-    public Text getDisplayName() {
-        return Text.translatable("block.moremechanics.experience_drain");
-    }
-
-    @Override
-    public @Nullable ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
-        return new GenericContainerScreenHandler(ScreenHandlerType.GENERIC_9X1, syncId, playerInventory, this, 1);
     }
 
     @Override
@@ -267,7 +247,7 @@ public class ExperienceDrainBlockEntity extends ManagedDisplayBlockEntity implem
         return ExperienceDrainBlockEntity.DISPLAY_SPECS;
     }
 
-    private static final Transformation TRANSFORMATION = DisplayTransformations.getForItem(null);
+    private static final Transformation TRANSFORMATION = DisplayTransformations.getForItem(null).setScale(1.01f).addTranslation(0.0f, 0.0045f, 0.0f);
 
     @Override
     protected Transformation getDisplayTransformation(World world, BlockPos pos, int index, DisplayType forType) {

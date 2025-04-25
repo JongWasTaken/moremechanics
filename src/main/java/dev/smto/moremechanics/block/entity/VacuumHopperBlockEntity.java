@@ -105,9 +105,11 @@ public class VacuumHopperBlockEntity extends ManagedDisplayBlockEntity implement
         blockEntity.markDirty();
     }
 
+    private static final int[] AVAILABLE_SLOTS = IntStream.rangeClosed(0, 26).toArray();
+
     @Override
     public int[] getAvailableSlots(Direction side) {
-        return IntStream.rangeClosed(0, 26).toArray();
+        return VacuumHopperBlockEntity.AVAILABLE_SLOTS;
     }
 
     @Override
@@ -118,7 +120,6 @@ public class VacuumHopperBlockEntity extends ManagedDisplayBlockEntity implement
     @Override
     public boolean canExtract(int slot, ItemStack stack, Direction dir) {
         return true;
-        //return !this.getStack(slot).isEmpty();
     }
 
     @Override
