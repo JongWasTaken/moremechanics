@@ -123,7 +123,7 @@ public class MobPrisonItem extends Item implements PolymerItem, MoreMechanicsCon
 
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        //tooltip.add(Text.translatable("item.moremechanics.mob_prison.description"));
+        tooltip.add(Text.translatable("item.moremechanics.mob_prison.description").formatted(MoreMechanics.getTooltipFormatting()));
         if (stack.contains(MoreMechanics.DataComponentTypes.STORED_ENTITY)) {
             try {
                 tooltip.add(Text.translatable("item.moremechanics.mob_prison.description.full").formatted(Formatting.BLUE).append(Text.literal(" ")).append(EntityType.get(stack.get(MoreMechanics.DataComponentTypes.STORED_ENTITY).copyNbt().getString("mobId")).orElseThrow().getName()).formatted(Formatting.BLUE));

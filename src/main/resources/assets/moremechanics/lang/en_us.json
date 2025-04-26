@@ -44,7 +44,7 @@
   "gui.moremechanics.experience_storage.take_ten": "Take 10 Levels",
   "gui.moremechanics.experience_storage.title": "Experience Storage",
   "item.moremechanics.mob_prison": "Mob Prison",
-  "item.moremechanics.mob_prison.description": "Use on a mob to imprison it.",
+  "item.moremechanics.mob_prison.description": "Can store (almost) any mob.",
   "item.moremechanics.mob_prison.description.empty": "Empty",
   "item.moremechanics.mob_prison.description.full": "Contains:",
   "item.moremechanics.mob_prison.use.disallowed": "This mob cannot be imprisoned.",
@@ -97,5 +97,11 @@
   "tooltip.moremechanics.smart_hopper.filter_type.none.description": "All items can pass.",
   "tooltip.moremechanics.smart_hopper.filter_type.item.description": "Only pass items that match the filter item.",
   "tooltip.moremechanics.smart_hopper.filter_type.stack.description": "Only pass items that match the filter stack.",
-  "tooltip.moremechanics.smart_hopper.filter_type.all.description": "Set filter using the slot on the right."
+  "tooltip.moremechanics.smart_hopper.filter_type.all.description": "Set filter using the slot on the right.",
+  "block.moremechanics.redstone_clock.paused": "Clock paused.",
+  "block.moremechanics.redstone_clock.unpaused": "Clock unpaused.",
+  "item.moremechanics.natures_compass": "Nature's Compass",
+  "item.moremechanics.natures_compass.no_biome": "Could not find the selected biome.",
+  "item.moremechanics.natures_compass.found": "Biome found. Follow the needle!",
+  "item.moremechanics.natures_compass.description": "Can find any biome."
 }

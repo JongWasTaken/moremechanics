@@ -60,7 +60,7 @@ public class ExperienceDrainBlockEntity extends ManagedDisplayBlockEntity implem
 
     @Override
     public void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(tag, DynamicRegistryManager.EMPTY);
+        super.readNbt(tag, registryLookup);
         Inventories.readNbt(tag, this.inventory.heldStacks, registryLookup);
         if (tag.contains("storedExperience")) {
             this.storedExperience = tag.getInt("storedExperience");
@@ -71,7 +71,7 @@ public class ExperienceDrainBlockEntity extends ManagedDisplayBlockEntity implem
     public void writeNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         Inventories.writeNbt(tag, this.inventory.heldStacks, registryLookup);
         tag.putInt("storedExperience", this.storedExperience);
-        super.writeNbt(tag, DynamicRegistryManager.EMPTY);
+        super.writeNbt(tag, registryLookup);
     }
 
     private void fixPlayerLevels(ServerPlayerEntity player) {

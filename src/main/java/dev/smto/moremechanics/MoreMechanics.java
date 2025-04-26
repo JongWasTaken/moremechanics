@@ -1,7 +1,7 @@
 package dev.smto.moremechanics;
 
 import dev.smto.moremechanics.block.entity.*;
-import dev.smto.moremechanics.item.SolidifiedExperienceItem;
+import dev.smto.moremechanics.item.*;
 import dev.smto.simpleconfig.SimpleConfig;
 import dev.smto.simpleconfig.api.ConfigAnnotations;
 import dev.smto.simpleconfig.api.ConfigLogger;
@@ -29,9 +29,6 @@ import net.minecraft.world.World;
 import org.slf4j.LoggerFactory;
 import dev.smto.moremechanics.api.MoreMechanicsContent;
 import dev.smto.moremechanics.block.*;
-import dev.smto.moremechanics.item.GenericBlockItem;
-import dev.smto.moremechanics.item.SurvivalDebugStickItem;
-import dev.smto.moremechanics.item.MobPrisonItem;
 import dev.smto.moremechanics.util.*;
 
 import java.lang.reflect.Field;
@@ -194,6 +191,7 @@ public class MoreMechanics implements ModInitializer {
 		public static Block YELLOW_MULTI_DOOR_BLOCK = new MultiDoorBlock(MoreMechanics.id("yellow_multi_door_block"));
 		public static Block TANK = new TankBlock(MoreMechanics.id("tank"));
 		public static Block SMART_HOPPER = new SmartHopperBlock(MoreMechanics.id("smart_hopper"));
+		public static Block REDSTONE_CLOCK = new RedstoneClockBlock(MoreMechanics.id("redstone_clock"));
 	}
 
 	@SuppressWarnings("unused")
@@ -207,6 +205,7 @@ public class MoreMechanics implements ModInitializer {
 		public static Item SURVIVAL_DEBUG_STICK = new SurvivalDebugStickItem(MoreMechanics.id("survival_debug_stick"));
 		public static Item MOB_PRISON = new MobPrisonItem(MoreMechanics.id("mob_prison"));
 		public static Item SOLIDIFIED_EXPERIENCE = new SolidifiedExperienceItem(MoreMechanics.id("solidified_experience"));
+		public static Item NATURES_COMPASS = new NaturesCompassItem(MoreMechanics.id("natures_compass"));
 		public static BlockItem MECHANICAL_PLACER = new GenericBlockItem(MoreMechanics.id("mechanical_placer"), Blocks.MECHANICAL_PLACER, Rarity.COMMON);
 		public static BlockItem MECHANICAL_BREAKER = new GenericBlockItem(MoreMechanics.id("mechanical_breaker"), Blocks.MECHANICAL_BREAKER, Rarity.COMMON);
 		public static BlockItem CAMOUFLAGE_BLOCK = new GenericBlockItem(MoreMechanics.id("camouflage_block"), Blocks.CAMOUFLAGE_BLOCK, Rarity.COMMON);
@@ -217,6 +216,7 @@ public class MoreMechanics implements ModInitializer {
 		public static BlockItem YELLOW_MULTI_DOOR_BLOCK = new GenericBlockItem(MoreMechanics.id("yellow_multi_door_block"), Blocks.YELLOW_MULTI_DOOR_BLOCK, Rarity.COMMON);
 		public static BlockItem TANK = new GenericBlockItem(MoreMechanics.id("tank"), Blocks.TANK, Rarity.COMMON);
 		public static BlockItem SMART_HOPPER = new GenericBlockItem(MoreMechanics.id("smart_hopper"), Blocks.SMART_HOPPER, Rarity.COMMON);
+		public static BlockItem REDSTONE_CLOCK = new GenericBlockItem(MoreMechanics.id("redstone_clock"), Blocks.REDSTONE_CLOCK, Rarity.COMMON);
 	}
 
 	public static class BlockEntities {
@@ -238,6 +238,8 @@ public class MoreMechanics implements ModInitializer {
 				.create(TankBlockEntity::new, Blocks.TANK).build();
 		public static BlockEntityType<SmartHopperBlockEntity> SMART_HOPPER = FabricBlockEntityTypeBuilder
 				.create(SmartHopperBlockEntity::new, Blocks.SMART_HOPPER).build();
+		public static BlockEntityType<RedstoneClockBlockEntity> REDSTONE_CLOCK = FabricBlockEntityTypeBuilder
+				.create(RedstoneClockBlockEntity::new, Blocks.REDSTONE_CLOCK).build();
 	}
 
 	public static class DataComponentTypes {

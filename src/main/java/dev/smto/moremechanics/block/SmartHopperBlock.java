@@ -99,6 +99,16 @@ public class SmartHopperBlock extends HopperBlock implements PolymerTexturedBloc
     }
 
     @Override
+    public BlockSoundGroup getSoundGroup(BlockState state) {
+        return BlockSoundGroup.METAL;
+    }
+
+    @Override
+    public BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.MODEL;
+    }
+
+    @Override
     public void addTooltip(ItemStack stack, List<Text> tooltip) {
         tooltip.add(Text.translatable("block.moremechanics.smart_hopper.description").formatted(MoreMechanics.getTooltipFormatting()));
     }

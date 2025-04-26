@@ -92,14 +92,14 @@ public class MechanicalPlacerBlockEntity extends ManagedDisplayBlockEntity imple
 
     @Override
     public void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(tag, DynamicRegistryManager.EMPTY);
+        super.readNbt(tag, registryLookup);
         Inventories.readNbt(tag, this.inventory, BuiltinRegistries.createWrapperLookup());
 
     }
 
     @Override
     public void writeNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(tag, DynamicRegistryManager.EMPTY);
+        super.writeNbt(tag, registryLookup);
         Inventories.writeNbt(tag, this.inventory, BuiltinRegistries.createWrapperLookup());
     }
 

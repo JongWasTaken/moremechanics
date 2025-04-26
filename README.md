@@ -3,10 +3,11 @@ A work-in-progress mod in my MoreMods series.
 
 # A TODO list of sorts
 - Redstone clock block
-  - Text display on the side, sets ticks
-
-# More ideas
+  - needs visuals and polish
+- Fix or remove chunk loader
 - nature's compass
+ - needs icons for back/next
+ - implement search
 
 ## License
 MIT License

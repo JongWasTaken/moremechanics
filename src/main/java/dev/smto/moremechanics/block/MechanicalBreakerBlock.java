@@ -81,7 +81,7 @@ public class MechanicalBreakerBlock extends Block implements PolymerTexturedBloc
         if (blockEntity instanceof MechanicalBreakerBlockEntity) {
             player.openHandledScreen((NamedScreenHandlerFactory)blockEntity);
         }
-        return ActionResult.CONSUME;
+        return ActionResult.SUCCESS_SERVER;
     }
 
     @Override

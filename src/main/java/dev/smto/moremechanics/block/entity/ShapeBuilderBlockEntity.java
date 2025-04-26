@@ -100,7 +100,7 @@ public class ShapeBuilderBlockEntity extends BlockEntity {
 
     @Override
     public void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(tag, DynamicRegistryManager.EMPTY);
+        super.readNbt(tag, registryLookup);
         //if(tag.contains("mode")) this.selectedShapeType = ShapeType.valueOf(tag.getString("mode"));
         if(tag.contains("negX")) this.negX = tag.getInt("negX");
         if(tag.contains("negY")) this.negY = tag.getInt("negY");
@@ -119,7 +119,7 @@ public class ShapeBuilderBlockEntity extends BlockEntity {
         tag.putInt("posX", this.posX);
         tag.putInt("posY", this.posY);
         tag.putInt("posZ", this.posZ);
-        super.writeNbt(tag, DynamicRegistryManager.EMPTY);
+        super.writeNbt(tag, registryLookup);
     }
 
     public static class ShapeSize {

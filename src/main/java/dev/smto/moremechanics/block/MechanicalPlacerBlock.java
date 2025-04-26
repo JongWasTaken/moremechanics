@@ -90,7 +90,7 @@ public class MechanicalPlacerBlock extends Block implements PolymerTexturedBlock
         if (blockEntity instanceof MechanicalPlacerBlockEntity) {
             player.openHandledScreen((NamedScreenHandlerFactory)blockEntity);
         }
-        return ActionResult.CONSUME;
+        return ActionResult.SUCCESS_SERVER;
     }
 
     @Override

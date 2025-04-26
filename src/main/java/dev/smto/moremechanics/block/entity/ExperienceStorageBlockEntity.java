@@ -157,7 +157,7 @@ public class ExperienceStorageBlockEntity extends ManagedDisplayBlockEntity impl
 
     @Override
     public void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(tag, DynamicRegistryManager.EMPTY);
+        super.readNbt(tag, registryLookup);
         if(tag.contains("storedExperience")) {
             this.storedExperience = tag.getInt("storedExperience");
         }
@@ -170,7 +170,7 @@ public class ExperienceStorageBlockEntity extends ManagedDisplayBlockEntity impl
     public void writeNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         tag.putInt("storedExperience", this.storedExperience);
         if (this.direction != null) tag.putInt("direction", this.direction.getId());
-        super.writeNbt(tag, DynamicRegistryManager.EMPTY);
+        super.writeNbt(tag, registryLookup);
     }
 
     @Override

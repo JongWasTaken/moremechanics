@@ -35,7 +35,7 @@ public class ChunkLoaderBlockEntity extends BlockEntity {
 
     @Override
     public void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(tag, DynamicRegistryManager.EMPTY);
+        super.readNbt(tag, registryLookup);
         if(tag.contains("counter")) {
             this.counter = tag.getInt("counter");
         }
@@ -44,7 +44,7 @@ public class ChunkLoaderBlockEntity extends BlockEntity {
     @Override
     public void writeNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         tag.putInt("counter", this.counter);
-        super.writeNbt(tag, DynamicRegistryManager.EMPTY);
+        super.writeNbt(tag, registryLookup);
     }
 
     public static void tick(World world, ChunkLoaderBlockEntity blockEntity) {
