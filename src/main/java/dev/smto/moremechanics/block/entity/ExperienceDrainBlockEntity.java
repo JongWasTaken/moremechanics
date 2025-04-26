@@ -54,7 +54,7 @@ public class ExperienceDrainBlockEntity extends ManagedDisplayBlockEntity implem
         super(MoreMechanics.BlockEntities.EXPERIENCE_DRAIN, pos, state);
         this.checkBox = new Box(
                 new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5),
-                new Vec3d(pos.getX() + 0.5, pos.getY() + 2 + 0.5, pos.getZ() + 0.5)
+                new Vec3d(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5)
         );
     }
 

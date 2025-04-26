@@ -22,7 +22,7 @@ public interface MoreMechanicsContent {
         try {
             Registry.register(registry, this.getIdentifier(), (T) this);
         } catch (Throwable x) {
-            throw new RuntimeException("Failed to register content: " + this.getIdentifier(), x);
+            throw new RuntimeException("Failed to register content: " + this.getIdentifier() + ", " + x.getMessage(), x);
         }
     }
 

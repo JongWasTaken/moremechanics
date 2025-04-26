@@ -101,9 +101,9 @@ public class MoreMechanics implements ModInitializer {
 				if (field.get(null) instanceof MoreMechanicsContent block) {
 					block.register(Registries.BLOCK);
 				}
-			} catch (Throwable ignored) {
+			} catch (Throwable x) {
                 MoreMechanics.LOGGER.error("Failed to register block: {}", field.getName());
-				MoreMechanics.LOGGER.warn(ignored.getMessage());
+				MoreMechanics.LOGGER.warn(x.getMessage());
 			}
 		}
 
@@ -193,6 +193,7 @@ public class MoreMechanics implements ModInitializer {
 		public static Block BLUE_MULTI_DOOR_BLOCK = new MultiDoorBlock(MoreMechanics.id("blue_multi_door_block"));
 		public static Block YELLOW_MULTI_DOOR_BLOCK = new MultiDoorBlock(MoreMechanics.id("yellow_multi_door_block"));
 		public static Block TANK = new TankBlock(MoreMechanics.id("tank"));
+		public static Block SMART_HOPPER = new SmartHopperBlock(MoreMechanics.id("smart_hopper"));
 	}
 
 	@SuppressWarnings("unused")
@@ -215,6 +216,7 @@ public class MoreMechanics implements ModInitializer {
 		public static BlockItem BLUE_MULTI_DOOR_BLOCK = new GenericBlockItem(MoreMechanics.id("blue_multi_door_block"), Blocks.BLUE_MULTI_DOOR_BLOCK, Rarity.COMMON);
 		public static BlockItem YELLOW_MULTI_DOOR_BLOCK = new GenericBlockItem(MoreMechanics.id("yellow_multi_door_block"), Blocks.YELLOW_MULTI_DOOR_BLOCK, Rarity.COMMON);
 		public static BlockItem TANK = new GenericBlockItem(MoreMechanics.id("tank"), Blocks.TANK, Rarity.COMMON);
+		public static BlockItem SMART_HOPPER = new GenericBlockItem(MoreMechanics.id("smart_hopper"), Blocks.SMART_HOPPER, Rarity.COMMON);
 	}
 
 	public static class BlockEntities {
@@ -234,6 +236,8 @@ public class MoreMechanics implements ModInitializer {
 				.create(ExperienceDrainBlockEntity::new, Blocks.EXPERIENCE_DRAIN).build();
 		public static BlockEntityType<TankBlockEntity> TANK = FabricBlockEntityTypeBuilder
 				.create(TankBlockEntity::new, Blocks.TANK).build();
+		public static BlockEntityType<SmartHopperBlockEntity> SMART_HOPPER = FabricBlockEntityTypeBuilder
+				.create(SmartHopperBlockEntity::new, Blocks.SMART_HOPPER).build();
 	}
 
 	public static class DataComponentTypes {

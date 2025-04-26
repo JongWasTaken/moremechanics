@@ -88,5 +88,14 @@
   "block.moremechanics.tank.empty": "Tank is empty.",
   "block.moremechanics.tank.emptied": "Tank emptied!",
   "block.moremechanics.experience_drain.description": "Drains experience and slowly converts it into solidified experience.",
-  "block.moremechanics.experience_drain.description.2": "Solidified experience must be removed using a hopper."
+  "block.moremechanics.experience_drain.description.2": "Solidified experience must be removed using a hopper.",
+  "block.moremechanics.smart_hopper": "Smart Hopper",
+  "block.moremechanics.smart_hopper.description": "Can filter items. Runs at double speed.",
+  "gui.moremechanics.smart_hopper.filter_type.stack": "Match Stack",
+  "gui.moremechanics.smart_hopper.filter_type.item": "Match Item",
+  "gui.moremechanics.smart_hopper.filter_type.none": "Filter Disabled",
+  "tooltip.moremechanics.smart_hopper.filter_type.none.description": "All items can pass.",
+  "tooltip.moremechanics.smart_hopper.filter_type.item.description": "Only pass items that match the filter item.",
+  "tooltip.moremechanics.smart_hopper.filter_type.stack.description": "Only pass items that match the filter stack.",
+  "tooltip.moremechanics.smart_hopper.filter_type.all.description": "Set filter using the slot on the right."
 }

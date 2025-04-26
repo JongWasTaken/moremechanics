@@ -126,11 +126,11 @@ public class MobPrisonItem extends Item implements PolymerItem, MoreMechanicsCon
         //tooltip.add(Text.translatable("item.moremechanics.mob_prison.description"));
         if (stack.contains(MoreMechanics.DataComponentTypes.STORED_ENTITY)) {
             try {
-                tooltip.add(Text.translatable("item.moremechanics.mob_prison.description.full").formatted(Formatting.ITALIC, Formatting.LIGHT_PURPLE).append(Text.literal(" ")).append(EntityType.get(stack.get(MoreMechanics.DataComponentTypes.STORED_ENTITY).copyNbt().getString("mobId")).orElseThrow().getName()));
+                tooltip.add(Text.translatable("item.moremechanics.mob_prison.description.full").formatted(Formatting.BLUE).append(Text.literal(" ")).append(EntityType.get(stack.get(MoreMechanics.DataComponentTypes.STORED_ENTITY).copyNbt().getString("mobId")).orElseThrow().getName()).formatted(Formatting.BLUE));
             } catch (Throwable ignored) {
                 tooltip.add(Text.literal("Possibly invalid data!").formatted(Formatting.ITALIC, Formatting.RED));
             }
-        } else tooltip.add(Text.translatable("item.moremechanics.mob_prison.description.empty").formatted(Formatting.ITALIC, Formatting.GRAY));
+        } else tooltip.add(Text.translatable("item.moremechanics.mob_prison.description.empty").formatted(Formatting.BLUE));
     }
 
     @Override

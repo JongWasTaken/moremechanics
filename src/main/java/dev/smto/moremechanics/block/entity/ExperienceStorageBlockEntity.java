@@ -127,7 +127,11 @@ public class ExperienceStorageBlockEntity extends ManagedDisplayBlockEntity impl
     public String getPrettyAmount() {
         String r = "";
         var values = ExperienceUtils.getLevelsAndPoints(this.getStoredAmount());
-        if (values.getRight() != 0.0F) r = new DecimalFormat(".00").format(values.getRight());
+        double r2 = (double) values.getRight();
+        if (r2 > 0.0F && r2 < 1.0F) {
+                //r = new DecimalFormat(".00").format(r2);
+                r = "." + values.getRight().toString().split("\\.")[1].substring(0,2);
+        }
         return values.getLeft() + r;
     }
 

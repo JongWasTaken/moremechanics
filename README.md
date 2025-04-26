@@ -7,7 +7,6 @@ A work-in-progress mod in my MoreMods series.
 
 # More ideas
 - nature's compass
-- hopper with filter
 
 ## License
 MIT License
