@@ -1,13 +1,6 @@
 {
     "replace": false,
     "values": [
-        "moremechanics:peace_beacon",
-        "moremechanics:elevator",
-        "moremechanics:camouflage_block",
-        "moremechanics:experience_storage",
-        "moremechanics:chunk_loader",
-        "moremechanics:shape_builder",
-        "moremechanics:mechanical_placer",
-        "moremechanics:mechanical_breaker"
+        "#moremechanics:pickaxe_breakable"
     ]
 }

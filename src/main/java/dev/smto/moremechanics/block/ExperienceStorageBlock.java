@@ -194,14 +194,6 @@ public class ExperienceStorageBlock extends Block implements PolymerTexturedBloc
             );
         }
 
-        private void playClickSound() {
-            this.player.networkHandler.sendPacket(new PlaySoundS2CPacket(
-                    SoundEvents.UI_BUTTON_CLICK, SoundCategory.MASTER,
-                    this.player.getX(), this.player.getY(), this.player.getZ(),
-                    1.0F, 1.0F, 0
-            ));
-        }
-
         @Override
         public void beforeOpen() {
             super.beforeOpen();
@@ -214,7 +206,7 @@ public class ExperienceStorageBlock extends Block implements PolymerTexturedBloc
                         int i = this.host.addExperience(xp);
                         this.player.addExperience(-i);
                         this.refreshCounter();
-                        this.playClickSound();
+                        GuiUtils.playClickSound(this.player);
                     })
                     .setComponent(DataComponentTypes.ITEM_NAME, Text.translatable("gui.moremechanics.experience_storage.add_one"))
                     .setComponent(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, false)
@@ -231,7 +223,7 @@ public class ExperienceStorageBlock extends Block implements PolymerTexturedBloc
                         int i = this.host.addExperience(xp);
                         this.player.addExperience(-i);
                         this.refreshCounter();
-                        this.playClickSound();
+                        GuiUtils.playClickSound(this.player);
                     })
                     .setComponent(DataComponentTypes.ITEM_NAME, Text.translatable("gui.moremechanics.experience_storage.add_ten"))
                     .setComponent(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, false)
@@ -244,7 +236,7 @@ public class ExperienceStorageBlock extends Block implements PolymerTexturedBloc
                         int xp = this.host.addExperience(playerXP < 0 ? Integer.MAX_VALUE : playerXP);
                         this.player.addExperience(-xp);
                         this.refreshCounter();
-                        this.playClickSound();
+                        GuiUtils.playClickSound(this.player);
                     })
                     .setComponent(DataComponentTypes.ITEM_NAME, Text.translatable("gui.moremechanics.experience_storage.add_all"))
                     .setComponent(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, false)
@@ -261,7 +253,7 @@ public class ExperienceStorageBlock extends Block implements PolymerTexturedBloc
                         int xp = this.host.takeExperience(Integer.MAX_VALUE);
                         this.player.addExperience(xp);
                         this.refreshCounter();
-                        this.playClickSound();
+                        GuiUtils.playClickSound(this.player);
                     })
                     .setComponent(DataComponentTypes.ITEM_NAME, Text.translatable("gui.moremechanics.experience_storage.take_all"))
                     .setComponent(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, false)
@@ -272,7 +264,7 @@ public class ExperienceStorageBlock extends Block implements PolymerTexturedBloc
                     .setCallback(() -> {
                         this.addLevelsToPlayer(10);
                         this.refreshCounter();
-                        this.playClickSound();
+                        GuiUtils.playClickSound(this.player);
                     })
                     .setComponent(DataComponentTypes.ITEM_NAME, Text.translatable("gui.moremechanics.experience_storage.take_ten"))
                     .setComponent(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, false)
@@ -283,7 +275,7 @@ public class ExperienceStorageBlock extends Block implements PolymerTexturedBloc
                     .setCallback(() -> {
                         this.addLevelsToPlayer(1);
                         this.refreshCounter();
-                        this.playClickSound();
+                        GuiUtils.playClickSound(this.player);
                     })
                     .setComponent(DataComponentTypes.ITEM_NAME, Text.translatable("gui.moremechanics.experience_storage.take_one"))
                     .setComponent(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, false)

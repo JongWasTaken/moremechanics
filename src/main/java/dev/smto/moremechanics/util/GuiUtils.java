@@ -5,6 +5,10 @@ import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SlotGuiInterface;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.Items;
+import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -70,5 +74,13 @@ public class GuiUtils {
                 gui.setSlot(i, GuiUtils.Elements.FILLER);
             }
         }
+    }
+
+    public static void playClickSound(ServerPlayerEntity player) {
+        player.networkHandler.sendPacket(new PlaySoundS2CPacket(
+                SoundEvents.UI_BUTTON_CLICK, SoundCategory.MASTER,
+                player.getX(), player.getY(), player.getZ(),
+                1.0F, 1.0F, 0
+        ));
     }
 }

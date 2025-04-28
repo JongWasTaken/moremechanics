@@ -1,5 +1,6 @@
 package dev.smto.moremechanics;
 
+import com.mojang.serialization.Codec;
 import dev.smto.moremechanics.block.entity.*;
 import dev.smto.moremechanics.item.*;
 import dev.smto.simpleconfig.SimpleConfig;
@@ -254,6 +255,7 @@ public class MoreMechanics implements ModInitializer {
 	public static class DataComponentTypes {
 		public static ComponentType<NbtComponent> STORED_ENTITY = ComponentType.<NbtComponent>builder().codec(NbtComponent.CODEC).build();
 		public static ComponentType<TankContents> TANK_CONTENTS = ComponentType.<TankContents>builder().codec(TankContents.CODEC).build();
+		public static ComponentType<String> TRACKED_BIOME = ComponentType.<String>builder().codec(Codec.STRING).build();
 	}
 
 	public static class Config {

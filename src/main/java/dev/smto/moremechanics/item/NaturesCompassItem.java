@@ -166,6 +166,7 @@ public class NaturesCompassItem extends Item implements PolymerItem, MoreMechani
                             player.sendMessage(Text.translatable("item.moremechanics.natures_compass.found"), true);
                             host.set(DataComponentTypes.LODESTONE_TRACKER, new LodestoneTrackerComponent(
                                     Optional.of(GlobalPos.create(player.getWorld().getRegistryKey(), pair.getFirst())), true));
+                            host.set(MoreMechanics.DataComponentTypes.TRACKED_BIOME, identifier.toString());
                             return;
                         }
                         player.sendMessage(Text.translatable("item.moremechanics.natures_compass.no_biome"), true);
@@ -182,37 +183,42 @@ public class NaturesCompassItem extends Item implements PolymerItem, MoreMechani
                 .from(Items.BARRIER.getDefaultStack())
                 .setItemName(Text.translatable("gui.cancel"))
                 //.setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Shapes.SELECTED)
-                .setCallback((int index, ClickType type, SlotActionType action, SlotGuiInterface gui) -> gui.close()));
+                .setCallback((int index, ClickType type, SlotActionType action, SlotGuiInterface gui) -> {
+                    GuiUtils.playClickSound(player);
+                    gui.close();
+                }));
         anvilGui.setSlot(2, GuiElementBuilder
                 .from(Items.BARRIER.getDefaultStack())
                 .setItemName(Text.translatable("gui.continue"))
                 .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.SELECTED)
                 .setCallback((int index2, ClickType type2, SlotActionType action2, SlotGuiInterface gui2) -> {
-            var biomes = new ArrayList<GuiElementBuilder>();
-            for (Identifier identifier : BuiltinRegistries.createWrapperLookup().getOrThrow(RegistryKeys.BIOME)
-                    .streamKeys()
-                    .map(RegistryKey::getValue).sorted().filter(b -> b.toString().contains(((AnvilInputGui)gui2).getInput().trim().toLowerCase(Locale.ROOT).replace(" ", "_"))).toList()) {
-                biomes.add(GuiElementBuilder
-                        .from(NaturesCompassItem.ICONS.getOrDefault(identifier, Items.BARRIER).getDefaultStack())
-                        .setItemName(Text.literal(identifier.toString()))
-                        .hideDefaultTooltip()
-                        .setCallback((int index, ClickType type, SlotActionType action, SlotGuiInterface gui) -> {
-                            Stopwatch stopwatch = Stopwatch.createStarted(Util.TICKER);
-                            Pair<BlockPos, RegistryEntry<Biome>> pair = player.getServerWorld().locateBiome((b) -> b.matchesId(identifier), player.getBlockPos(), 6400, 32, 64);
-                            stopwatch.stop();
-                            gui.close();
-                            if (pair != null) {
-                                player.sendMessage(Text.translatable("item.moremechanics.natures_compass.found"), true);
-                                host.set(DataComponentTypes.LODESTONE_TRACKER, new LodestoneTrackerComponent(
-                                        Optional.of(GlobalPos.create(player.getWorld().getRegistryKey(), pair.getFirst())), true));
-                                return;
-                            }
-                            player.sendMessage(Text.translatable("item.moremechanics.natures_compass.no_biome"), true);
-                        })
-                );
-            }
-            gui2.close();
-            new BiomeSelectionGui(player, biomes, host).open();
+                    GuiUtils.playClickSound(player);
+                    var biomes = new ArrayList<GuiElementBuilder>();
+                    for (Identifier identifier : BuiltinRegistries.createWrapperLookup().getOrThrow(RegistryKeys.BIOME)
+                            .streamKeys()
+                            .map(RegistryKey::getValue).sorted().filter(b -> b.toString().contains(((AnvilInputGui)gui2).getInput().trim().toLowerCase(Locale.ROOT).replace(" ", "_"))).toList()) {
+                        biomes.add(GuiElementBuilder
+                                .from(NaturesCompassItem.ICONS.getOrDefault(identifier, Items.BARRIER).getDefaultStack())
+                                .setItemName(Text.literal(identifier.toString()))
+                                .hideDefaultTooltip()
+                                .setCallback((int index, ClickType type, SlotActionType action, SlotGuiInterface gui) -> {
+                                    GuiUtils.playClickSound(player);
+                                    Stopwatch stopwatch = Stopwatch.createStarted(Util.TICKER);
+                                    Pair<BlockPos, RegistryEntry<Biome>> pair = player.getServerWorld().locateBiome((b) -> b.matchesId(identifier), player.getBlockPos(), 6400, 32, 64);
+                                    stopwatch.stop();
+                                    gui.close();
+                                    if (pair != null) {
+                                        player.sendMessage(Text.translatable("item.moremechanics.natures_compass.found"), true);
+                                        host.set(DataComponentTypes.LODESTONE_TRACKER, new LodestoneTrackerComponent(
+                                                Optional.of(GlobalPos.create(player.getWorld().getRegistryKey(), pair.getFirst())), true));
+                                        return;
+                                    }
+                                    player.sendMessage(Text.translatable("item.moremechanics.natures_compass.no_biome"), true);
+                                })
+                        );
+                    }
+                    gui2.close();
+                    new BiomeSelectionGui(player, biomes, host).open();
         }));
         anvilGui.open();
     }
@@ -245,6 +251,7 @@ public class NaturesCompassItem extends Item implements PolymerItem, MoreMechani
                     .hideDefaultTooltip()
                     .setCallback((int index, ClickType type, SlotActionType action, SlotGuiInterface gui) -> {
                         if (this.page > 1) this.page--;
+                        GuiUtils.playClickSound(this.player);
                         gui.beforeOpen();
                     })
             );
@@ -255,6 +262,7 @@ public class NaturesCompassItem extends Item implements PolymerItem, MoreMechani
                     .hideDefaultTooltip()
                     .setCallback((int index, ClickType type, SlotActionType action, SlotGuiInterface gui) -> {
                         gui.close();
+                        GuiUtils.playClickSound(this.player);
                         NaturesCompassItem.openSearchGui(this.player, this.host);
                     })
             );
@@ -265,6 +273,7 @@ public class NaturesCompassItem extends Item implements PolymerItem, MoreMechani
                     .hideDefaultTooltip()
                     .setCallback((int index, ClickType type, SlotActionType action, SlotGuiInterface gui) -> {
                         if (this.page < Math.ceil((double) this.biomes.size() / 45)) this.page++;
+                        GuiUtils.playClickSound(this.player);
                         gui.beforeOpen();
                     })
             );
@@ -275,6 +284,12 @@ public class NaturesCompassItem extends Item implements PolymerItem, MoreMechani
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         tooltip.add(Text.translatable("item.moremechanics.natures_compass.description").formatted(MoreMechanics.getTooltipFormatting()));
+        if (stack.contains(MoreMechanics.DataComponentTypes.TRACKED_BIOME)) {
+            tooltip.add(
+                    Text.translatable("item.moremechanics.natures_compass.description.tracked").formatted(Formatting.BLUE)
+                            .append(Text.literal(": ")).append(stack.get(MoreMechanics.DataComponentTypes.TRACKED_BIOME)).formatted(Formatting.BLUE)
+            );
+        }
     }
 
     @Override
