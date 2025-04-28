@@ -7,6 +7,7 @@ import dev.smto.moremechanics.util.DisplayTransformations;
 import dev.smto.moremechanics.util.Transformation;
 import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -35,8 +36,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public class MechanicalBreakerBlockEntity extends ManagedDisplayBlockEntity implements SidedInventory, NamedScreenHandlerFactory {
-    private static final String DISPLAY_COMMAND_TAG = MoreMechanics.id("mechanical_breaker_display").toString();
+public class MechanicalBreakerBlockEntity extends BlockEntity implements SidedInventory, NamedScreenHandlerFactory {
 
     protected DefaultedList<ItemStack> inventory = DefaultedList.ofSize(9, ItemStack.EMPTY);
     private FakePlayer fakePlayer;
@@ -46,31 +46,8 @@ public class MechanicalBreakerBlockEntity extends ManagedDisplayBlockEntity impl
         super(MoreMechanics.BlockEntities.MECHANICAL_BREAKER, pos, state);
     }
 
-    @Override
-    protected String getDisplayCommandTag() {
-        return MechanicalBreakerBlockEntity.DISPLAY_COMMAND_TAG;
-    }
-
-    @Override
-    protected DisplayData getDisplayData(World world, BlockPos pos, int index, DisplayType forType) {
-        return DisplayData.create(MoreMechanics.Blocks.DUMMY_MECHANICAL_BREAKER.getDefaultState());
-    }
-
-    private static final DisplaySpec[] DISPLAY_SPECS = { DisplaySpec.BLOCK };
-
-    @Override
-    protected DisplaySpec[] getDisplaySpec() {
-        return MechanicalBreakerBlockEntity.DISPLAY_SPECS;
-    }
-
-    @Override
-    protected Transformation getDisplayTransformation(World world, BlockPos pos, int index, DisplayType forType) {
-        return DisplayTransformations.getForBlock(world.getBlockState(pos).get(MechanicalBreakerBlock.FACING).getOpposite());
-    }
-
     public static void tick(World world, BlockPos pos, MechanicalBreakerBlockEntity blockEntity) {
         if (world instanceof ServerWorld w) {
-            blockEntity.ensureDisplay(w, pos);
             if (blockEntity.fakePlayer == null) blockEntity.fakePlayer = FakePlayer.get(w, new GameProfile(FakePlayer.DEFAULT_UUID, "MechanicalBreakerFakePlayer"));
             if (world.getBlockState(pos).get(MechanicalBreakerBlock.POWERED)) return;
             if (blockEntity.inventory.isEmpty()) return;

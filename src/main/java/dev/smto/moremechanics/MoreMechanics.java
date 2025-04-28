@@ -11,6 +11,7 @@ import eu.pb4.polymer.core.api.other.PolymerComponent;
 import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.*;
@@ -25,6 +26,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.GlobalPos;
 import net.minecraft.world.World;
 import org.slf4j.LoggerFactory;
 import dev.smto.moremechanics.api.MoreMechanicsContent;
@@ -164,6 +166,17 @@ public class MoreMechanics implements ModInitializer {
 				}).build());
 
 		CommandRegistrationCallback.EVENT.register((dispatcher, x, environment) -> Commands.register(dispatcher));
+
+		ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+			var state = ModWorldDataSaver.get(server);
+			for (GlobalPos existingChunkLoader : state.existingChunkLoaders) {
+				ChunkLoaderBlock.markChunks(server.getWorld(existingChunkLoader.dimension()), existingChunkLoader.pos());
+			}
+			for (GlobalPos existingPeaceBeacon : state.existingPeaceBeacons) {
+				PeaceBeaconBlock.markChunks(existingPeaceBeacon.dimension(), existingPeaceBeacon.pos());
+			}
+		});
+
 		MoreMechanics.LOGGER.info("MoreMechanics loaded!");
 	}
 
@@ -171,8 +184,6 @@ public class MoreMechanics implements ModInitializer {
 		public static Block DUMMY_CAMOUFLAGE_BLOCK = new DummyBlock(MoreMechanics.id("dummy_camouflage_block"), MoreMechanics.id("item/camouflage_block"));
 		public static Block DUMMY_ELEVATOR = new DummyBlock(MoreMechanics.id("dummy_elevator"), MoreMechanics.id("item/elevator"));
 		public static Block DUMMY_EXPERIENCE_STORAGE = new DummyBlock(MoreMechanics.id("dummy_experience_storage"), MoreMechanics.id("item/experience_storage"));
-		public static Block DUMMY_MECHANICAL_PLACER = new DummyBlock(MoreMechanics.id("dummy_mechanical_placer"), MoreMechanics.id("item/mechanical_placer"));
-		public static Block DUMMY_MECHANICAL_BREAKER = new DummyBlock(MoreMechanics.id("dummy_mechanical_breaker"), MoreMechanics.id("item/mechanical_breaker"));
 		public static Block DUMMY_TANK = new DummyBlock(MoreMechanics.id("dummy_tank"), MoreMechanics.id("item/tank"));
 
 		public static Block ELEVATOR = new ElevatorBlock(MoreMechanics.id("elevator"));
@@ -226,8 +237,6 @@ public class MoreMechanics implements ModInitializer {
 				.create(MechanicalPlacerBlockEntity::new, Blocks.MECHANICAL_PLACER).build();
 		public static BlockEntityType<MechanicalBreakerBlockEntity> MECHANICAL_BREAKER = FabricBlockEntityTypeBuilder
 				.create(MechanicalBreakerBlockEntity::new, Blocks.MECHANICAL_BREAKER).build();
-		public static BlockEntityType<ChunkLoaderBlockEntity> CHUNK_LOADER = FabricBlockEntityTypeBuilder
-				.create(ChunkLoaderBlockEntity::new, Blocks.CHUNK_LOADER).build();
 		public static BlockEntityType<ShapeBuilderBlockEntity> SHAPE_BUILDER = FabricBlockEntityTypeBuilder
 				.create(ShapeBuilderBlockEntity::new, Blocks.SHAPE_BUILDER).build();
 		public static BlockEntityType<VacuumHopperBlockEntity> VACUUM_HOPPER = FabricBlockEntityTypeBuilder

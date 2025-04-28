@@ -2,6 +2,7 @@ package dev.smto.moremechanics.block;
 
 import dev.smto.moremechanics.MoreMechanics;
 import dev.smto.moremechanics.api.MoreMechanicsContent;
+import dev.smto.moremechanics.util.ModWorldDataSaver;
 import eu.pb4.polymer.blocks.api.BlockModelType;
 import eu.pb4.polymer.blocks.api.PolymerBlockModel;
 import eu.pb4.polymer.blocks.api.PolymerBlockResourceUtils;
@@ -23,6 +24,7 @@ import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
@@ -52,6 +54,15 @@ public class PeaceBeaconBlock extends Block implements PolymerTexturedBlock, Mor
 
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
+        if (world instanceof ServerWorld w) {
+            var stateLoader = ModWorldDataSaver.get(w.getServer());
+            var globalPos = new GlobalPos(world.getRegistryKey(), pos);
+            if (!stateLoader.existingPeaceBeacons.contains(globalPos)) {
+                stateLoader.existingPeaceBeacons.add(globalPos);
+                stateLoader.markDirty();
+            }
+            PeaceBeaconBlock.markChunks(w.getRegistryKey(), pos);
+        }
         super.onPlaced(world, pos, state, placer, itemStack);
         world.scheduleBlockTick(pos, state.getBlock(), 0);
     }
@@ -83,7 +94,7 @@ public class PeaceBeaconBlock extends Block implements PolymerTexturedBlock, Mor
 
     @Override
     public void addTooltip(ItemStack stack, List<Text> tooltip) {
-        tooltip.add(MutableText.of(new TranslatableTextContent("block.moremechanics.peace_beacon.description", null, List.of(MoreMechanics.Config.peaceBeaconRadius).toArray(new Integer[0]))).formatted(MoreMechanics.getTooltipFormatting()));
+        tooltip.add(MutableText.of(new TranslatableTextContent("block.moremechanics.peace_beacon.description", null, List.of((double) MoreMechanics.Config.peaceBeaconRadius / 2).toArray(new Double[0]))).formatted(MoreMechanics.getTooltipFormatting()));
     }
 
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
@@ -101,7 +112,7 @@ public class PeaceBeaconBlock extends Block implements PolymerTexturedBlock, Mor
                 )
         );
         if (world instanceof ServerWorld w) {
-            PeaceBeaconBlock.addPeacefulChunks(w.getRegistryKey(), this.getPeacefulChunks(pos));
+            PeaceBeaconBlock.markChunks(w.getRegistryKey(), pos);
         }
         world.scheduleBlockTick(pos, state.getBlock(), 20);
     }
@@ -109,11 +120,17 @@ public class PeaceBeaconBlock extends Block implements PolymerTexturedBlock, Mor
     @Override
     protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (!state.isOf(newState.getBlock()) && world instanceof ServerWorld w) {
-            PeaceBeaconBlock.removePeacefulChunks(w.getRegistryKey(), this.getPeacefulChunks(pos));
+            var stateLoader = ModWorldDataSaver.get(w.getServer());
+            var globalPos = new GlobalPos(w.getRegistryKey(), pos);
+            if (stateLoader.existingPeaceBeacons.contains(globalPos)) {
+                stateLoader.existingPeaceBeacons.remove(globalPos);
+                stateLoader.markDirty();
+            }
+            PeaceBeaconBlock.unmarkChunks(w.getRegistryKey(), pos);
         }
     }
 
-    private LinkedHashSet<ChunkPos> getPeacefulChunks(BlockPos pos) {
+    private static LinkedHashSet<ChunkPos> getAffectedChunks(BlockPos pos) {
         LinkedHashSet<ChunkPos> chunks = new LinkedHashSet<>();
         ChunkPos centerChunk = new ChunkPos(pos);
         for (int x = centerChunk.x - MoreMechanics.Config.peaceBeaconRadius; x < centerChunk.x + MoreMechanics.Config.peaceBeaconRadius; x++) {
@@ -126,14 +143,14 @@ public class PeaceBeaconBlock extends Block implements PolymerTexturedBlock, Mor
 
     private static final Map<RegistryKey<World>, LinkedHashSet<ChunkPos>> SUPPRESSED_CHUNK_MAP = new LinkedHashMap<>();
 
-    public static void addPeacefulChunks(RegistryKey<World> registryKey, LinkedHashSet<ChunkPos> linkedHashSet) {
+    public static void markChunks(RegistryKey<World> registryKey, BlockPos pos) {
         LinkedHashSet<ChunkPos> set = PeaceBeaconBlock.SUPPRESSED_CHUNK_MAP.getOrDefault(registryKey, new LinkedHashSet<>());
-        set.addAll(linkedHashSet);
+        set.addAll(PeaceBeaconBlock.getAffectedChunks(pos));
         PeaceBeaconBlock.SUPPRESSED_CHUNK_MAP.put(registryKey, set);
     }
 
-    public static void removePeacefulChunks(RegistryKey<World> registryKey, LinkedHashSet<ChunkPos> linkedHashSet) {
-        if (PeaceBeaconBlock.SUPPRESSED_CHUNK_MAP.containsKey(registryKey)) PeaceBeaconBlock.SUPPRESSED_CHUNK_MAP.get(registryKey).removeAll(linkedHashSet);
+    public static void unmarkChunks(RegistryKey<World> registryKey, BlockPos pos) {
+        if (PeaceBeaconBlock.SUPPRESSED_CHUNK_MAP.containsKey(registryKey)) PeaceBeaconBlock.SUPPRESSED_CHUNK_MAP.get(registryKey).removeAll(PeaceBeaconBlock.getAffectedChunks(pos));
     }
 
     public static boolean isChunkPeaceful(RegistryKey<World> registryKey, ChunkPos chunkPos) {

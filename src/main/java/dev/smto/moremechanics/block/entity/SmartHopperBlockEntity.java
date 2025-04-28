@@ -59,6 +59,7 @@ public class SmartHopperBlockEntity extends LootableContainerBlockEntity impleme
         this.facing = state.get(HopperBlock.FACING);
     }
 
+
     @Override
     public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
         super.readNbt(nbt, registries);
@@ -607,13 +608,15 @@ public class SmartHopperBlockEntity extends LootableContainerBlockEntity impleme
             this.put(FilterType.NONE, GuiElementBuilder.from(Items.BLACK_STAINED_GLASS_PANE.getDefaultStack())
                     .setItemName(Text.translatable("gui.moremechanics.smart_hopper.filter_type.none"))
                     .hideDefaultTooltip()
-                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Letters.X)
+                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.X)
                     .setLore(List.of(
                             Text.translatable("tooltip.moremechanics.smart_hopper.filter_type.none.description").formatted(MoreMechanics.getTooltipFormatting()),
-                            Text.translatable("tooltip.moremechanics.smart_hopper.filter_type.all.description").formatted(MoreMechanics.getTooltipFormatting())
+                            Text.empty(),
+                            Text.translatable("tooltip.moremechanics.smart_hopper.filter_type.all_change.description").formatted(MoreMechanics.getTooltipFormatting()),
+                            Text.translatable("tooltip.moremechanics.smart_hopper.filter_type.all_set.description").formatted(MoreMechanics.getTooltipFormatting())
                     ))
                     .setCallback((int index, ClickType type, SlotActionType action, SlotGuiInterface gui) -> {
-                        gui.setSlot(7, Gui.FILTER_TOGGLES.get(FilterType.ITEM).build());
+                        gui.setSlot(6, Gui.FILTER_TOGGLES.get(FilterType.ITEM).build());
                         ((Gui)gui).blockEntity.setFilterType(FilterType.ITEM);
                         ((Gui)gui).blockEntity.markDirty();
                     })
@@ -621,13 +624,15 @@ public class SmartHopperBlockEntity extends LootableContainerBlockEntity impleme
             this.put(FilterType.ITEM, GuiElementBuilder.from(Items.BLACK_STAINED_GLASS_PANE.getDefaultStack())
                     .setItemName(Text.translatable("gui.moremechanics.smart_hopper.filter_type.item"))
                     .hideDefaultTooltip()
-                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Shapes.ITEM)
+                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.ITEM)
                     .setLore(List.of(
                             Text.translatable("tooltip.moremechanics.smart_hopper.filter_type.item.description").formatted(MoreMechanics.getTooltipFormatting()),
-                            Text.translatable("tooltip.moremechanics.smart_hopper.filter_type.all.description").formatted(MoreMechanics.getTooltipFormatting())
+                            Text.empty(),
+                            Text.translatable("tooltip.moremechanics.smart_hopper.filter_type.all_change.description").formatted(MoreMechanics.getTooltipFormatting()),
+                            Text.translatable("tooltip.moremechanics.smart_hopper.filter_type.all_set.description").formatted(MoreMechanics.getTooltipFormatting())
                     ))
                     .setCallback((int index, ClickType type, SlotActionType action, SlotGuiInterface gui) -> {
-                        gui.setSlot(7, Gui.FILTER_TOGGLES.get(FilterType.STACK).build());
+                        gui.setSlot(6, Gui.FILTER_TOGGLES.get(FilterType.STACK).build());
                         ((Gui)gui).blockEntity.setFilterType(FilterType.STACK);
                         ((Gui)gui).blockEntity.markDirty();
                     })
@@ -635,13 +640,15 @@ public class SmartHopperBlockEntity extends LootableContainerBlockEntity impleme
             this.put(FilterType.STACK, GuiElementBuilder.from(Items.BLACK_STAINED_GLASS_PANE.getDefaultStack())
                     .setItemName(Text.translatable("gui.moremechanics.smart_hopper.filter_type.stack"))
                     .hideDefaultTooltip()
-                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Shapes.STACK)
+                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.STACK)
                     .setLore(List.of(
                             Text.translatable("tooltip.moremechanics.smart_hopper.filter_type.stack.description").formatted(MoreMechanics.getTooltipFormatting()),
-                            Text.translatable("tooltip.moremechanics.smart_hopper.filter_type.all.description").formatted(MoreMechanics.getTooltipFormatting())
+                            Text.empty(),
+                            Text.translatable("tooltip.moremechanics.smart_hopper.filter_type.all_change.description").formatted(MoreMechanics.getTooltipFormatting()),
+                            Text.translatable("tooltip.moremechanics.smart_hopper.filter_type.all_set.description").formatted(MoreMechanics.getTooltipFormatting())
                     ))
                     .setCallback((int index, ClickType type, SlotActionType action, SlotGuiInterface gui) -> {
-                        gui.setSlot(7, Gui.FILTER_TOGGLES.get(FilterType.NONE).build());
+                        gui.setSlot(6, Gui.FILTER_TOGGLES.get(FilterType.NONE).build());
                         ((Gui)gui).blockEntity.setFilterType(FilterType.NONE);
                         ((Gui)gui).blockEntity.markDirty();
                     })
@@ -654,8 +661,8 @@ public class SmartHopperBlockEntity extends LootableContainerBlockEntity impleme
                 this.addSlot(itemStack);
             }
             this.addSlot(GuiUtils.Elements.FILLER);
-            this.addSlot(GuiUtils.Elements.FILLER);
             this.addSlot(Gui.FILTER_TOGGLES.get(this.blockEntity.getFilterType()).build());
+            this.addSlot(GuiUtils.Elements.ARROW_RIGHT);
             this.addSlot(this.blockEntity.getFilter());
 
             this.setTitle(Text.translatable("block.moremechanics.smart_hopper"));

@@ -89,11 +89,15 @@ public abstract class ManagedDisplayBlockEntity extends BlockEntity {
         }
     }
 
+    protected boolean shouldSpawnBlockBreakParticles() {
+        return true;
+    }
+
     @Override
     public void markRemoved() {
         if (this.getWorld() != null) {
             this.cleanupDisplayEntities(this.getWorld());
-            ParticleUtils.createBlockBreakParticles((ServerWorld) this.getWorld(), this.getPos(), this.getDisplayData(this.getWorld(), this.getPos(), -1, DisplayType.BLOCK).blockState());
+            if (this.shouldSpawnBlockBreakParticles()) ParticleUtils.createBlockBreakParticles((ServerWorld) this.getWorld(), this.getPos(), this.getDisplayData(this.getWorld(), this.getPos(), -1, DisplayType.BLOCK).blockState());
         }
     }
 

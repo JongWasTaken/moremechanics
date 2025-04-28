@@ -3,6 +3,9 @@ package dev.smto.moremechanics.block;
 import dev.smto.moremechanics.MoreMechanics;
 import dev.smto.moremechanics.api.MoreMechanicsContent;
 import dev.smto.moremechanics.block.entity.RedstoneClockBlockEntity;
+import eu.pb4.polymer.blocks.api.BlockModelType;
+import eu.pb4.polymer.blocks.api.PolymerBlockModel;
+import eu.pb4.polymer.blocks.api.PolymerBlockResourceUtils;
 import eu.pb4.polymer.blocks.api.PolymerTexturedBlock;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
@@ -10,6 +13,7 @@ import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -31,19 +35,36 @@ import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class RedstoneClockBlock extends Block implements PolymerTexturedBlock, BlockEntityProvider, MoreMechanicsContent {
     private final Identifier id;
 
+    private final HashMap<Direction, BlockState> models = new HashMap<>();
+
+    private void makeModels(String path) {
+        this.models.put(Direction.EAST, PolymerBlockResourceUtils.requestBlock(BlockModelType.FULL_BLOCK, PolymerBlockModel.of(MoreMechanics.id("block/" + path), 0, 90)));
+        this.models.put(Direction.NORTH, PolymerBlockResourceUtils.requestBlock(BlockModelType.FULL_BLOCK, PolymerBlockModel.of(MoreMechanics.id("block/" + path))));
+        this.models.put(Direction.SOUTH, PolymerBlockResourceUtils.requestBlock(BlockModelType.FULL_BLOCK, PolymerBlockModel.of(MoreMechanics.id("block/" + path), 0, 180)));
+        this.models.put(Direction.WEST, PolymerBlockResourceUtils.requestBlock(BlockModelType.FULL_BLOCK, PolymerBlockModel.of(MoreMechanics.id("block/" + path), 0, 270)));
+    }
+
     public RedstoneClockBlock(Identifier id) {
         super(Settings.copy(Blocks.GLASS).registryKey(RegistryKey.of(RegistryKeys.BLOCK, id)));
         this.id = id;
+        this.makeModels(id.getPath());
+        this.setDefaultState(this.stateManager.getDefaultState().with(Properties.FACING, Direction.NORTH).with(Properties.POWERED, Boolean.TRUE));
     }
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(Properties.POWERED);
+        builder.add(Properties.FACING, Properties.POWERED);
+    }
+
+    @Override
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        return this.getDefaultState().with(MechanicalBreakerBlock.FACING, ctx.getHorizontalPlayerFacing().getOpposite());
     }
 
     @Override
@@ -110,9 +131,10 @@ public class RedstoneClockBlock extends Block implements PolymerTexturedBlock, B
     public final ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
         return new ItemStack(this);
     }
+
     @Override
     public BlockState getPolymerBlockState(BlockState state, PacketContext context) {
-        return Blocks.BARRIER.getDefaultState();
+        return this.models.getOrDefault(state.get(Properties.FACING), this.models.get(Direction.NORTH));
     }
 
     @Override
@@ -137,10 +159,7 @@ public class RedstoneClockBlock extends Block implements PolymerTexturedBlock, B
 
     @Override
     public void addTooltip(ItemStack stack, List<Text> tooltip) {
-        tooltip.add(Text.translatable("block.moremechanics.tank.description").formatted(MoreMechanics.getTooltipFormatting()));
-        if (stack.contains(MoreMechanics.DataComponentTypes.TANK_CONTENTS)) {
-            var info = stack.get(MoreMechanics.DataComponentTypes.TANK_CONTENTS);
-            tooltip.add(Text.translatable("block.minecraft." + Registries.FLUID.getId(info.fluid()).getPath()).append(Text.literal(": " + info.amount() + "mB")).formatted(Formatting.BLUE));
-        }
+        tooltip.add(Text.translatable("block.moremechanics.redstone_clock.description").formatted(MoreMechanics.getTooltipFormatting()));
+        tooltip.add(Text.translatable("block.moremechanics.redstone_clock.description.2").formatted(MoreMechanics.getTooltipFormatting()));
     }
 }

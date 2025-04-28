@@ -4,6 +4,7 @@ import dev.smto.moremechanics.MoreMechanics;
 import dev.smto.moremechanics.api.MoreMechanicsContent;
 import dev.smto.moremechanics.block.entity.ManagedDisplayBlockEntity;
 import dev.smto.moremechanics.block.entity.ExperienceDrainBlockEntity;
+import dev.smto.moremechanics.util.ParticleUtils;
 import eu.pb4.polymer.blocks.api.PolymerTexturedBlock;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
@@ -18,6 +19,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -60,7 +62,7 @@ public class ExperienceDrainBlock extends Block implements PolymerTexturedBlock,
         if (!state.isOf(newState.getBlock())) {
             ItemScatterer.onStateReplaced(state, newState, world, pos);
             world.removeBlockEntity(pos);
-            world.addBlockBreakParticles(pos, Blocks.HOPPER.getDefaultState());
+            ParticleUtils.createBlockBreakParticles((ServerWorld) world, pos, Blocks.HOPPER.getDefaultState());
         }
     }
 

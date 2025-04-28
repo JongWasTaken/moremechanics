@@ -1,6 +1,7 @@
 package dev.smto.moremechanics.block.entity;
 
 import dev.smto.moremechanics.MoreMechanics;
+import dev.smto.moremechanics.util.Degrees;
 import dev.smto.moremechanics.util.DisplayTransformations;
 import dev.smto.moremechanics.util.Transformation;
 import net.minecraft.block.BlockState;
@@ -15,8 +16,10 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
+import java.util.HashMap;
 import java.util.Objects;
 
 public class RedstoneClockBlockEntity extends ManagedDisplayBlockEntity {
@@ -110,7 +113,15 @@ public class RedstoneClockBlockEntity extends ManagedDisplayBlockEntity {
 
     @Override
     protected DisplayData getDisplayData(World world, BlockPos pos, int index, DisplayType forType) {
-        return DisplayData.create(TextDisplayData.create(Text.literal(RedstoneClockBlockEntity.INTERVAL_DESCRIPTION[this.selectedInterval])));
+        return DisplayData.create(
+            new TextDisplayData(
+                    Text.literal(RedstoneClockBlockEntity.INTERVAL_DESCRIPTION[this.selectedInterval]),
+                    TextDisplayData.DEFAULT.lineWidth(),
+                    0,
+                    (byte)255,
+                    (byte)0
+            )
+        );
     }
 
     private static final DisplaySpec[] DISPLAY_SPECS = { DisplaySpec.TEXT };
@@ -127,10 +138,20 @@ public class RedstoneClockBlockEntity extends ManagedDisplayBlockEntity {
         return RedstoneClockBlockEntity.DISPLAY_TICK_ENABLED;
     }
 
-    private static final Transformation TRANSFORMATION = DisplayTransformations.getForItem(null);
+    private static final HashMap<Direction,Transformation> TEXT_TRANSFORMATIONS = new HashMap<>() {{
+        this.put(Direction.NORTH, DisplayTransformations.getForItem(Direction.NORTH).addTranslation(0.0f, -0.1f, -0.51f));
+        this.put(Direction.EAST, DisplayTransformations.getForItem(Direction.EAST).addTranslation(0.51f, -0.1f, 0.0f));
+        this.put(Direction.SOUTH, DisplayTransformations.getForItem(Direction.SOUTH).addTranslation(0.0f, -0.1f, 0.51f));
+        this.put(Direction.WEST, DisplayTransformations.getForItem(Direction.WEST).addTranslation(-0.51f, -0.1f, 0.0f));
+    }};
 
     @Override
     protected Transformation getDisplayTransformation(World world, BlockPos pos, int index, DisplayType forType) {
-        return RedstoneClockBlockEntity.TRANSFORMATION;
+        return TEXT_TRANSFORMATIONS.getOrDefault(world.getBlockState(pos).get(Properties.FACING), TEXT_TRANSFORMATIONS.get(Direction.NORTH));
+    }
+
+    @Override
+    public boolean shouldSpawnBlockBreakParticles() {
+        return false;
     }
 }

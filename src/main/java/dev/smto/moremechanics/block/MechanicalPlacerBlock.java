@@ -4,6 +4,10 @@ import dev.smto.moremechanics.MoreMechanics;
 import dev.smto.moremechanics.api.MoreMechanicsContent;
 import dev.smto.moremechanics.block.entity.ManagedDisplayBlockEntity;
 import dev.smto.moremechanics.block.entity.MechanicalPlacerBlockEntity;
+import dev.smto.moremechanics.util.ParticleUtils;
+import eu.pb4.polymer.blocks.api.BlockModelType;
+import eu.pb4.polymer.blocks.api.PolymerBlockModel;
+import eu.pb4.polymer.blocks.api.PolymerBlockResourceUtils;
 import eu.pb4.polymer.blocks.api.PolymerTexturedBlock;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
@@ -19,6 +23,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -35,6 +40,7 @@ import net.minecraft.world.block.WireOrientation;
 import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class MechanicalPlacerBlock extends Block implements PolymerTexturedBlock, BlockEntityProvider, MoreMechanicsContent {
@@ -43,9 +49,21 @@ public class MechanicalPlacerBlock extends Block implements PolymerTexturedBlock
 
     private final Identifier id;
 
+    private final HashMap<Direction, BlockState> models = new HashMap<>();
+
+    private void makeModels(String path) {
+        this.models.put(Direction.UP, PolymerBlockResourceUtils.requestBlock(BlockModelType.FULL_BLOCK, PolymerBlockModel.of(MoreMechanics.id("block/" + path), 270, 0)));
+        this.models.put(Direction.DOWN, PolymerBlockResourceUtils.requestBlock(BlockModelType.FULL_BLOCK, PolymerBlockModel.of(MoreMechanics.id("block/" + path), 90, 0)));
+        this.models.put(Direction.EAST, PolymerBlockResourceUtils.requestBlock(BlockModelType.FULL_BLOCK, PolymerBlockModel.of(MoreMechanics.id("block/" + path), 0, 90)));
+        this.models.put(Direction.NORTH, PolymerBlockResourceUtils.requestBlock(BlockModelType.FULL_BLOCK, PolymerBlockModel.of(MoreMechanics.id("block/" + path), 0, 0)));
+        this.models.put(Direction.SOUTH, PolymerBlockResourceUtils.requestBlock(BlockModelType.FULL_BLOCK, PolymerBlockModel.of(MoreMechanics.id("block/" + path), 0, 180)));
+        this.models.put(Direction.WEST, PolymerBlockResourceUtils.requestBlock(BlockModelType.FULL_BLOCK, PolymerBlockModel.of(MoreMechanics.id("block/" + path), 0, 270)));
+    }
+
     public MechanicalPlacerBlock(Identifier id) {
         super(Settings.copy(Blocks.STONE).nonOpaque().registryKey(RegistryKey.of(RegistryKeys.BLOCK, id)));
         this.id = id;
+        this.makeModels(id.getPath());
         this.setDefaultState(this.stateManager.getDefaultState().with(MechanicalPlacerBlock.FACING, Direction.NORTH).with(MechanicalPlacerBlock.POWERED, Boolean.FALSE));
     }
 
@@ -79,7 +97,7 @@ public class MechanicalPlacerBlock extends Block implements PolymerTexturedBlock
         if (!state.isOf(newState.getBlock())) {
             ItemScatterer.onStateReplaced(state, newState, world, pos);
             world.removeBlockEntity(pos);
-            world.addBlockBreakParticles(pos, Blocks.DISPENSER.getDefaultState());
+            ParticleUtils.createBlockBreakParticles((ServerWorld) world, pos, Blocks.DISPENSER.getDefaultState());
         }
     }
 
@@ -123,9 +141,10 @@ public class MechanicalPlacerBlock extends Block implements PolymerTexturedBlock
     public final ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
         return new ItemStack(MoreMechanics.Items.MECHANICAL_PLACER);
     }
+
     @Override
     public BlockState getPolymerBlockState(BlockState state, PacketContext context) {
-        return Blocks.BARRIER.getDefaultState();
+        return this.models.get(state.get(MechanicalBreakerBlock.FACING));
     }
 
     @Override
@@ -162,10 +181,5 @@ public class MechanicalPlacerBlock extends Block implements PolymerTexturedBlock
     public void addTooltip(ItemStack stack, List<Text> tooltip) {
         tooltip.add(Text.translatable("block.moremechanics.mechanical_placer.description").formatted(MoreMechanics.getTooltipFormatting()));
         tooltip.add(Text.translatable("block.moremechanics.mechanical_placer.description.2").formatted(MoreMechanics.getTooltipFormatting()));
-    }
-
-    @Override
-    public Block getDummyBlock() {
-        return MoreMechanics.Blocks.DUMMY_MECHANICAL_PLACER;
     }
 }

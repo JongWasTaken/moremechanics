@@ -2,7 +2,7 @@
   "block.moremechanics.camouflage_block": "Camouflage Block",
   "block.moremechanics.camouflage_block.description": "Can take the appearance of any block.",
   "block.moremechanics.chunk_loader": "Chunk Loader",
-  "block.moremechanics.chunk_loader.description": "Force-Loads the chunk it is placed in.",
+  "block.moremechanics.chunk_loader.description": "Keeps chunks in a %s chunk radius loaded.",
   "block.moremechanics.chunk_loader.description.2": "Use F3+G to show chunk boundaries.",
   "block.moremechanics.elevator": "Elevator",
   "block.moremechanics.elevator.description": "Teleports the player up or down.",
@@ -97,11 +97,16 @@
   "tooltip.moremechanics.smart_hopper.filter_type.none.description": "All items can pass.",
   "tooltip.moremechanics.smart_hopper.filter_type.item.description": "Only pass items that match the filter item.",
   "tooltip.moremechanics.smart_hopper.filter_type.stack.description": "Only pass items that match the filter stack.",
-  "tooltip.moremechanics.smart_hopper.filter_type.all.description": "Set filter using the slot on the right.",
+  "tooltip.moremechanics.smart_hopper.filter_type.all_set.description": "Set filter using the slot on the right.",
   "block.moremechanics.redstone_clock.paused": "Clock paused.",
   "block.moremechanics.redstone_clock.unpaused": "Clock unpaused.",
   "item.moremechanics.natures_compass": "Nature's Compass",
   "item.moremechanics.natures_compass.no_biome": "Could not find the selected biome.",
   "item.moremechanics.natures_compass.found": "Biome found. Follow the needle!",
-  "item.moremechanics.natures_compass.description": "Can find any biome."
+  "item.moremechanics.natures_compass.description": "Can find any biome.",
+  "item.moremechanics.natures_compass.search": "Biome Search",
+  "tooltip.moremechanics.smart_hopper.filter_type.all_change.description": "Click to change filter type.",
+  "block.moremechanics.redstone_clock": "Redstone Clock",
+  "block.moremechanics.redstone_clock.description": "Interval configurable.",
+  "block.moremechanics.redstone_clock.description.2": "Interact with the top side to pause or unpause."
 }

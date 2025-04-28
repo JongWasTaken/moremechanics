@@ -4,6 +4,7 @@ import dev.smto.moremechanics.MoreMechanics;
 import dev.smto.moremechanics.api.MoreMechanicsContent;
 import dev.smto.moremechanics.block.entity.ManagedDisplayBlockEntity;
 import dev.smto.moremechanics.block.entity.ExperienceStorageBlockEntity;
+import dev.smto.moremechanics.block.entity.SmartHopperBlockEntity;
 import dev.smto.moremechanics.util.ExperienceUtils;
 import dev.smto.moremechanics.util.GuiUtils;
 import eu.pb4.polymer.blocks.api.PolymerTexturedBlock;
@@ -14,6 +15,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -33,6 +35,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -108,11 +111,14 @@ public class ExperienceStorageBlock extends Block implements PolymerTexturedBloc
     }
 
     @Override
-    public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        if (world.getBlockEntity(pos) instanceof ExperienceStorageBlockEntity ent) {
-            if (!world.isClient()) ent.dropExperience((ServerWorld) world, pos);
+    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (!state.isOf(newState.getBlock())) {
+            if (world.getBlockEntity(pos) instanceof ExperienceStorageBlockEntity ent) {
+                if (!world.isClient()) ent.dropExperience((ServerWorld) world, pos);
+            }
+            world.removeBlockEntity(pos);
         }
-        return super.onBreak(world, pos, state, player);
+        super.onStateReplaced(state, world, pos, newState, moved);
     }
 
     @Override
@@ -179,7 +185,7 @@ public class ExperienceStorageBlock extends Block implements PolymerTexturedBloc
                     values.getLeft() + r
             ).formatted(Formatting.LIGHT_PURPLE).append(Text.literal(" ")).append(Text.translatable("gui.moremechanics.experience_storage.stored_xp_levels_text").formatted(Formatting.GRAY)));
             this.setSlot(4, GuiElementBuilder.from(Items.STICK.getDefaultStack())
-                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Letters.QUESTION_MARK)
+                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.QUESTION_MARK)
                     .setLore(lore)
                     .setCallback(this::refreshCounter)
                     .setComponent(DataComponentTypes.ITEM_NAME, Text.translatable("gui.moremechanics.experience_storage.stored_xp_text"))
@@ -201,7 +207,7 @@ public class ExperienceStorageBlock extends Block implements PolymerTexturedBloc
             super.beforeOpen();
 
             this.setSlot(0, GuiElementBuilder.from(Items.STICK.getDefaultStack())
-                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Numbers.ONE_RED)
+                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.PLUS_ONE)
                     .setCallback(() -> {
                         this.fixPlayerLevels();
                         int xp = ExperienceUtils.getBarCapacityAtLevel(this.player.experienceLevel - 1);
@@ -215,7 +221,7 @@ public class ExperienceStorageBlock extends Block implements PolymerTexturedBloc
                     .build()
             );
             this.setSlot(1, GuiElementBuilder.from(Items.STICK.getDefaultStack())
-                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Numbers.TEN_RED)
+                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.PLUS_TEN)
                     .setCallback(() -> {
                         this.fixPlayerLevels();
                         int xp = 0;
@@ -232,7 +238,7 @@ public class ExperienceStorageBlock extends Block implements PolymerTexturedBloc
                     .build()
             );
             this.setSlot(2, GuiElementBuilder.from(Items.STICK.getDefaultStack())
-                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Sizes.DECREASE_RED)
+                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.PLUS)
                     .setCallback(() -> {
                         int playerXP = ExperienceUtils.getTotalPoints(this.player.experienceLevel, this.player.experienceProgress);
                         int xp = this.host.addExperience(playerXP < 0 ? Integer.MAX_VALUE : playerXP);
@@ -250,7 +256,7 @@ public class ExperienceStorageBlock extends Block implements PolymerTexturedBloc
             this.setSlot(5, GuiUtils.Elements.FILLER);
 
             this.setSlot(6, GuiElementBuilder.from(Items.STICK.getDefaultStack())
-                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Sizes.INCREASE_GREEN)
+                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.MINUS)
                     .setCallback(() -> {
                         int xp = this.host.takeExperience(Integer.MAX_VALUE);
                         this.player.addExperience(xp);
@@ -261,8 +267,8 @@ public class ExperienceStorageBlock extends Block implements PolymerTexturedBloc
                     .setComponent(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, false)
                     .build()
             );
-            this.setSlot(7, GuiElementBuilder.from(Items.PLAYER_HEAD.getDefaultStack())
-                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Numbers.TEN_GREEN)
+            this.setSlot(7, GuiElementBuilder.from(Items.STICK.getDefaultStack())
+                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.MINUS_TEN)
                     .setCallback(() -> {
                         this.addLevelsToPlayer(10);
                         this.refreshCounter();
@@ -272,8 +278,8 @@ public class ExperienceStorageBlock extends Block implements PolymerTexturedBloc
                     .setComponent(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, false)
                     .build()
             );
-            this.setSlot(8, GuiElementBuilder.from(Items.PLAYER_HEAD.getDefaultStack())
-                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Numbers.ONE_GREEN)
+            this.setSlot(8, GuiElementBuilder.from(Items.STICK.getDefaultStack())
+                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.MINUS_ONE)
                     .setCallback(() -> {
                         this.addLevelsToPlayer(1);
                         this.refreshCounter();

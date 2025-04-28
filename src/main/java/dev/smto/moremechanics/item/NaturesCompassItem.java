@@ -8,8 +8,8 @@ import dev.smto.moremechanics.util.GuiUtils;
 import eu.pb4.polymer.core.api.item.PolymerItem;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
+import eu.pb4.sgui.api.gui.AnvilInputGui;
 import eu.pb4.sgui.api.gui.SimpleGui;
-import eu.pb4.sgui.api.gui.SimpleGuiBuilder;
 import eu.pb4.sgui.api.gui.SlotGuiInterface;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LodestoneTrackerComponent;
@@ -23,7 +23,6 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
@@ -33,10 +32,7 @@ import net.minecraft.world.biome.Biome;
 import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class NaturesCompassItem extends Item implements PolymerItem, MoreMechanicsContent {
     private final Identifier id;
@@ -148,15 +144,15 @@ public class NaturesCompassItem extends Item implements PolymerItem, MoreMechani
     @Override
     public ActionResult use(World world, PlayerEntity user, Hand hand) {
         if (world.isClient) return ActionResult.PASS;
-        this.openGui((ServerPlayerEntity) user, user.getStackInHand(hand));
+        this.openBiomeSelectionGui((ServerPlayerEntity) user, user.getStackInHand(hand));
         return ActionResult.SUCCESS_SERVER;
     }
 
-    public void openGui(ServerPlayerEntity player, ItemStack host) {
+    public void openBiomeSelectionGui(ServerPlayerEntity player, ItemStack host) {
         var biomes = new ArrayList<GuiElementBuilder>();
         for (Identifier identifier : BuiltinRegistries.createWrapperLookup().getOrThrow(RegistryKeys.BIOME)
                 .streamKeys()
-                .map(RegistryKey::getValue).toList()) {
+                .map(RegistryKey::getValue).sorted().toList()) {
             biomes.add(GuiElementBuilder
                     .from(NaturesCompassItem.ICONS.getOrDefault(identifier, Items.BARRIER).getDefaultStack())
                     .setItemName(Text.literal(identifier.toString()))
@@ -176,16 +172,60 @@ public class NaturesCompassItem extends Item implements PolymerItem, MoreMechani
                     })
             );
         }
-        new Gui(player, biomes).open();
+        new BiomeSelectionGui(player, biomes, host).open();
     }
 
-    private static class Gui extends SimpleGui {
+    public static void openSearchGui(ServerPlayerEntity player, ItemStack host) {
+        var anvilGui = new AnvilInputGui(player, false);
+        anvilGui.setTitle(Text.translatable("item.moremechanics.natures_compass.search"));
+        anvilGui.setSlot(1, GuiElementBuilder
+                .from(Items.BARRIER.getDefaultStack())
+                .setItemName(Text.translatable("gui.cancel"))
+                //.setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Shapes.SELECTED)
+                .setCallback((int index, ClickType type, SlotActionType action, SlotGuiInterface gui) -> gui.close()));
+        anvilGui.setSlot(2, GuiElementBuilder
+                .from(Items.BARRIER.getDefaultStack())
+                .setItemName(Text.translatable("gui.continue"))
+                .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.SELECTED)
+                .setCallback((int index2, ClickType type2, SlotActionType action2, SlotGuiInterface gui2) -> {
+            var biomes = new ArrayList<GuiElementBuilder>();
+            for (Identifier identifier : BuiltinRegistries.createWrapperLookup().getOrThrow(RegistryKeys.BIOME)
+                    .streamKeys()
+                    .map(RegistryKey::getValue).sorted().filter(b -> b.toString().contains(((AnvilInputGui)gui2).getInput().trim().toLowerCase(Locale.ROOT).replace(" ", "_"))).toList()) {
+                biomes.add(GuiElementBuilder
+                        .from(NaturesCompassItem.ICONS.getOrDefault(identifier, Items.BARRIER).getDefaultStack())
+                        .setItemName(Text.literal(identifier.toString()))
+                        .hideDefaultTooltip()
+                        .setCallback((int index, ClickType type, SlotActionType action, SlotGuiInterface gui) -> {
+                            Stopwatch stopwatch = Stopwatch.createStarted(Util.TICKER);
+                            Pair<BlockPos, RegistryEntry<Biome>> pair = player.getServerWorld().locateBiome((b) -> b.matchesId(identifier), player.getBlockPos(), 6400, 32, 64);
+                            stopwatch.stop();
+                            gui.close();
+                            if (pair != null) {
+                                player.sendMessage(Text.translatable("item.moremechanics.natures_compass.found"), true);
+                                host.set(DataComponentTypes.LODESTONE_TRACKER, new LodestoneTrackerComponent(
+                                        Optional.of(GlobalPos.create(player.getWorld().getRegistryKey(), pair.getFirst())), true));
+                                return;
+                            }
+                            player.sendMessage(Text.translatable("item.moremechanics.natures_compass.no_biome"), true);
+                        })
+                );
+            }
+            gui2.close();
+            new BiomeSelectionGui(player, biomes, host).open();
+        }));
+        anvilGui.open();
+    }
+
+    private static class BiomeSelectionGui extends SimpleGui {
         private final List<GuiElementBuilder> biomes;
         private int page = 1;
+        private final ItemStack host;
 
-        public Gui(ServerPlayerEntity player, List<GuiElementBuilder> biomes) {
+        public BiomeSelectionGui(ServerPlayerEntity player, List<GuiElementBuilder> biomes, ItemStack host) {
             super(ScreenHandlerType.GENERIC_9X6, player, false);
             this.biomes = biomes;
+            this.host = host;
             this.setTitle(Text.translatable("item.moremechanics.natures_compass"));
         }
 
@@ -201,6 +241,7 @@ public class NaturesCompassItem extends Item implements PolymerItem, MoreMechani
             this.setSlot(45, GuiElementBuilder
                     .from(Items.BARRIER.getDefaultStack())
                     .setItemName(Text.literal("Previous Page"))
+                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.PREVIOUS)
                     .hideDefaultTooltip()
                     .setCallback((int index, ClickType type, SlotActionType action, SlotGuiInterface gui) -> {
                         if (this.page > 1) this.page--;
@@ -208,22 +249,26 @@ public class NaturesCompassItem extends Item implements PolymerItem, MoreMechani
                     })
             );
             this.setSlot(49, GuiElementBuilder
-                    .from(Items.SPYGLASS.getDefaultStack())
+                    .from(Items.BARRIER.getDefaultStack())
                     .setItemName(Text.literal("Search"))
+                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.MAGNIFYING_GLASS)
                     .hideDefaultTooltip()
                     .setCallback((int index, ClickType type, SlotActionType action, SlotGuiInterface gui) -> {
-                        gui.beforeOpen();
+                        gui.close();
+                        NaturesCompassItem.openSearchGui(this.player, this.host);
                     })
             );
             this.setSlot(53, GuiElementBuilder
                     .from(Items.BARRIER.getDefaultStack())
                     .setItemName(Text.literal("Next Page"))
+                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.NEXT)
                     .hideDefaultTooltip()
                     .setCallback((int index, ClickType type, SlotActionType action, SlotGuiInterface gui) -> {
                         if (this.page < Math.ceil((double) this.biomes.size() / 45)) this.page++;
                         gui.beforeOpen();
                     })
             );
+            GuiUtils.fillEmptySlots(this);
         }
     }
 

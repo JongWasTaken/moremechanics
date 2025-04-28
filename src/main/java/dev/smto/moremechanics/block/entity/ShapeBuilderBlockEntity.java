@@ -23,7 +23,6 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.particle.*;
-import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.ScreenHandlerType;
@@ -322,7 +321,7 @@ public class ShapeBuilderBlockEntity extends BlockEntity {
             this.addSlot(GuiElementBuilder.from(Items.BREEZE_ROD.getDefaultStack())
                     .setName(Text.translatable("item.moremechanics.shape_builder.disable"))
                     .setLore(this.shapeBuilder.getShapeType() == null ? Lists.newArrayList(Text.translatable("item.moremechanics.shape_builder.selected").formatted(Formatting.GREEN)) : Lists.newArrayList())
-                    .setComponent(DataComponentTypes.ITEM_MODEL, this.shapeBuilder.getShapeType() == null ? GuiUtils.Models.Shapes.SELECTED : GuiUtils.Models.Shapes.DISABLED)
+                    .setComponent(DataComponentTypes.ITEM_MODEL, this.shapeBuilder.getShapeType() == null ? GuiUtils.Models.SELECTED : GuiUtils.Models.DISABLED)
                     .setCallback((slot, clickType, actionType, slotGuiInterface) -> {
                         this.shapeBuilder.selectedShapeType = null;
                         this.shapeBuilder.markDirty();
@@ -337,7 +336,7 @@ public class ShapeBuilderBlockEntity extends BlockEntity {
                 this.addSlot(GuiElementBuilder.from(Items.BREEZE_ROD.getDefaultStack())
                     .setName(Text.translatable(shapeType.translationKey))
                     .setLore(this.shapeBuilder.getShapeType() == shapeType ? Lists.newArrayList(Text.translatable("item.moremechanics.shape_builder.selected").formatted(Formatting.GREEN)) : Lists.newArrayList())
-                    .setComponent(DataComponentTypes.ITEM_MODEL, this.shapeBuilder.getShapeType() == shapeType ? GuiUtils.Models.Shapes.SELECTED : shapeType.getModel())
+                    .setComponent(DataComponentTypes.ITEM_MODEL, this.shapeBuilder.getShapeType() == shapeType ? GuiUtils.Models.SELECTED : shapeType.getModel())
                     .setCallback((slot, clickType, actionType, slotGuiInterface) -> {
                         this.shapeBuilder.setShapeType(shapeType);
                         this.shapeBuilder.displayModeChange(this.player);
@@ -373,7 +372,7 @@ public class ShapeBuilderBlockEntity extends BlockEntity {
             // pos Y
             this.setSlot(4, GuiElementBuilder.from(Items.BREEZE_ROD.getDefaultStack())
                     .setName(Text.translatable("item.moremechanics.shape_builder.decrease"))
-                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Sizes.DECREASE)
+                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.DECREASE)
                     .setCallback((slot, clickType, actionType, slotGuiInterface) -> {
                         this.shapeBuilder.setSize(new ShapeSize() {{
                             super.negX = SizeSelectionGui.this.shapeBuilder.negX;
@@ -394,10 +393,10 @@ public class ShapeBuilderBlockEntity extends BlockEntity {
             this.setSlot(5, GuiElementBuilder.from(Items.BREEZE_ROD.getDefaultStack())
                     .setName(Text.literal(String.valueOf(this.shapeBuilder.posY)).append(Text.literal(" (Y+)").formatted(Formatting.GRAY)))
                     .setLore(List.of(Text.translatable("item.moremechanics.shape_builder.side_description.1").formatted(Formatting.GRAY),Text.translatable("item.moremechanics.shape_builder.side_description.2").formatted(Formatting.GRAY),Text.translatable("item.moremechanics.shape_builder.pos_y_description").formatted(Formatting.GRAY)))
-                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Sizes.Y_POSITIVE));
+                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Y_POSITIVE));
             this.setSlot(6, GuiElementBuilder.from(Items.BREEZE_ROD.getDefaultStack())
                     .setName(Text.translatable("item.moremechanics.shape_builder.increase"))
-                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Sizes.INCREASE)
+                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.INCREASE)
                     .setCallback((slot, clickType, actionType, slotGuiInterface) -> {
                         this.shapeBuilder.setSize(new ShapeSize() {{
                             super.negX = SizeSelectionGui.this.shapeBuilder.negX;
@@ -419,7 +418,7 @@ public class ShapeBuilderBlockEntity extends BlockEntity {
             // neg Y
             this.setSlot(38, GuiElementBuilder.from(Items.BREEZE_ROD.getDefaultStack())
                     .setName(Text.translatable("item.moremechanics.shape_builder.decrease"))
-                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Sizes.DECREASE)
+                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.DECREASE)
                     .setCallback((slot, clickType, actionType, slotGuiInterface) -> {
                         this.shapeBuilder.setSize(new ShapeSize() {{
                             super.negX = SizeSelectionGui.this.shapeBuilder.negX;
@@ -440,10 +439,10 @@ public class ShapeBuilderBlockEntity extends BlockEntity {
             this.setSlot(39, GuiElementBuilder.from(Items.BREEZE_ROD.getDefaultStack())
                     .setName(Text.literal(String.valueOf(this.shapeBuilder.negY)).append(Text.literal(" (Y-)").formatted(Formatting.GRAY)))
                     .setLore(List.of(Text.translatable("item.moremechanics.shape_builder.side_description.1").formatted(Formatting.GRAY),Text.translatable("item.moremechanics.shape_builder.side_description.2").formatted(Formatting.GRAY),Text.translatable("item.moremechanics.shape_builder.neg_y_description").formatted(Formatting.GRAY)))
-                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Sizes.Y_NEGATIVE));
+                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Y_NEGATIVE));
             this.setSlot(40, GuiElementBuilder.from(Items.BREEZE_ROD.getDefaultStack())
                     .setName(Text.translatable("item.moremechanics.shape_builder.increase"))
-                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Sizes.INCREASE)
+                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.INCREASE)
                     .setCallback((slot, clickType, actionType, slotGuiInterface) -> {
                         this.shapeBuilder.setSize(new ShapeSize() {{
                             super.negX = SizeSelectionGui.this.shapeBuilder.negX;
@@ -465,7 +464,7 @@ public class ShapeBuilderBlockEntity extends BlockEntity {
             // neg X
             this.setSlot(18, GuiElementBuilder.from(Items.BREEZE_ROD.getDefaultStack())
                     .setName(Text.translatable("item.moremechanics.shape_builder.decrease"))
-                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Sizes.DECREASE)
+                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.DECREASE)
                     .setCallback((slot, clickType, actionType, slotGuiInterface) -> {
                         this.shapeBuilder.setSize(new ShapeSize() {{
                             super.negX = Math.max(SizeSelectionGui.this.shapeBuilder.negX - 1, 1);
@@ -486,10 +485,10 @@ public class ShapeBuilderBlockEntity extends BlockEntity {
             this.setSlot(19, GuiElementBuilder.from(Items.BREEZE_ROD.getDefaultStack())
                     .setName(Text.literal(String.valueOf(this.shapeBuilder.negX)).append(Text.literal(" (X-)").formatted(Formatting.GRAY)))
                     .setLore(List.of(Text.translatable("item.moremechanics.shape_builder.side_description.1").formatted(Formatting.GRAY),Text.translatable("item.moremechanics.shape_builder.side_description.2").formatted(Formatting.GRAY),Text.translatable("item.moremechanics.shape_builder.neg_x_description").formatted(Formatting.GRAY)))
-                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Sizes.X_NEGATIVE));
+                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.X_NEGATIVE));
             this.setSlot(20, GuiElementBuilder.from(Items.BREEZE_ROD.getDefaultStack())
                     .setName(Text.translatable("item.moremechanics.shape_builder.increase"))
-                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Sizes.INCREASE)
+                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.INCREASE)
                     .setCallback((slot, clickType, actionType, slotGuiInterface) -> {
                         this.shapeBuilder.setSize(new ShapeSize() {{
                             super.negX = Math.max(SizeSelectionGui.this.shapeBuilder.negX + 1, 1);
@@ -511,7 +510,7 @@ public class ShapeBuilderBlockEntity extends BlockEntity {
             // pos X
             this.setSlot(24, GuiElementBuilder.from(Items.BREEZE_ROD.getDefaultStack())
                     .setName(Text.translatable("item.moremechanics.shape_builder.decrease"))
-                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Sizes.DECREASE)
+                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.DECREASE)
                     .setCallback((slot, clickType, actionType, slotGuiInterface) -> {
                         this.shapeBuilder.setSize(new ShapeSize() {{
                             super.negX = SizeSelectionGui.this.shapeBuilder.negX;
@@ -532,10 +531,10 @@ public class ShapeBuilderBlockEntity extends BlockEntity {
             this.setSlot(25, GuiElementBuilder.from(Items.BREEZE_ROD.getDefaultStack())
                     .setName(Text.literal(String.valueOf(this.shapeBuilder.posX)).append(Text.literal(" (X+)").formatted(Formatting.GRAY)))
                     .setLore(List.of(Text.translatable("item.moremechanics.shape_builder.side_description.1").formatted(Formatting.GRAY),Text.translatable("item.moremechanics.shape_builder.side_description.2").formatted(Formatting.GRAY),Text.translatable("item.moremechanics.shape_builder.pos_x_description").formatted(Formatting.GRAY)))
-                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Sizes.X_POSITIVE));
+                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.X_POSITIVE));
             this.setSlot(26, GuiElementBuilder.from(Items.BREEZE_ROD.getDefaultStack())
                     .setName(Text.translatable("item.moremechanics.shape_builder.increase"))
-                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Sizes.INCREASE)
+                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.INCREASE)
                     .setCallback((slot, clickType, actionType, slotGuiInterface) -> {
                         this.shapeBuilder.setSize(new ShapeSize() {{
                             super.negX = SizeSelectionGui.this.shapeBuilder.negX;
@@ -556,7 +555,7 @@ public class ShapeBuilderBlockEntity extends BlockEntity {
             // neg Z
             this.setSlot(28, GuiElementBuilder.from(Items.BREEZE_ROD.getDefaultStack())
                     .setName(Text.translatable("item.moremechanics.shape_builder.decrease"))
-                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Sizes.DECREASE)
+                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.DECREASE)
                     .setCallback((slot, clickType, actionType, slotGuiInterface) -> {
                         this.shapeBuilder.setSize(new ShapeSize() {{
                             super.negX = SizeSelectionGui.this.shapeBuilder.negX;
@@ -577,10 +576,10 @@ public class ShapeBuilderBlockEntity extends BlockEntity {
             this.setSlot(29, GuiElementBuilder.from(Items.BREEZE_ROD.getDefaultStack())
                     .setName(Text.literal(String.valueOf(this.shapeBuilder.negZ)).append(Text.literal(" (Z-)").formatted(Formatting.GRAY)))
                     .setLore(List.of(Text.translatable("item.moremechanics.shape_builder.side_description.1").formatted(Formatting.GRAY),Text.translatable("item.moremechanics.shape_builder.side_description.2").formatted(Formatting.GRAY),Text.translatable("item.moremechanics.shape_builder.neg_z_description").formatted(Formatting.GRAY)))
-                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Sizes.Z_NEGATIVE));
+                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Z_NEGATIVE));
             this.setSlot(30, GuiElementBuilder.from(Items.BREEZE_ROD.getDefaultStack())
                     .setName(Text.translatable("item.moremechanics.shape_builder.increase"))
-                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Sizes.INCREASE)
+                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.INCREASE)
                     .setCallback((slot, clickType, actionType, slotGuiInterface) -> {
                         this.shapeBuilder.setSize(new ShapeSize() {{
                             super.negX = SizeSelectionGui.this.shapeBuilder.negX;
@@ -602,7 +601,7 @@ public class ShapeBuilderBlockEntity extends BlockEntity {
             // pos Z
             this.setSlot(14, GuiElementBuilder.from(Items.BREEZE_ROD.getDefaultStack())
                     .setName(Text.translatable("item.moremechanics.shape_builder.decrease"))
-                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Sizes.DECREASE)
+                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.DECREASE)
                     .setCallback((slot, clickType, actionType, slotGuiInterface) -> {
                         this.shapeBuilder.setSize(new ShapeSize() {{
                             super.negX = SizeSelectionGui.this.shapeBuilder.negX;
@@ -623,10 +622,10 @@ public class ShapeBuilderBlockEntity extends BlockEntity {
             this.setSlot(15, GuiElementBuilder.from(Items.BREEZE_ROD.getDefaultStack())
                     .setName(Text.literal(String.valueOf(this.shapeBuilder.posZ)).append(Text.literal(" (Z+)").formatted(Formatting.GRAY)))
                     .setLore(List.of(Text.translatable("item.moremechanics.shape_builder.side_description.1").formatted(Formatting.GRAY),Text.translatable("item.moremechanics.shape_builder.side_description.2").formatted(Formatting.GRAY),Text.translatable("item.moremechanics.shape_builder.pos_z_description").formatted(Formatting.GRAY)))
-                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Sizes.Z_POSITIVE));
+                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Z_POSITIVE));
             this.setSlot(16, GuiElementBuilder.from(Items.BREEZE_ROD.getDefaultStack())
                     .setName(Text.translatable("item.moremechanics.shape_builder.increase"))
-                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.Sizes.INCREASE)
+                    .setComponent(DataComponentTypes.ITEM_MODEL, GuiUtils.Models.INCREASE)
                     .setCallback((slot, clickType, actionType, slotGuiInterface) -> {
                         this.shapeBuilder.setSize(new ShapeSize() {{
                             super.negX = SizeSelectionGui.this.shapeBuilder.negX;

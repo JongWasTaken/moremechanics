@@ -1,0 +1,12 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "item/handheld",
+	"textures": {
+		"layer0": "moremechanics:item/gui/arrow_right"
+	},
+	"display": {
+		"gui": {
+			"scale": [1.12, 1.12, 1]
+		}
+	}
+}

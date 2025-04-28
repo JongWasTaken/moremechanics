@@ -2,31 +2,43 @@ package dev.smto.moremechanics.block;
 
 import dev.smto.moremechanics.MoreMechanics;
 import dev.smto.moremechanics.api.MoreMechanicsContent;
-import dev.smto.moremechanics.block.entity.ChunkLoaderBlockEntity;
+import dev.smto.moremechanics.util.ModWorldDataSaver;
 import eu.pb4.polymer.blocks.api.BlockModelType;
 import eu.pb4.polymer.blocks.api.PolymerBlockModel;
 import eu.pb4.polymer.blocks.api.PolymerBlockResourceUtils;
 import eu.pb4.polymer.blocks.api.PolymerTexturedBlock;
 import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.GlobalPos;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
 
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 
-public class ChunkLoaderBlock extends Block implements PolymerTexturedBlock, BlockEntityProvider, MoreMechanicsContent {
+public class ChunkLoaderBlock extends Block implements PolymerTexturedBlock, MoreMechanicsContent {
     private final Identifier id;
     private final BlockState polymerBlockState;
 
@@ -57,22 +69,57 @@ public class ChunkLoaderBlock extends Block implements PolymerTexturedBlock, Blo
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockPos blockPos, BlockState blockState) {
-        return new ChunkLoaderBlockEntity(blockPos, blockState);
+    public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
+        if (world instanceof ServerWorld w) {
+            var stateLoader = ModWorldDataSaver.get(w.getServer());
+            var globalPos = new GlobalPos(world.getRegistryKey(), pos);
+            if (!stateLoader.existingChunkLoaders.contains(globalPos)) {
+                stateLoader.existingChunkLoaders.add(globalPos);
+                stateLoader.markDirty();
+            }
+            ChunkLoaderBlock.markChunks(w, pos);
+        }
+        super.onPlaced(world, pos, state, placer, itemStack);
+        world.scheduleBlockTick(pos, state.getBlock(), 0);
     }
+
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        Objects.requireNonNull(world.getServer()).getPlayerManager().sendToAround(
+                null,
+                pos.getX(), pos.getY(), pos.getZ(),
+                32,
+                world.getRegistryKey(),
+                new ParticleS2CPacket(
+                        ParticleTypes.PORTAL,
+                        false,
+                        pos.getX() + 0.5, pos.getY() + 0.75, pos.getZ() + 0.5,
+                        random.nextFloat() * 0.5F, 0, random.nextFloat() * 0.5F,
+                        0.01f, 3
+                )
+        );
+        if (world instanceof ServerWorld w) {
+            ChunkLoaderBlock.markChunks(w, pos);
+        }
+        world.scheduleBlockTick(pos, state.getBlock(), 20);
+    }
+
+    @Override
+    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (!state.isOf(newState.getBlock()) && world instanceof ServerWorld w) {
+            var stateLoader = ModWorldDataSaver.get(w.getServer());
+            var globalPos = new GlobalPos(w.getRegistryKey(), pos);
+            if (stateLoader.existingChunkLoaders.contains(globalPos)) {
+                stateLoader.existingChunkLoaders.remove(globalPos);
+                stateLoader.markDirty();
+            }
+            ChunkLoaderBlock.unmarkChunks(w, pos);
+        }
+    }
+
 
     @Override
     public final ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
         return new ItemStack(this);
-    }
-
-    @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> blockEntityType) {
-        return (wo, pos, s, te) -> {
-            if (te instanceof ChunkLoaderBlockEntity) {
-                ChunkLoaderBlockEntity.tick(world, (ChunkLoaderBlockEntity) te);
-            }
-        };
     }
 
     @Override
@@ -92,7 +139,30 @@ public class ChunkLoaderBlock extends Block implements PolymerTexturedBlock, Blo
 
     @Override
     public void addTooltip(ItemStack stack, List<Text> tooltip) {
-        tooltip.add(Text.translatable("block.moremechanics.chunk_loader.description").formatted(MoreMechanics.getTooltipFormatting()));
+        tooltip.add(MutableText.of(new TranslatableTextContent("block.moremechanics.chunk_loader.description", null, List.of((double) MoreMechanics.Config.peaceBeaconRadius / 2).toArray(new Double[0]))).formatted(MoreMechanics.getTooltipFormatting()));
         tooltip.add(Text.translatable("block.moremechanics.chunk_loader.description.2").formatted(MoreMechanics.getTooltipFormatting()));
+    }
+
+    public static void markChunks(ServerWorld world, BlockPos pos) {
+        for (ChunkPos affectedChunk : ChunkLoaderBlock.getAffectedChunks(pos)) {
+            world.setChunkForced(affectedChunk.x, affectedChunk.z, true);
+        }
+    }
+
+    public static void unmarkChunks(ServerWorld world, BlockPos pos) {
+        for (ChunkPos affectedChunk : ChunkLoaderBlock.getAffectedChunks(pos)) {
+            world.setChunkForced(affectedChunk.x, affectedChunk.z, false);
+        }
+    }
+
+    private static LinkedHashSet<ChunkPos> getAffectedChunks(BlockPos pos) {
+        LinkedHashSet<ChunkPos> chunks = new LinkedHashSet<>();
+        ChunkPos centerChunk = new ChunkPos(pos);
+        for (int x = centerChunk.x - 3; x < centerChunk.x + 3; x++) {
+            for (int z = centerChunk.z - 3; z < centerChunk.z + 3; z++) {
+                chunks.add(new ChunkPos(x, z));
+            }
+        }
+        return chunks;
     }
 }

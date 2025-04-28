@@ -31,7 +31,7 @@ public class GenericBlockItem extends BlockItem implements eu.pb4.polymer.core.a
     public GenericBlockItem(Identifier id, Identifier model, Block target, Rarity rarity) {
         super(target, new Settings().rarity(rarity).useBlockPrefixedTranslationKey().registryKey(RegistryKey.of(RegistryKeys.ITEM, id)));
         this.id = id;
-        this.model = id;
+        this.model = model;
         this.target = target;
     }
 

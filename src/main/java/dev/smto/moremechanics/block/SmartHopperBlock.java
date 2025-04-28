@@ -3,6 +3,7 @@ package dev.smto.moremechanics.block;
 import dev.smto.moremechanics.MoreMechanics;
 import dev.smto.moremechanics.api.MoreMechanicsContent;
 import dev.smto.moremechanics.block.entity.SmartHopperBlockEntity;
+import dev.smto.moremechanics.block.entity.TankBlockEntity;
 import eu.pb4.polymer.blocks.api.BlockModelType;
 import eu.pb4.polymer.blocks.api.PolymerBlockModel;
 import eu.pb4.polymer.blocks.api.PolymerBlockResourceUtils;
@@ -11,6 +12,7 @@ import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -56,6 +58,18 @@ public class SmartHopperBlock extends HopperBlock implements PolymerTexturedBloc
         this.id = id;
         this.makeModels(id.getPath());
         this.setDefaultState(this.stateManager.getDefaultState().with(HopperBlock.FACING, Direction.DOWN).with(HopperBlock.ENABLED, Boolean.TRUE));
+    }
+
+    @Override
+    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (!state.isOf(newState.getBlock())) {
+            ItemScatterer.onStateReplaced(state, newState, world, pos);
+            if (world.getBlockEntity(pos) instanceof SmartHopperBlockEntity t) {
+                world.spawnEntity(new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, t.getFilter()));
+            }
+            world.removeBlockEntity(pos);
+        }
+        super.onStateReplaced(state, world, pos, newState, moved);
     }
 
     @Override
