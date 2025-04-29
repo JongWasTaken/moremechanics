@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "AbstractCauldronBlockMixin",
+    "ChestBlockMixin",
     "EntityMixin",
     "LivingEntityMixin",
     "MobEntityMixin",

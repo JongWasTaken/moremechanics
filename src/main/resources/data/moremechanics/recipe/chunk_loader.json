@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "D#D",
+    "GOG",
+    "GOG"
+  ],
+  "key": {
+    "#": "minecraft:ender_eye",
+    "O": "#minecraft:logs",
+    "G": "minecraft:sculk",
+    "D": "minecraft:diamond"
+  },
+  "result": {
+    "id": "moremechanics:chunk_loader",
+    "count": 1
+  }
+}

@@ -15,7 +15,7 @@ import dev.smto.moremechanics.MoreMechanics;
 public class MobEntityMixin {
 
     @Inject(at = @At("HEAD"), method = "interactWithItem", cancellable = true)
-    public void interactMob(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
+    public void MoreMechanics$interactMob(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
         ItemStack itemStackEx = player.getStackInHand(hand);
         if (itemStackEx.isOf(MoreMechanics.Items.MOB_PRISON)) {
             cir.setReturnValue(itemStackEx.useOnEntity(player, (MobEntity)(Object)this, hand));

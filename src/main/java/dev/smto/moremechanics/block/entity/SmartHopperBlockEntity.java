@@ -108,7 +108,12 @@ public class SmartHopperBlockEntity extends LootableContainerBlockEntity impleme
 
     @Override
     public ItemStack removeStack(int slot, int amount) {
+        return this.removeStack(slot, amount, false);
+    }
+
+    public ItemStack removeStack(int slot, int amount, boolean bypass) {
         this.generateLoot(null);
+        if (!bypass && this.getFilterType().check(this.getStack(slot), this.getFilter())) return ItemStack.EMPTY;
         return Inventories.splitStack(this.getHeldStacks(), slot, amount);
     }
 
@@ -192,7 +197,7 @@ public class SmartHopperBlockEntity extends LootableContainerBlockEntity impleme
                             if (!blockEntity.getFilterType().check(itemStack, blockEntity.getFilter())) continue;
                         }
                         int j = itemStack.getCount();
-                        ItemStack itemStack2 = SmartHopperBlockEntity.transfer(blockEntity, inventory, blockEntity.removeStack(i, 1), direction);
+                        ItemStack itemStack2 = SmartHopperBlockEntity.transfer(blockEntity, inventory, blockEntity.removeStack(i, 1, true), direction);
                         if (itemStack2.isEmpty()) {
                             inventory.markDirty();
                             return true;
@@ -688,19 +693,19 @@ public class SmartHopperBlockEntity extends LootableContainerBlockEntity impleme
         ITEM(ItemStack::areItemsEqual),
         STACK(ItemStack::areItemsAndComponentsEqual);
 
-        private final FilterTypeCheck check;
+        private final FilterTypeCheck checkFunction;
 
-        FilterType(FilterTypeCheck check) {
-            this.check = check;
+        FilterType(FilterTypeCheck checkFunction) {
+            this.checkFunction = checkFunction;
         }
 
         public boolean check(ItemStack stack, ItemStack filter) {
-            return this.check.check(stack, filter);
+            return this.checkFunction.run(stack, filter);
         }
     }
 
     @FunctionalInterface
     public interface FilterTypeCheck {
-        boolean check(ItemStack stack, ItemStack filter);
+        boolean run(ItemStack stack, ItemStack filter);
     }
 }

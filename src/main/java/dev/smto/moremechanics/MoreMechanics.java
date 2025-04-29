@@ -217,7 +217,7 @@ public class MoreMechanics implements ModInitializer {
 		public static Item SURVIVAL_DEBUG_STICK = new SurvivalDebugStickItem(MoreMechanics.id("survival_debug_stick"));
 		public static Item MOB_PRISON = new MobPrisonItem(MoreMechanics.id("mob_prison"));
 		public static Item SOLIDIFIED_EXPERIENCE = new SolidifiedExperienceItem(MoreMechanics.id("solidified_experience"));
-		public static Item NATURES_COMPASS = new NaturesCompassItem(MoreMechanics.id("natures_compass"));
+		public static Item BIOME_COMPASS = new BiomeCompassItem(MoreMechanics.id("biome_compass"));
 		public static BlockItem MECHANICAL_PLACER = new GenericBlockItem(MoreMechanics.id("mechanical_placer"), Blocks.MECHANICAL_PLACER, Rarity.COMMON);
 		public static BlockItem MECHANICAL_BREAKER = new GenericBlockItem(MoreMechanics.id("mechanical_breaker"), Blocks.MECHANICAL_BREAKER, Rarity.COMMON);
 		public static BlockItem CAMOUFLAGE_BLOCK = new GenericBlockItem(MoreMechanics.id("camouflage_block"), Blocks.CAMOUFLAGE_BLOCK, Rarity.COMMON);
@@ -262,6 +262,10 @@ public class MoreMechanics implements ModInitializer {
 		@ConfigAnnotations.Holds(type = Integer.class)
 		@ConfigAnnotations.Comment(comment = "Chunk radius of the peace beacon.")
 		public static Integer peaceBeaconRadius = 8;
+
+		@ConfigAnnotations.Holds(type = Integer.class)
+		@ConfigAnnotations.Comment(comment = "Chunk radius of the chunk loader.")
+		public static Integer chunkLoaderRadius = 3;
 
 		@ConfigAnnotations.Holds(type = String.class)
 		@ConfigAnnotations.Comment(comment = "List of block ids that can be modified with the survival debug stick.\nThis has precedence over the blocktag whitelist!")

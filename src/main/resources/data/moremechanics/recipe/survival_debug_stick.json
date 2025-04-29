@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "  O",
+    " B ",
+    "S  "
+  ],
+  "key": {
+    "S": "minecraft:stick",
+    "B": "minecraft:blaze_rod",
+    "O": "minecraft:obsidian"
+  },
+  "result": {
+    "id": "moremechanics:survival_debug_stick",
+    "count": 1
+  }
+}

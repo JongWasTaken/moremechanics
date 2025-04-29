@@ -1,0 +1,16 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "AAA",
+        "ACA",
+        "AAA"
+    ],
+    "key": {
+        "C": "minecraft:compass",
+        "A": "minecraft:amethyst_shard"
+    },
+    "result": {
+        "id": "moremechanics:biome_compass",
+        "count": 1
+    }
+}

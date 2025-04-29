@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SPS",
+    "SDS",
+    "SSS"
+  ],
+  "key": {
+    "D": "minecraft:dispenser",
+    "S": "minecraft:cobbled_deepslate",
+    "P": "minecraft:piston"
+  },
+  "result": {
+    "id": "moremechanics:mechanical_placer",
+    "count": 1
+  }
+}

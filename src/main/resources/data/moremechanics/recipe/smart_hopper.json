@@ -1,0 +1,17 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        " P ",
+        " H ",
+        " B "
+    ],
+    "key": {
+        "H": "minecraft:hopper",
+        "P": "minecraft:paper",
+        "B": "minecraft:redstone_block"
+    },
+    "result": {
+        "id": "moremechanics:smart_hopper",
+        "count": 1
+    }
+}

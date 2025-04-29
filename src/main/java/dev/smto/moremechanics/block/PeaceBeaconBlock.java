@@ -130,8 +130,8 @@ public class PeaceBeaconBlock extends Block implements PolymerTexturedBlock, Mor
         }
     }
 
-    private static LinkedHashSet<ChunkPos> getAffectedChunks(BlockPos pos) {
-        LinkedHashSet<ChunkPos> chunks = new LinkedHashSet<>();
+    private static List<ChunkPos> getAffectedChunks(BlockPos pos) {
+        List<ChunkPos> chunks = new ArrayList<>();
         ChunkPos centerChunk = new ChunkPos(pos);
         for (int x = centerChunk.x - MoreMechanics.Config.peaceBeaconRadius; x < centerChunk.x + MoreMechanics.Config.peaceBeaconRadius; x++) {
             for (int z = centerChunk.z - MoreMechanics.Config.peaceBeaconRadius; z < centerChunk.z + MoreMechanics.Config.peaceBeaconRadius; z++) {
@@ -141,20 +141,19 @@ public class PeaceBeaconBlock extends Block implements PolymerTexturedBlock, Mor
         return chunks;
     }
 
-    private static final Map<RegistryKey<World>, LinkedHashSet<ChunkPos>> SUPPRESSED_CHUNK_MAP = new LinkedHashMap<>();
+    private static final Map<RegistryKey<World>, List<ChunkPos>> PEACEFUL_CHUNKS = new LinkedHashMap<>();
 
     public static void markChunks(RegistryKey<World> registryKey, BlockPos pos) {
-        LinkedHashSet<ChunkPos> set = PeaceBeaconBlock.SUPPRESSED_CHUNK_MAP.getOrDefault(registryKey, new LinkedHashSet<>());
-        set.addAll(PeaceBeaconBlock.getAffectedChunks(pos));
-        PeaceBeaconBlock.SUPPRESSED_CHUNK_MAP.put(registryKey, set);
+        List<ChunkPos> chunks = PeaceBeaconBlock.PEACEFUL_CHUNKS.getOrDefault(registryKey, new ArrayList<>());
+        chunks.addAll(PeaceBeaconBlock.getAffectedChunks(pos));
+        PeaceBeaconBlock.PEACEFUL_CHUNKS.put(registryKey, chunks);
     }
 
     public static void unmarkChunks(RegistryKey<World> registryKey, BlockPos pos) {
-        if (PeaceBeaconBlock.SUPPRESSED_CHUNK_MAP.containsKey(registryKey)) PeaceBeaconBlock.SUPPRESSED_CHUNK_MAP.get(registryKey).removeAll(PeaceBeaconBlock.getAffectedChunks(pos));
+        if (PeaceBeaconBlock.PEACEFUL_CHUNKS.containsKey(registryKey)) PeaceBeaconBlock.PEACEFUL_CHUNKS.get(registryKey).removeAll(PeaceBeaconBlock.getAffectedChunks(pos));
     }
 
     public static boolean isChunkPeaceful(RegistryKey<World> registryKey, ChunkPos chunkPos) {
-        LinkedHashSet<ChunkPos> set = PeaceBeaconBlock.SUPPRESSED_CHUNK_MAP.getOrDefault(registryKey, new LinkedHashSet<>());
-        return set.contains(chunkPos);
+        return PeaceBeaconBlock.PEACEFUL_CHUNKS.getOrDefault(registryKey, new ArrayList<>()).contains(chunkPos);
     }
 }

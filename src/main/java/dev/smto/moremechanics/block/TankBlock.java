@@ -15,6 +15,7 @@ import net.minecraft.item.BucketItem;
 import net.minecraft.item.GlassBottleItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.PotionItem;
+import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -87,12 +88,15 @@ public class TankBlock extends Block implements PolymerTexturedBlock, BlockEntit
     @Override
     protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (world.isClient) return ActionResult.FAIL;
-        if (world.getBlockEntity(pos) instanceof TankBlockEntity t) {
+        if (world.getBlockEntity(pos) instanceof TankBlockEntity t && player instanceof ServerPlayerEntity sp) {
+            sp.networkHandler.sendPacket(
+                    new BlockUpdateS2CPacket(pos.offset(hit.getSide()), world.getBlockState(pos.offset(hit.getSide())))
+            );
             if (stack.getItem() instanceof BucketItem) {
-                return t.interactBucket((ServerPlayerEntity) player, stack);
+                return t.interactBucket(sp, stack);
             }
             if (stack.getItem() instanceof PotionItem || stack.getItem() instanceof GlassBottleItem) {
-                return t.interactBottle((ServerPlayerEntity) player, stack);
+                return t.interactBottle(sp, stack);
             }
         }
         return super.onUseWithItem(stack, state, world, pos, player, hand, hit);

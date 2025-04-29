@@ -1,0 +1,16 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "EHE",
+        "HHH",
+        "EHE"
+    ],
+    "key": {
+        "H": "minecraft:hopper",
+        "E": "minecraft:ender_eye"
+    },
+    "result": {
+        "id": "moremechanics:vacuum_hopper",
+        "count": 1
+    }
+}

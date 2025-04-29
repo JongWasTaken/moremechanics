@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(SpawnRestriction.class)
 public class SpawnRestrictionMixin {
     @Inject(at = @At("HEAD"), method = "canSpawn", cancellable = true)
-    private static <T extends Entity> void canSpawn(EntityType<T> type, ServerWorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random, CallbackInfoReturnable<Boolean> cir) {
+    private static <T extends Entity> void MoreMechanics$canSpawn(EntityType<T> type, ServerWorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random, CallbackInfoReturnable<Boolean> cir) {
         if (spawnReason.equals(SpawnReason.NATURAL) && PeaceBeaconBlock.isChunkPeaceful(world.toServerWorld().getRegistryKey(), new ChunkPos(pos))) {
             cir.setReturnValue(false);
             cir.cancel();

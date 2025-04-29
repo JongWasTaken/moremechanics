@@ -1,10 +1,9 @@
 package dev.smto.moremechanics.util.shape.generator;
 
 import dev.smto.moremechanics.util.shape.ShapeUtils;
-import dev.smto.moremechanics.util.shape.Shapeable;
 import net.minecraft.util.math.Direction;
 
-public class ShapeCuboidGenerator extends DefaultShapeGenerator {
+public class ShapeCuboidGenerator extends ShapeGenerator {
     public enum Elements {
         CORNERS(true, false, false),
         EDGES(true, true, false),
@@ -44,7 +43,7 @@ public class ShapeCuboidGenerator extends DefaultShapeGenerator {
     }
 
     @Override
-    public void generateShape(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, Shapeable shapeable) {
+    public void generateShape(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, ShapeUtils.Shapeable shapeable) {
         int dx = maxX - minX - 2;
         int dy = maxY - minY - 2;
         int dz = maxZ - minZ - 2;

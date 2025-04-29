@@ -1,0 +1,16 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        " P ",
+        "PAP",
+        " P "
+    ],
+    "key": {
+        "A": "minecraft:amethyst_shard",
+        "P": "minecraft:paper"
+    },
+    "result": {
+        "id": "moremechanics:camouflage_block",
+        "count": 1
+    }
+}

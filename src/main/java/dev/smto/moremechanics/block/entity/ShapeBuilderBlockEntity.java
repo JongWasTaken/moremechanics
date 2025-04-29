@@ -10,13 +10,17 @@ import com.google.common.primitives.Ints;
 import java.util.*;
 
 import dev.smto.moremechanics.MoreMechanics;
+import dev.smto.moremechanics.block.ShapeBuilderBlock;
 import dev.smto.moremechanics.util.GuiUtils;
+import dev.smto.moremechanics.util.shape.ShapeUtils;
+import dev.smto.moremechanics.util.shape.generator.ShapeGenerator;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -38,14 +42,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import dev.smto.moremechanics.util.ParticleUtils;
-import dev.smto.moremechanics.util.shape.ShapeGenerator;
 import dev.smto.moremechanics.util.shape.ShapeType;
-import dev.smto.moremechanics.util.shape.Shapeable;
+import org.jetbrains.annotations.Nullable;
 
 import static dev.smto.moremechanics.util.shape.ShapeUtils.lengthSq;
 
 // A lot of this + dev.smto.moremechanics.util.shape.* has been kidnapped from OpenBlocks, which has not been updated since 2019 (MIT license)!
-public class ShapeBuilderBlockEntity extends BlockEntity {
+public class ShapeBuilderBlockEntity extends BlockEntity implements SidedInventory {
 
     public ShapeBuilderBlockEntity(BlockPos pos, BlockState state) {
         super(MoreMechanics.BlockEntities.SHAPE_BUILDER, pos, state);
@@ -87,7 +90,7 @@ public class ShapeBuilderBlockEntity extends BlockEntity {
         }
     };
 
-    private List<BlockPos> targetPositions;
+    private ArrayList<BlockPos> targetPositions;
 
     private int negX = 5;
     private int negY = 5;
@@ -160,12 +163,12 @@ public class ShapeBuilderBlockEntity extends BlockEntity {
         Preconditions.checkArgument(size.posZ > 0, "PosZ must be > 0");
         this.posZ = size.posZ;
 
-        if (this.selectedShapeType != null) this.recreateShape();
+        if (this.selectedShapeType != null) this.recreateShape(null);
         this.markDirty();
     }
 
     public int getCount() {
-        if (this.targetPositions == null) this.recreateShape();
+        if (this.targetPositions == null) this.recreateShape(null);
         return this.targetPositions.size();
     }
 
@@ -175,7 +178,7 @@ public class ShapeBuilderBlockEntity extends BlockEntity {
 
     public void setShapeType(ShapeType shape) {
         this.selectedShapeType = shape;
-        this.recreateShape();
+        this.recreateShape(null);
         this.markDirty();
     }
 
@@ -191,9 +194,12 @@ public class ShapeBuilderBlockEntity extends BlockEntity {
         if (stack.getItem() instanceof BlockItem b) {
             if (this.targetPositions == null) return ActionResult.CONSUME;
             for (BlockPos blockPos : this.targetPositions) {
-                if (this.world.isAir(blockPos) && player.canModifyAt((ServerWorld) this.world, blockPos)) {
+                if (this.world.isAir(blockPos)) {
+                    if (player != null) {
+                         if(!player.canModifyAt((ServerWorld) this.world, blockPos)) return ActionResult.CONSUME;
+                    }
                     if (this.world.setBlockState(blockPos, b.getBlock().getDefaultState())) {
-                        if (!player.isCreative()) stack.decrement(1);
+                        if (player != null && !player.isCreative()) stack.decrement(1);
                         var g = b.getBlock().getDefaultState().getSoundGroup();
                         Objects.requireNonNull(this.world.getServer()).getPlayerManager()
                                 .sendToAround(
@@ -208,6 +214,8 @@ public class ShapeBuilderBlockEntity extends BlockEntity {
                                                 g.volume, g.pitch, this.world.random.nextInt()
                                         )
                                 );
+                        this.listNeedsCleanup = true;
+                        this.cleanList();
                         return ActionResult.SUCCESS_SERVER;
                     }
                 }
@@ -225,26 +233,28 @@ public class ShapeBuilderBlockEntity extends BlockEntity {
         player.sendMessage(Text.translatable("block.moremechanics.shape_builder.total_blocks").append(Text.literal(this.targetPositions.size() + "")), true);
     }
 
-    public static void tick(World world, ShapeBuilderBlockEntity te) {
-        if (te.selectedShapeType == null) return;
+    public static void tick(World world, ShapeBuilderBlockEntity blockEntity) {
+        if (blockEntity.selectedShapeType == null) return;
         if (world.isClient) return;
-        if (te.targetPositions != null) {
+        if (blockEntity.targetPositions != null) {
+            blockEntity.cleanList();
+
             BlockPos negBound = new BlockPos(
-                    te.getPos().getX() + (te.negX - (2*te.negX)),
-                    te.getPos().getY() + (te.negY - (2*te.negY)),
-                    te.getPos().getZ() + (te.negZ - (2*te.negZ))
+                    blockEntity.getPos().getX() + (blockEntity.negX - (2*blockEntity.negX)),
+                    blockEntity.getPos().getY() + (blockEntity.negY - (2*blockEntity.negY)),
+                    blockEntity.getPos().getZ() + (blockEntity.negZ - (2*blockEntity.negZ))
             );
             BlockPos posBound = new BlockPos(
-                    te.getPos().getX() + te.posX,
-                    te.getPos().getY() + te.posY,
-                    te.getPos().getZ() + te.posZ
+                    blockEntity.getPos().getX() + blockEntity.posX,
+                    blockEntity.getPos().getY() + blockEntity.posY,
+                    blockEntity.getPos().getZ() + blockEntity.posZ
             );
 
             /*
             ParticleUtils.showParticleAround(new DustParticleEffect(ParticleUtils.BLUE, 1.0F), (ServerWorld) world, negBound, 20);
             ParticleUtils.showParticleAround(new DustParticleEffect(ParticleUtils.BLUE, 1.0F), (ServerWorld) world, posBound, 20);
             */
-            for (BlockPos blockPos : te.targetPositions) {
+            for (BlockPos blockPos : blockEntity.targetPositions) {
                 if (blockPos != negBound && blockPos != posBound) {
                     ParticleUtils.showParticleAround(new DustParticleEffect(ParticleUtils.WHITE, 1.0F),(ServerWorld) world, blockPos, 20);
                 }
@@ -253,10 +263,12 @@ public class ShapeBuilderBlockEntity extends BlockEntity {
         }
     }
 
-    private void recreateShape() {
+    private boolean listNeedsCleanup = true;
+
+    private void recreateShape(@Nullable World world) {
         ShapeGenerator generator = this.getShapeType().generator;
         Set<BlockPos> uniqueResults = Sets.newHashSet();
-        Shapeable collector = (x, y, z) -> {
+        ShapeUtils.Shapeable collector = (x, y, z) -> {
             if (this.canAddTarget(x, y, z)) uniqueResults.add(new BlockPos(x, y, z));
         };
         generator.generateShape(-this.negX, -this.negY, -this.negZ, this.posX, this.posY, this.posZ, collector);
@@ -281,7 +293,17 @@ public class ShapeBuilderBlockEntity extends BlockEntity {
             rotatedResult.add(new BlockPos(tx, ty, tz));
             */
         }
-        this.targetPositions = ImmutableList.copyOf(finalResult);
+        this.targetPositions = new ArrayList<>(finalResult);
+        this.listNeedsCleanup = true;
+        this.cleanList();
+    }
+
+    private void cleanList() {
+        if (!this.listNeedsCleanup || this.world == null) return;
+        this.targetPositions.removeIf(blockPos -> !this.world.isAir(blockPos));
+        this.targetPositions.removeIf(blockPos -> !this.world.isInBuildLimit(blockPos));
+        this.targetPositions.removeIf(blockPos -> this.world.getBottomY() > blockPos.getY());
+        this.listNeedsCleanup = false;
     }
 
     protected boolean canAddTarget(int x, int y, int z) {
@@ -294,7 +316,7 @@ public class ShapeBuilderBlockEntity extends BlockEntity {
     }
 
     private void afterDimensionsChange(PlayerEntity player) {
-        if (this.selectedShapeType != null) this.recreateShape();
+        if (this.selectedShapeType != null) this.recreateShape(player.getWorld());
         this.markDirty();
         this.notifyPlayer(player);
     }
@@ -340,7 +362,7 @@ public class ShapeBuilderBlockEntity extends BlockEntity {
                     .setCallback((slot, clickType, actionType, slotGuiInterface) -> {
                         this.shapeBuilder.setShapeType(shapeType);
                         this.shapeBuilder.displayModeChange(this.player);
-                        this.shapeBuilder.recreateShape();
+                        this.shapeBuilder.recreateShape(this.player.getWorld());
                         this.shapeBuilder.markDirty();
                         this.onOpen();
                         this.player.networkHandler.sendPacket(new PlaySoundS2CPacket(
@@ -646,5 +668,61 @@ public class ShapeBuilderBlockEntity extends BlockEntity {
 
             GuiUtils.fillEmptySlots(this);
         }
+    }
+
+    @Override
+    public int[] getAvailableSlots(Direction side) {
+        return new int[1];
+    }
+
+    @Override
+    public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
+        if (this.targetPositions == null) return false;
+        return (stack.getItem() instanceof BlockItem) && (!this.targetPositions.isEmpty());
+    }
+
+    @Override
+    public boolean canExtract(int slot, ItemStack stack, Direction dir) {
+        return false;
+    }
+
+    @Override
+    public int size() {
+        return 1;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return true;
+    }
+
+    @Override
+    public ItemStack getStack(int slot) {
+        return ItemStack.EMPTY;
+    }
+
+    @Override
+    public ItemStack removeStack(int slot, int amount) {
+        return ItemStack.EMPTY;
+    }
+
+    @Override
+    public ItemStack removeStack(int slot) {
+        return ItemStack.EMPTY;
+    }
+
+    @Override
+    public void setStack(int slot, ItemStack stack) {
+        this.onUseWithItem(null, stack, new BlockHitResult(this.pos.toCenterPos(), Direction.NORTH, this.pos, false));
+    }
+
+    @Override
+    public boolean canPlayerUse(PlayerEntity player) {
+        return false;
+    }
+
+    @Override
+    public void clear() {
+
     }
 }

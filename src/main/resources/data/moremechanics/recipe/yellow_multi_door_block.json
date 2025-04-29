@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "WRW",
+    "WDW",
+    "WWW"
+  ],
+  "key": {
+    "W": "#minecraft:planks",
+    "D": "minecraft:yellow_dye",
+    "R": "minecraft:redstone"
+  },
+  "result": {
+    "id": "moremechanics:yellow_multi_door_block",
+    "count": 4
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "moremechanics:red_multi_door_block",
+    "moremechanics:green_multi_door_block",
+    "moremechanics:blue_multi_door_block",
+    "moremechanics:yellow_multi_door_block"
+  ]
+}

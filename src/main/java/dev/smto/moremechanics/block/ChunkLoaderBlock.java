@@ -9,7 +9,6 @@ import eu.pb4.polymer.blocks.api.PolymerBlockResourceUtils;
 import eu.pb4.polymer.blocks.api.PolymerTexturedBlock;
 import net.minecraft.block.*;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
 import net.minecraft.particle.ParticleTypes;
@@ -23,13 +22,11 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
@@ -139,7 +136,7 @@ public class ChunkLoaderBlock extends Block implements PolymerTexturedBlock, Mor
 
     @Override
     public void addTooltip(ItemStack stack, List<Text> tooltip) {
-        tooltip.add(MutableText.of(new TranslatableTextContent("block.moremechanics.chunk_loader.description", null, List.of((double) MoreMechanics.Config.peaceBeaconRadius / 2).toArray(new Double[0]))).formatted(MoreMechanics.getTooltipFormatting()));
+        tooltip.add(MutableText.of(new TranslatableTextContent("block.moremechanics.chunk_loader.description", null, List.of((double) MoreMechanics.Config.chunkLoaderRadius / 2).toArray(new Double[0]))).formatted(MoreMechanics.getTooltipFormatting()));
         tooltip.add(Text.translatable("block.moremechanics.chunk_loader.description.2").formatted(MoreMechanics.getTooltipFormatting()));
     }
 

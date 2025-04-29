@@ -2,6 +2,7 @@ package dev.smto.moremechanics.block;
 
 import dev.smto.moremechanics.MoreMechanics;
 import dev.smto.moremechanics.api.MoreMechanicsContent;
+import dev.smto.moremechanics.api.TransparentToChests;
 import dev.smto.moremechanics.block.entity.SmartHopperBlockEntity;
 import dev.smto.moremechanics.block.entity.TankBlockEntity;
 import eu.pb4.polymer.blocks.api.BlockModelType;
@@ -34,7 +35,7 @@ import xyz.nucleoid.packettweaker.PacketContext;
 import java.util.HashMap;
 import java.util.List;
 
-public class SmartHopperBlock extends HopperBlock implements PolymerTexturedBlock, MoreMechanicsContent {
+public class SmartHopperBlock extends HopperBlock implements PolymerTexturedBlock, MoreMechanicsContent, TransparentToChests {
     private final Identifier id;
 
     private final HashMap<Direction, BlockState> models = new HashMap<>();

@@ -1,10 +1,10 @@
 package dev.smto.moremechanics.util.shape.generator;
 
-import dev.smto.moremechanics.util.shape.Shapeable;
+import dev.smto.moremechanics.util.shape.ShapeUtils;
 
-public class ShapeAxesGenerator extends DefaultShapeGenerator{
+public class ShapeAxesGenerator extends ShapeGenerator {
     @Override
-    public void generateShape(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, Shapeable shapeable) {
+    public void generateShape(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, ShapeUtils.Shapeable shapeable) {
         for (int x = minX; x <= maxX; x++)
             shapeable.setBlock(x, 0, 0);
 

@@ -463,4 +463,9 @@ public class ShapeUtils {
         double result = target - current;
         return Math.abs(result) > 180? 180 - result : result;
     }
+
+    @FunctionalInterface
+    public static interface Shapeable {
+        void setBlock(int x, int y, int z);
+    }
 }

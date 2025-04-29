@@ -2,6 +2,7 @@ package dev.smto.moremechanics.block;
 
 import dev.smto.moremechanics.MoreMechanics;
 import dev.smto.moremechanics.api.MoreMechanicsContent;
+import dev.smto.moremechanics.api.TransparentToChests;
 import dev.smto.moremechanics.block.entity.ManagedDisplayBlockEntity;
 import dev.smto.moremechanics.block.entity.VacuumHopperBlockEntity;
 import dev.smto.moremechanics.util.ParticleUtils;
@@ -32,7 +33,7 @@ import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.List;
 
-public class VacuumHopperBlock extends Block implements PolymerTexturedBlock, BlockEntityProvider, MoreMechanicsContent {
+public class VacuumHopperBlock extends Block implements PolymerTexturedBlock, BlockEntityProvider, MoreMechanicsContent, TransparentToChests {
     private final Identifier id;
 
     public VacuumHopperBlock(Identifier id) {

@@ -2,13 +2,12 @@ package dev.smto.moremechanics.util.shape.generator;
 
 import com.google.common.collect.Lists;
 import dev.smto.moremechanics.util.shape.ShapeUtils;
-import dev.smto.moremechanics.util.shape.Shapeable;
 
 import java.lang.reflect.Array;
 import java.util.List;
 import java.util.function.Function;
 
-public class ShapeEquilateral2dGenerator extends DefaultShapeGenerator {
+public class ShapeEquilateral2dGenerator extends ShapeGenerator {
 
     private static class Trig {
         final double sin;
@@ -39,7 +38,7 @@ public class ShapeEquilateral2dGenerator extends DefaultShapeGenerator {
     private enum Symmetry {
         TwoFold(Math.PI) {
             @Override
-            public Shapeable createMirroredShapeable(Shapeable shapeable) {
+            public ShapeUtils.Shapeable createMirroredShapeable(ShapeUtils.Shapeable shapeable) {
                 return (x, y, z) -> {
                     if (z >= 0) {
                         shapeable.setBlock(x, y, +z);
@@ -55,7 +54,7 @@ public class ShapeEquilateral2dGenerator extends DefaultShapeGenerator {
         },
         FourFold(Math.PI / 2) {
             @Override
-            public Shapeable createMirroredShapeable(Shapeable shapeable) {
+            public ShapeUtils.Shapeable createMirroredShapeable(ShapeUtils.Shapeable shapeable) {
                 return (x, y, z) -> {
                     if (x >= 0 && z >= 0) {
                         shapeable.setBlock(+x, y, -z);
@@ -73,7 +72,7 @@ public class ShapeEquilateral2dGenerator extends DefaultShapeGenerator {
         },
         EightFold(Math.PI / 4) {
             @Override
-            public Shapeable createMirroredShapeable(Shapeable shapeable) {
+            public ShapeUtils.Shapeable createMirroredShapeable(ShapeUtils.Shapeable shapeable) {
                 return (x, y, z) -> {
                     if (x >= z) {
                         shapeable.setBlock(+x, y, -z);
@@ -95,7 +94,7 @@ public class ShapeEquilateral2dGenerator extends DefaultShapeGenerator {
             }
         };
 
-        public abstract Shapeable createMirroredShapeable(Shapeable shapeable);
+        public abstract ShapeUtils.Shapeable createMirroredShapeable(ShapeUtils.Shapeable shapeable);
 
         public abstract Point mirrorLastPoint(Point point);
 
@@ -131,8 +130,8 @@ public class ShapeEquilateral2dGenerator extends DefaultShapeGenerator {
     }
 
     @Override
-    public void generateShape(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, Shapeable shapeable) {
-        Shapeable columnShapeable = (x, ingored, z) -> {
+    public void generateShape(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, ShapeUtils.Shapeable shapeable) {
+        ShapeUtils.Shapeable columnShapeable = (x, ingored, z) -> {
             for (int y = minY; y <= maxY; y++)
                 shapeable.setBlock(x, y, z);
         };
@@ -149,7 +148,7 @@ public class ShapeEquilateral2dGenerator extends DefaultShapeGenerator {
             return new Point(x, z);
         });
 
-        Shapeable mirroredShapeable = this.symmetry.createMirroredShapeable(columnShapeable);
+        ShapeUtils.Shapeable mirroredShapeable = this.symmetry.createMirroredShapeable(columnShapeable);
 
         Point prevPoint = points[0];
 

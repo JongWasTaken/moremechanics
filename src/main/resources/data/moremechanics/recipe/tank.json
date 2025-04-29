@@ -1,0 +1,16 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "#A#",
+        "A A",
+        "#A#"
+    ],
+    "key": {
+        "#": "minecraft:glass",
+        "A": "minecraft:iron_bars"
+    },
+    "result": {
+        "id": "moremechanics:tank",
+        "count": 1
+    }
+}

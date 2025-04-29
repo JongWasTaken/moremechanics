@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "   ",
+    "RER",
+    "###"
+  ],
+  "key": {
+    "E": "minecraft:ender_eye",
+    "#": "minecraft:iron_bars",
+    "R": "minecraft:emerald"
+  },
+  "result": {
+    "id": "moremechanics:experience_storage",
+    "count": 1
+  }
+}

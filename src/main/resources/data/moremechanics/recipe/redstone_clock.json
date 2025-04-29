@@ -1,0 +1,17 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        " C ",
+        " I ",
+        " B "
+    ],
+    "key": {
+        "B": "minecraft:redstone_block",
+        "C": "minecraft:clock",
+        "I": "minecraft:iron_block"
+    },
+    "result": {
+        "id": "moremechanics:redstone_clock",
+        "count": 1
+    }
+}

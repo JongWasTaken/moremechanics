@@ -247,7 +247,7 @@ public class ExperienceDrainBlockEntity extends ManagedDisplayBlockEntity implem
         return ExperienceDrainBlockEntity.DISPLAY_SPECS;
     }
 
-    private static final Transformation TRANSFORMATION = DisplayTransformations.getForItem(null).setScale(1.01f).addTranslation(0.0f, 0.0045f, 0.0f);
+    private static final Transformation TRANSFORMATION = DisplayTransformations.getForItem(null).setScale(1.01f,1.05f,1.01f).addTranslation(0.0f, 0.024f, 0.0f);
 
     @Override
     protected Transformation getDisplayTransformation(World world, BlockPos pos, int index, DisplayType forType) {

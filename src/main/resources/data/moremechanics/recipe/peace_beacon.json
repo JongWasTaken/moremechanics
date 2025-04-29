@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "EAE",
+    " O ",
+    " O "
+  ],
+  "key": {
+    "A": "minecraft:amethyst_shard",
+    "O": "minecraft:obsidian",
+    "E": "minecraft:ender_eye"
+  },
+  "result": {
+    "id": "moremechanics:peace_beacon",
+    "count": 1
+  }
+}

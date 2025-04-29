@@ -17,7 +17,6 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.potion.Potions;
-import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -179,8 +178,8 @@ public class TankBlockEntity extends ManagedDisplayBlockEntity implements SidedI
 
     private void updateFluidTransformation() {
         if (this.storedFluid != Fluids.EMPTY) {
-            float val = (float) this.storedAmount / TankBlockEntity.MAX_AMOUNT;
-            this.fluidTransformation.setScale(0.99f, val, 0.99f).setTranslation(0.5f, (val / 2) + 0.001f, 0.5f);
+            float val = ((float) this.storedAmount / TankBlockEntity.MAX_AMOUNT) * 0.999f;
+            this.fluidTransformation.setScale(0.99f, val, 0.99f).setTranslation(0.5f, (val / 2) + 0.0007f, 0.5f);
         }
     }
 

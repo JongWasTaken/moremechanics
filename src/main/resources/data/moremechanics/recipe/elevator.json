@@ -1,0 +1,17 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "#A#",
+        "AEA",
+        "#A#"
+    ],
+    "key": {
+        "#": "minecraft:glass",
+        "A": "minecraft:amethyst_shard",
+        "E": "minecraft:ender_pearl"
+    },
+    "result": {
+        "id": "moremechanics:elevator",
+        "count": 1
+    }
+}

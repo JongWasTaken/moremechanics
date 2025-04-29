@@ -18,6 +18,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
+import net.minecraft.network.packet.s2c.play.SetPlayerInventoryS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -91,6 +93,7 @@ public class CamouflageBlock extends Block implements PolymerTexturedBlock, More
 
     @Override
     protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if (world.isClient) return ActionResult.FAIL;
         BlockState newState = MoreMechanics.Blocks.DUMMY_CAMOUFLAGE_BLOCK.getDefaultState();
         ActionResult result = ActionResult.CONSUME;
         var handItem = player.getStackInHand(hand).getItem();
@@ -117,7 +120,10 @@ public class CamouflageBlock extends Block implements PolymerTexturedBlock, More
             updated = true;
         }
         if (updated) result = ActionResult.SUCCESS_SERVER;
-        player.getInventory().markDirty();
+        if (player instanceof ServerPlayerEntity sp) {
+            // fixes the inventory desync
+            sp.networkHandler.sendPacket(new SetPlayerInventoryS2CPacket(player.getInventory().selectedSlot, player.getStackInHand(hand)));
+        }
         return result;
     }
 

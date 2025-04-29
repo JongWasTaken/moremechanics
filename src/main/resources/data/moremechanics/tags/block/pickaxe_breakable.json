@@ -1,22 +1,22 @@
 {
   "replace": false,
   "values": [
-    "moremechanics:elevator",
-    "moremechanics:peace_beacon",
-    "moremechanics:experience_storage",
-    "moremechanics:experience_drain",
     "moremechanics:chunk_loader",
+    "moremechanics:elevator",
+    "moremechanics:experience_drain",
+    "moremechanics:experience_storage",
+    "moremechanics:peace_beacon",
     "moremechanics:shape_builder",
-    "moremechanics:mechanical_placer",
-    "moremechanics:mechanical_breaker",
-    "moremechanics:camouflage_block",
-    "moremechanics:vacuum_hopper",
     "moremechanics:red_multi_door_block",
     "moremechanics:green_multi_door_block",
     "moremechanics:blue_multi_door_block",
     "moremechanics:yellow_multi_door_block",
     "moremechanics:tank",
     "moremechanics:smart_hopper",
+    "moremechanics:vacuum_hopper",
+    "moremechanics:mechanical_placer",
+    "moremechanics:mechanical_breaker",
+    "moremechanics:camouflage_block",
     "moremechanics:redstone_clock"
   ]
 }

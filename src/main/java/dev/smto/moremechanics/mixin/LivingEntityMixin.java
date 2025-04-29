@@ -11,7 +11,7 @@ import dev.smto.moremechanics.util.PlayerMovementEvents;
 @Mixin(LivingEntity.class)
 abstract class LivingEntityMixin {
     @Inject(method = "jump", at=@At("HEAD"), cancellable = true)
-    void hookJump(CallbackInfo ci)
+    void MoreMechanics$jumpHook(CallbackInfo ci)
     {
         if ((LivingEntity)(Object)this instanceof ServerPlayerEntity s) {
             if(!PlayerMovementEvents.JUMP.invoker().allowJump(s))

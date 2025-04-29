@@ -11,7 +11,7 @@ import dev.smto.moremechanics.util.PlayerMovementEvents;
 @Mixin(Entity.class)
 abstract class EntityMixin {
     @Inject(method = "setSneaking", at = @At("HEAD"), cancellable = true)
-    void hookSetSneaking(boolean sneaking, CallbackInfo ci) {
+    void MoreMechanics$sneakHook(boolean sneaking, CallbackInfo ci) {
         if ((Entity)(Object)this instanceof ServerPlayerEntity s) {
             if(sneaking) {
                 if(!PlayerMovementEvents.SNEAK.invoker().allowSneak(s)) {
