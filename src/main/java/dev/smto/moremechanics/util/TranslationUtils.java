@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 @SuppressWarnings("unused")
 public class TranslationUtils {
@@ -27,43 +28,43 @@ public class TranslationUtils {
     }
 
     @Deprecated
-    public static void setTooltipText(List<Text> tooltip, @Nullable String flavorText, @Nullable String explanationText) {
+    public static void setTooltipText(Consumer<Text> tooltip, @Nullable String flavorText, @Nullable String explanationText) {
         if(flavorText != null)
         {
             var flavorTextLines = flavorText.split("\n");
             for (var line : flavorTextLines) {
-                tooltip.add(Text.of("§" + Formatting.DARK_PURPLE.getCode() + "§" + Formatting.ITALIC.getCode() + line));
+                tooltip.accept(Text.of("§" + Formatting.DARK_PURPLE.getCode() + "§" + Formatting.ITALIC.getCode() + line));
             }
         }
         if(explanationText != null)
         {
             var explanationTextLines = explanationText.split("\n");
             for (var line : explanationTextLines) {
-                tooltip.add(Text.of("§" + Formatting.GOLD.getCode() + line));
+                tooltip.accept(Text.of("§" + Formatting.GOLD.getCode() + line));
             }
         }
     }
 
-    public static void setTooltipText(List<Text> tooltip, @Nullable MutableText flavorText, @Nullable MutableText explanationText) {
+    public static void setTooltipText(Consumer<Text> tooltip, @Nullable MutableText flavorText, @Nullable MutableText explanationText) {
         if(flavorText != null)
         {
-            tooltip.add(flavorText.formatted(Formatting.DARK_PURPLE, Formatting.ITALIC));
+            tooltip.accept(flavorText.formatted(Formatting.DARK_PURPLE, Formatting.ITALIC));
         }
         if(explanationText != null)
         {
-            tooltip.add(explanationText.formatted(Formatting.GOLD));
+            tooltip.accept(explanationText.formatted(Formatting.GOLD));
         }
     }
 
-    public static void setTooltipText(List<Text> tooltip, ItemStack stack) {
+    public static void setTooltipText(Consumer<Text> tooltip, ItemStack stack) {
         TranslationUtils.setTooltipText(tooltip, stack.getItem().getTranslationKey());
     }
 
-    public static void setTooltipText(List<Text> tooltip, ItemStack stack, @Nullable Integer flavorTextLineCount, @Nullable Integer explanationTextCount) {
+    public static void setTooltipText(Consumer<Text> tooltip, ItemStack stack, @Nullable Integer flavorTextLineCount, @Nullable Integer explanationTextCount) {
         TranslationUtils.setTooltipText(tooltip, stack.getItem().getTranslationKey(), flavorTextLineCount, explanationTextCount);
     }
 
-    public static void setTooltipText(List<Text> tooltip, String translationBaseKey) {
+    public static void setTooltipText(Consumer<Text> tooltip, String translationBaseKey) {
         int flavorTextLineCount = 0;
         int explanationTextCount = 0;
 
@@ -81,34 +82,34 @@ public class TranslationUtils {
         TranslationUtils.setTooltipText(tooltip, translationBaseKey, flavorTextLineCount, explanationTextCount);
     }
 
-    public static void setTooltipText(List<Text> tooltip, String translationBaseKey, @Nullable Integer flavorTextLineCount, @Nullable Integer explanationTextCount) {
+    public static void setTooltipText(Consumer<Text> tooltip, String translationBaseKey, @Nullable Integer flavorTextLineCount, @Nullable Integer explanationTextCount) {
         if (flavorTextLineCount != null) {
             if (flavorTextLineCount != 0) {
                 for (int i = 0; i < flavorTextLineCount; i++) {
-                    tooltip.add(Text.translatable(translationBaseKey + ".f_description." + i).formatted(Formatting.DARK_PURPLE, Formatting.ITALIC));
+                    tooltip.accept(Text.translatable(translationBaseKey + ".f_description." + i).formatted(Formatting.DARK_PURPLE, Formatting.ITALIC));
                 }
             }
         }
         if (explanationTextCount != null) {
             if (explanationTextCount != 0) {
                 for (int i = 0; i < explanationTextCount; i++) {
-                    tooltip.add(Text.translatable(translationBaseKey + ".e_description." + i).formatted(Formatting.GOLD));
+                    tooltip.accept(Text.translatable(translationBaseKey + ".e_description." + i).formatted(Formatting.GOLD));
                 }
             }
         }
     }
 
-    public static void setTooltipText(List<Text> tooltip, @Nullable List<MutableText> flavorText, @Nullable List<MutableText> explanationText) {
+    public static void setTooltipText(Consumer<Text> tooltip, @Nullable List<MutableText> flavorText, @Nullable List<MutableText> explanationText) {
         if(flavorText != null)
         {
             for (MutableText mutableText : flavorText) {
-                tooltip.add(mutableText.formatted(Formatting.DARK_PURPLE, Formatting.ITALIC));
+                tooltip.accept(mutableText.formatted(Formatting.DARK_PURPLE, Formatting.ITALIC));
             }
         }
         if(explanationText != null)
         {
             for (MutableText mutableText : explanationText) {
-                tooltip.add(mutableText.formatted(Formatting.GOLD));
+                tooltip.accept(mutableText.formatted(Formatting.GOLD));
             }
         }
     }

@@ -13,6 +13,7 @@ import eu.pb4.sgui.api.gui.SimpleGui;
 import eu.pb4.sgui.api.gui.SlotGuiInterface;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LodestoneTrackerComponent;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -33,6 +34,7 @@ import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public class BiomeCompassItem extends Item implements PolymerItem, MoreMechanicsContent {
     private final Identifier id;
@@ -285,10 +287,10 @@ public class BiomeCompassItem extends Item implements PolymerItem, MoreMechanics
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        tooltip.add(Text.translatable("item.moremechanics.biome_compass.description").formatted(MoreMechanics.getTooltipFormatting()));
+    public void appendTooltip(ItemStack stack, Item.TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
+        textConsumer.accept(Text.translatable("item.moremechanics.biome_compass.description").formatted(MoreMechanics.getTooltipFormatting()));
         if (stack.contains(MoreMechanics.DataComponentTypes.TRACKED_BIOME)) {
-            tooltip.add(
+            textConsumer.accept(
                     Text.translatable("item.moremechanics.biome_compass.description.tracked").formatted(Formatting.BLUE)
                             .append(Text.literal(": ")).append(stack.get(MoreMechanics.DataComponentTypes.TRACKED_BIOME)).formatted(Formatting.BLUE)
             );

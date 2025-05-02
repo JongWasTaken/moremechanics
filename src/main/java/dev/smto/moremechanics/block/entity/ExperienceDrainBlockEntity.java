@@ -63,7 +63,7 @@ public class ExperienceDrainBlockEntity extends ManagedDisplayBlockEntity implem
         super.readNbt(tag, registryLookup);
         Inventories.readNbt(tag, this.inventory.heldStacks, registryLookup);
         if (tag.contains("storedExperience")) {
-            this.storedExperience = tag.getInt("storedExperience");
+            this.storedExperience = tag.getInt("storedExperience").get();
         }
     }
 
@@ -110,7 +110,7 @@ public class ExperienceDrainBlockEntity extends ManagedDisplayBlockEntity implem
                         continue;
                     }
                     if (otherEntity instanceof ExperienceOrbEntity experienceOrbEntity) {
-                        blockEntity.storedExperience += experienceOrbEntity.getExperienceAmount();
+                        blockEntity.storedExperience += experienceOrbEntity.getValue();
                         experienceOrbEntity.discard();
                         continue;
                     }

@@ -67,9 +67,9 @@ public class SmartHopperBlockEntity extends LootableContainerBlockEntity impleme
         if (!this.readLootTable(nbt)) {
             Inventories.readNbt(nbt, this.inventory, registries);
         }
-        ItemStack.fromNbt(registries, nbt.getCompound("Filter")).ifPresent(this::setFilter);
-        this.transferCooldown = nbt.getInt("TransferCooldown");
-        if (nbt.contains("FilterType")) this.filterType = FilterType.values()[nbt.getInt("FilterType")];
+        if (nbt.contains("Filter")) ItemStack.fromNbt(registries, nbt.getCompound("Filter").get()).ifPresent(this::setFilter);
+        this.transferCooldown = nbt.getInt("TransferCooldown").get();
+        if (nbt.contains("FilterType")) this.filterType = FilterType.values()[nbt.getInt("FilterType").get()];
     }
 
     @Override

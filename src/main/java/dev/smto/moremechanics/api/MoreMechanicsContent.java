@@ -9,6 +9,7 @@ import net.minecraft.util.Identifier;
 import dev.smto.moremechanics.MoreMechanics;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public interface MoreMechanicsContent {
     default Identifier getIdentifier() {
@@ -45,7 +46,7 @@ public interface MoreMechanicsContent {
         this._register(target);
     }
 
-    default void addTooltip(ItemStack stack, List<Text> tooltip) {}
+    default void addTooltip(ItemStack stack, Consumer<Text> tooltip) {}
 
     default Block getDummyBlock() {
         return Blocks.AIR;

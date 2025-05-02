@@ -33,6 +33,7 @@ import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class ExperienceDrainBlock extends Block implements PolymerTexturedBlock, BlockEntityProvider, MoreMechanicsContent {
     private final Identifier id;
@@ -58,11 +59,14 @@ public class ExperienceDrainBlock extends Block implements PolymerTexturedBlock,
     }
 
     @Override
-    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.isOf(newState.getBlock())) {
-            ItemScatterer.onStateReplaced(state, newState, world, pos);
+    protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
+        if (!state.isOf(world.getBlockState(pos).getBlock())) {
+            if (world.getBlockEntity(pos) instanceof ExperienceDrainBlockEntity ent) {
+                ItemScatterer.spawn(world, pos, ent);
+                ItemScatterer.onStateReplaced(state, world, pos);
+            }
             world.removeBlockEntity(pos);
-            ParticleUtils.createBlockBreakParticles((ServerWorld) world, pos, Blocks.HOPPER.getDefaultState());
+            ParticleUtils.createBlockBreakParticles(world, pos, Blocks.HOPPER.getDefaultState());
         }
     }
 
@@ -95,7 +99,7 @@ public class ExperienceDrainBlock extends Block implements PolymerTexturedBlock,
     }
 
     @Override
-    public final ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
+    public final ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state, boolean includeData) {
         return new ItemStack(this);
     }
 
@@ -125,8 +129,8 @@ public class ExperienceDrainBlock extends Block implements PolymerTexturedBlock,
     }
 
     @Override
-    public void addTooltip(ItemStack stack, List<Text> tooltip) {
-        tooltip.add(Text.translatable("block.moremechanics.experience_drain.description").formatted(MoreMechanics.getTooltipFormatting()));
-        tooltip.add(Text.translatable("block.moremechanics.experience_drain.description.2").formatted(MoreMechanics.getTooltipFormatting()));
+    public void addTooltip(ItemStack stack, Consumer<Text> tooltip) {
+        tooltip.accept(Text.translatable("block.moremechanics.experience_drain.description").formatted(MoreMechanics.getTooltipFormatting()));
+        tooltip.accept(Text.translatable("block.moremechanics.experience_drain.description.2").formatted(MoreMechanics.getTooltipFormatting()));
     }
 }

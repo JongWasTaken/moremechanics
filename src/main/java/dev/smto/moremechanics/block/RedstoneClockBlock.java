@@ -3,6 +3,7 @@ package dev.smto.moremechanics.block;
 import dev.smto.moremechanics.MoreMechanics;
 import dev.smto.moremechanics.api.MoreMechanicsContent;
 import dev.smto.moremechanics.block.entity.RedstoneClockBlockEntity;
+import dev.smto.moremechanics.block.entity.VacuumHopperBlockEntity;
 import eu.pb4.polymer.blocks.api.BlockModelType;
 import eu.pb4.polymer.blocks.api.PolymerBlockModel;
 import eu.pb4.polymer.blocks.api.PolymerBlockResourceUtils;
@@ -21,6 +22,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Properties;
@@ -37,6 +39,7 @@ import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class RedstoneClockBlock extends Block implements PolymerTexturedBlock, BlockEntityProvider, MoreMechanicsContent {
     private final Identifier id;
@@ -83,9 +86,9 @@ public class RedstoneClockBlock extends Block implements PolymerTexturedBlock, B
     }
 
     @Override
-    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.isOf(newState.getBlock())) {
-            ItemScatterer.onStateReplaced(state, newState, world, pos);
+    protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
+        if (!state.isOf(world.getBlockState(pos).getBlock())) {
+            ItemScatterer.onStateReplaced(state, world, pos);
             world.removeBlockEntity(pos);
         }
     }
@@ -128,7 +131,7 @@ public class RedstoneClockBlock extends Block implements PolymerTexturedBlock, B
     }
 
     @Override
-    public final ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
+    public final ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state, boolean includeData) {
         return new ItemStack(this);
     }
 
@@ -158,8 +161,8 @@ public class RedstoneClockBlock extends Block implements PolymerTexturedBlock, B
     }
 
     @Override
-    public void addTooltip(ItemStack stack, List<Text> tooltip) {
-        tooltip.add(Text.translatable("block.moremechanics.redstone_clock.description").formatted(MoreMechanics.getTooltipFormatting()));
-        tooltip.add(Text.translatable("block.moremechanics.redstone_clock.description.2").formatted(MoreMechanics.getTooltipFormatting()));
+    public void addTooltip(ItemStack stack, Consumer<Text> tooltip) {
+        tooltip.accept(Text.translatable("block.moremechanics.redstone_clock.description").formatted(MoreMechanics.getTooltipFormatting()));
+        tooltip.accept(Text.translatable("block.moremechanics.redstone_clock.description.2").formatted(MoreMechanics.getTooltipFormatting()));
     }
 }

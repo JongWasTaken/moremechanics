@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.8-SNAPSHOT'
+	id 'fabric-loom' version '1.10-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -41,8 +41,7 @@ dependencies {
 	include(modImplementation("eu.pb4:polymer-blocks:${project.polymer_version}"))
 	include(modImplementation("eu.pb4:polymer-resource-pack:${project.polymer_version}"))
 	include(modImplementation("eu.pb4:polymer-autohost:${project.polymer_version}"))
-	include(modImplementation("eu.pb4:sgui:1.7.2+1.21.2"))
-	compileOnly 'de.bluecolored.bluemap:BlueMapAPI:2.7.2'
+	include(modImplementation("eu.pb4:sgui:1.9.0+1.21.5"))
 	include(implementation "dev.smto:simpleconfig:1.1.0")
 }
 

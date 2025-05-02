@@ -2,6 +2,7 @@ package dev.smto.moremechanics.item;
 
 import dev.smto.moremechanics.api.MoreMechanicsContent;
 import net.minecraft.block.Block;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -17,6 +18,7 @@ import net.minecraft.util.Rarity;
 import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class GenericBlockItem extends BlockItem implements eu.pb4.polymer.core.api.item.PolymerItem, MoreMechanicsContent {
 
@@ -53,7 +55,7 @@ public class GenericBlockItem extends BlockItem implements eu.pb4.polymer.core.a
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        if (this.target instanceof MoreMechanicsContent m) m.addTooltip(stack, tooltip);
+    public void appendTooltip(ItemStack stack, Item.TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
+        if (this.target instanceof MoreMechanicsContent m) m.addTooltip(stack, textConsumer);
     }
 }

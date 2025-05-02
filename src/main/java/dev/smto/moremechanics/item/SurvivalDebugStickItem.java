@@ -9,6 +9,8 @@ import net.minecraft.block.WallBlock;
 import net.minecraft.block.enums.WallShape;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.DebugStickStateComponent;
+import net.minecraft.component.type.TooltipDisplayComponent;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.item.tooltip.TooltipType;
@@ -35,6 +37,7 @@ import dev.smto.moremechanics.api.ItemInteractionPrecedence;
 import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public class SurvivalDebugStickItem extends DebugStickItem implements PolymerItem, MoreMechanicsContent, ItemInteractionPrecedence {
     private final Identifier id;
@@ -70,9 +73,9 @@ public class SurvivalDebugStickItem extends DebugStickItem implements PolymerIte
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        tooltip.add(Text.translatable("item.moremechanics.survival_debug_stick.description").formatted(MoreMechanics.getTooltipFormatting()));
-        tooltip.add(Text.translatable("item.moremechanics.survival_debug_stick.description.2").formatted(MoreMechanics.getTooltipFormatting()));
+    public void appendTooltip(ItemStack stack, Item.TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
+        textConsumer.accept(Text.translatable("item.moremechanics.survival_debug_stick.description").formatted(MoreMechanics.getTooltipFormatting()));
+        textConsumer.accept(Text.translatable("item.moremechanics.survival_debug_stick.description.2").formatted(MoreMechanics.getTooltipFormatting()));
     }
 
     private boolean use(PlayerEntity player, BlockState state, WorldAccess world, BlockPos pos, ItemStack stack) {
@@ -168,8 +171,8 @@ public class SurvivalDebugStickItem extends DebugStickItem implements PolymerIte
     }
 
     @Override
-    public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
-        if (!world.isClient) {
+    public boolean canMine(ItemStack stack, BlockState state, World world, BlockPos pos, LivingEntity user) {
+        if (!world.isClient && user instanceof PlayerEntity miner) {
             this.use(miner, state, world, pos, miner.getStackInHand(Hand.MAIN_HAND));
         }
 

@@ -39,6 +39,7 @@ import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 // So this is basically a re-creation of the cool castle doors from TwilightForest
 public class MultiDoorBlock extends Block implements PolymerTexturedBlock, MoreMechanicsContent {
@@ -65,8 +66,8 @@ public class MultiDoorBlock extends Block implements PolymerTexturedBlock, MoreM
     }
 
     @Override
-    public void addTooltip(ItemStack stack, List<Text> tooltip) {
-        tooltip.add(Text.translatable("block.moremechanics.any_multi_door_block.description").formatted(MoreMechanics.getTooltipFormatting()));
+    public void addTooltip(ItemStack stack, Consumer<Text> tooltip) {
+        tooltip.accept(Text.translatable("block.moremechanics.any_multi_door_block.description").formatted(MoreMechanics.getTooltipFormatting()));
     }
 
     @Override
@@ -139,7 +140,7 @@ public class MultiDoorBlock extends Block implements PolymerTexturedBlock, MoreM
                 for (int dx = 0; dx < 4; ++dx) {
                     for (int dy = 0; dy < 4; ++dy) {
                         for (int dz = 0; dz < 4; ++dz) {
-                            particles.add(new ParticleS2CPacket(ParticleTypes.WHITE_SMOKE, false,
+                            particles.add(new ParticleS2CPacket(ParticleTypes.WHITE_SMOKE, false, false,
                                     pos.getX() + (dx + 0.5D) / 4,
                                     pos.getY() + (dy + 0.5D) / 4,
                                     pos.getZ() + (dz + 0.5D) / 4,

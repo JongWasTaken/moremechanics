@@ -188,11 +188,11 @@ public class TankBlockEntity extends ManagedDisplayBlockEntity implements SidedI
         super.readNbt(tag, registryLookup);
         Inventories.readNbt(tag, this.inventory.heldStacks, registryLookup);
         if (tag.contains("storedAmount")) {
-            this.storedAmount = tag.getInt("storedAmount");
+            this.storedAmount = tag.getInt("storedAmount").get();
         }
         if (tag.contains("storedFluid")) {
             try {
-                this.storedFluid = Registries.FLUID.get(Identifier.tryParse(tag.getString("storedFluid")));
+                this.storedFluid = Registries.FLUID.get(Identifier.tryParse(tag.getString("storedFluid").get()));
             } catch (Throwable ignored) {}
         }
         this.updateFluidTransformation();

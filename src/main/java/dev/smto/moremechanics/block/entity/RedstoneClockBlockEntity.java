@@ -70,9 +70,9 @@ public class RedstoneClockBlockEntity extends ManagedDisplayBlockEntity {
     @Override
     public void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(tag, registryLookup);
-        if (tag.contains("paused")) this.paused = tag.getBoolean("paused");
+        if (tag.contains("paused")) this.paused = tag.getBoolean("paused").get();
         if (tag.contains("interval")) {
-            int interval = tag.getInt("interval");
+            int interval = tag.getInt("interval").get();
             for (int i = 0; i < RedstoneClockBlockEntity.INTERVALS.length; i++) {
                 if (RedstoneClockBlockEntity.INTERVALS[i] == interval) {
                     this.selectedInterval = i;

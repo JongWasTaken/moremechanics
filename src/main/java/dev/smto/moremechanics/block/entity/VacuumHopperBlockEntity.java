@@ -54,7 +54,7 @@ public class VacuumHopperBlockEntity extends ManagedDisplayBlockEntity implement
         super.readNbt(tag, registryLookup);
         Inventories.readNbt(tag, this.inventory.heldStacks, registryLookup);
         if (tag.contains("storedExperience")) {
-            this.storedExperience = tag.getInt("storedExperience");
+            this.storedExperience = tag.getInt("storedExperience").get();
         }
     }
 
@@ -79,7 +79,7 @@ public class VacuumHopperBlockEntity extends ManagedDisplayBlockEntity implement
                 continue;
             }
             if (otherEntity instanceof ExperienceOrbEntity experienceOrbEntity) {
-                blockEntity.storedExperience += experienceOrbEntity.getExperienceAmount();
+                blockEntity.storedExperience += experienceOrbEntity.getValue();
                 experienceOrbEntity.discard();
                 continue;
             }
@@ -99,7 +99,7 @@ public class VacuumHopperBlockEntity extends ManagedDisplayBlockEntity implement
                         blockEntity.pos.getX(), blockEntity.pos.getY(), blockEntity.pos.getZ(),
                         10,
                         world.getRegistryKey(),
-                        new ParticleS2CPacket(ParticleTypes.REVERSE_PORTAL, false, blockEntity.pos.getX() + 0.5, blockEntity.pos.getY() + 0.65, blockEntity.pos.getZ() + 0.5, 0, 0, 0, 0.01f, 1)
+                        new ParticleS2CPacket(ParticleTypes.REVERSE_PORTAL, false, false, blockEntity.pos.getX() + 0.5, blockEntity.pos.getY() + 0.65, blockEntity.pos.getZ() + 0.5, 0, 0, 0, 0.01f, 1)
                 );
 
         blockEntity.markDirty();

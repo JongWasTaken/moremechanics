@@ -39,6 +39,7 @@ import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class ElevatorBlock extends Block implements PlayerMovementListener, PolymerTexturedBlock, MoreMechanicsContent {
     private static final String DISPLAY_COMMAND_TAG = MoreMechanics.id("elevator_display").toString();
@@ -136,8 +137,8 @@ public class ElevatorBlock extends Block implements PlayerMovementListener, Poly
     }
 
     @Override
-    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.isOf(newState.getBlock())) {
+    protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
+        if (!state.isOf(world.getBlockState(pos).getBlock())) {
             for (DisplayEntity.BlockDisplayEntity blockDisplayEntity : this.getDisplayEntities(world, pos)) {
                 blockDisplayEntity.discard();
             }
@@ -188,7 +189,7 @@ public class ElevatorBlock extends Block implements PlayerMovementListener, Poly
     }
 
     @Override
-    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
+    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state, boolean includeData) {
         return new ItemStack(MoreMechanics.Blocks.ELEVATOR);
     }
 
@@ -198,9 +199,9 @@ public class ElevatorBlock extends Block implements PlayerMovementListener, Poly
     }
 
     @Override
-    public void addTooltip(ItemStack stack, List<Text> tooltip) {
-        tooltip.add(Text.translatable("block.moremechanics.elevator.description").formatted(MoreMechanics.getTooltipFormatting()));
-        tooltip.add(Text.translatable("block.moremechanics.elevator.description.2").formatted(MoreMechanics.getTooltipFormatting()));
+    public void addTooltip(ItemStack stack, Consumer<Text> tooltip) {
+        tooltip.accept(Text.translatable("block.moremechanics.elevator.description").formatted(MoreMechanics.getTooltipFormatting()));
+        tooltip.accept(Text.translatable("block.moremechanics.elevator.description.2").formatted(MoreMechanics.getTooltipFormatting()));
     }
 
     @Override

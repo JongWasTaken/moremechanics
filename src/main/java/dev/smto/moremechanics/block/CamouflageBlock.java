@@ -44,6 +44,7 @@ import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class CamouflageBlock extends Block implements PolymerTexturedBlock, MoreMechanicsContent {
     private static final String DISPLAY_COMMAND_TAG = "moremechanics:camouflage_display";
@@ -66,8 +67,8 @@ public class CamouflageBlock extends Block implements PolymerTexturedBlock, More
     }
 
     @Override
-    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.isOf(newState.getBlock())) {
+    protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
+        if (!state.isOf(world.getBlockState(pos).getBlock())) {
             for (DisplayEntity.BlockDisplayEntity blockDisplayEntity : this.getDisplayEntities(world, pos)) {
                 blockDisplayEntity.discard();
             }
@@ -122,13 +123,13 @@ public class CamouflageBlock extends Block implements PolymerTexturedBlock, More
         if (updated) result = ActionResult.SUCCESS_SERVER;
         if (player instanceof ServerPlayerEntity sp) {
             // fixes the inventory desync
-            sp.networkHandler.sendPacket(new SetPlayerInventoryS2CPacket(player.getInventory().selectedSlot, player.getStackInHand(hand)));
+            sp.networkHandler.sendPacket(new SetPlayerInventoryS2CPacket(player.getInventory().getSelectedSlot(), player.getStackInHand(hand)));
         }
         return result;
     }
 
     @Override
-    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
+    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state, boolean includeData) {
         return new ItemStack(MoreMechanics.Blocks.CAMOUFLAGE_BLOCK);
     }
 
@@ -138,8 +139,8 @@ public class CamouflageBlock extends Block implements PolymerTexturedBlock, More
     }
 
     @Override
-    public void addTooltip(ItemStack stack, List<Text> tooltip) {
-        tooltip.add(Text.translatable("block.moremechanics.camouflage_block.description").formatted(MoreMechanics.getTooltipFormatting()));
+    public void addTooltip(ItemStack stack, Consumer<Text> tooltip) {
+        tooltip.accept(Text.translatable("block.moremechanics.camouflage_block.description").formatted(MoreMechanics.getTooltipFormatting()));
     }
 
     @Override

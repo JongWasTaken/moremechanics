@@ -34,6 +34,7 @@ import xyz.nucleoid.packettweaker.PacketContext;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class ChunkLoaderBlock extends Block implements PolymerTexturedBlock, MoreMechanicsContent {
     private final Identifier id;
@@ -70,8 +71,8 @@ public class ChunkLoaderBlock extends Block implements PolymerTexturedBlock, Mor
         if (world instanceof ServerWorld w) {
             var stateLoader = ModWorldDataSaver.get(w.getServer());
             var globalPos = new GlobalPos(world.getRegistryKey(), pos);
-            if (!stateLoader.existingChunkLoaders.contains(globalPos)) {
-                stateLoader.existingChunkLoaders.add(globalPos);
+            if (!stateLoader.getExistingChunkLoaders().contains(globalPos)) {
+                stateLoader.getExistingChunkLoaders().add(globalPos);
                 stateLoader.markDirty();
             }
             ChunkLoaderBlock.markChunks(w, pos);
@@ -88,7 +89,7 @@ public class ChunkLoaderBlock extends Block implements PolymerTexturedBlock, Mor
                 world.getRegistryKey(),
                 new ParticleS2CPacket(
                         ParticleTypes.PORTAL,
-                        false,
+                        false, false,
                         pos.getX() + 0.5, pos.getY() + 0.75, pos.getZ() + 0.5,
                         random.nextFloat() * 0.5F, 0, random.nextFloat() * 0.5F,
                         0.01f, 3
@@ -101,12 +102,12 @@ public class ChunkLoaderBlock extends Block implements PolymerTexturedBlock, Mor
     }
 
     @Override
-    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.isOf(newState.getBlock()) && world instanceof ServerWorld w) {
+    protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
+        if (!state.isOf(world.getBlockState(pos).getBlock()) && world instanceof ServerWorld w) {
             var stateLoader = ModWorldDataSaver.get(w.getServer());
             var globalPos = new GlobalPos(w.getRegistryKey(), pos);
-            if (stateLoader.existingChunkLoaders.contains(globalPos)) {
-                stateLoader.existingChunkLoaders.remove(globalPos);
+            if (stateLoader.getExistingChunkLoaders().contains(globalPos)) {
+                stateLoader.getExistingChunkLoaders().remove(globalPos);
                 stateLoader.markDirty();
             }
             ChunkLoaderBlock.unmarkChunks(w, pos);
@@ -115,7 +116,7 @@ public class ChunkLoaderBlock extends Block implements PolymerTexturedBlock, Mor
 
 
     @Override
-    public final ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
+    public final ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state, boolean includeData) {
         return new ItemStack(this);
     }
 
@@ -135,9 +136,9 @@ public class ChunkLoaderBlock extends Block implements PolymerTexturedBlock, Mor
     }
 
     @Override
-    public void addTooltip(ItemStack stack, List<Text> tooltip) {
-        tooltip.add(MutableText.of(new TranslatableTextContent("block.moremechanics.chunk_loader.description", null, List.of((double) MoreMechanics.Config.chunkLoaderRadius / 2).toArray(new Double[0]))).formatted(MoreMechanics.getTooltipFormatting()));
-        tooltip.add(Text.translatable("block.moremechanics.chunk_loader.description.2").formatted(MoreMechanics.getTooltipFormatting()));
+    public void addTooltip(ItemStack stack, Consumer<Text> tooltip) {
+        tooltip.accept(MutableText.of(new TranslatableTextContent("block.moremechanics.chunk_loader.description", null, List.of((double) MoreMechanics.Config.chunkLoaderRadius / 2).toArray(new Double[0]))).formatted(MoreMechanics.getTooltipFormatting()));
+        tooltip.accept(Text.translatable("block.moremechanics.chunk_loader.description.2").formatted(MoreMechanics.getTooltipFormatting()));
     }
 
     public static void markChunks(ServerWorld world, BlockPos pos) {

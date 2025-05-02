@@ -46,6 +46,7 @@ import xyz.nucleoid.packettweaker.PacketContext;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class ExperienceStorageBlock extends Block implements PolymerTexturedBlock, BlockEntityProvider, MoreMechanicsContent {
     private final Identifier id;
@@ -56,8 +57,8 @@ public class ExperienceStorageBlock extends Block implements PolymerTexturedBloc
     }
 
     @Override
-    public void addTooltip(ItemStack stack, List<Text> tooltip) {
-        tooltip.add(Text.translatable("block.moremechanics.experience_storage.description").formatted(MoreMechanics.getTooltipFormatting()));
+    public void addTooltip(ItemStack stack, Consumer<Text> tooltip) {
+        tooltip.accept(Text.translatable("block.moremechanics.experience_storage.description").formatted(MoreMechanics.getTooltipFormatting()));
     }
 
     @Override
@@ -106,19 +107,19 @@ public class ExperienceStorageBlock extends Block implements PolymerTexturedBloc
     }
 
     @Override
-    public final ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
+    public final ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state, boolean includeData) {
         return new ItemStack(this);
     }
 
     @Override
-    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.isOf(newState.getBlock())) {
+    protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
+        if (!state.isOf(world.getBlockState(pos).getBlock())) {
             if (world.getBlockEntity(pos) instanceof ExperienceStorageBlockEntity ent) {
-                if (!world.isClient()) ent.dropExperience((ServerWorld) world, pos);
+                if (!world.isClient()) ent.dropExperience(world, pos);
             }
             world.removeBlockEntity(pos);
         }
-        super.onStateReplaced(state, world, pos, newState, moved);
+        super.onStateReplaced(state, world, pos, moved);
     }
 
     @Override

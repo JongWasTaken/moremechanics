@@ -3,6 +3,7 @@ package dev.smto.moremechanics.block;
 import dev.smto.moremechanics.MoreMechanics;
 import dev.smto.moremechanics.api.MoreMechanicsContent;
 import dev.smto.moremechanics.block.entity.TankBlockEntity;
+import dev.smto.moremechanics.block.entity.VacuumHopperBlockEntity;
 import eu.pb4.polymer.blocks.api.PolymerTexturedBlock;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
@@ -22,6 +23,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
@@ -33,6 +35,7 @@ import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class TankBlock extends Block implements PolymerTexturedBlock, BlockEntityProvider, MoreMechanicsContent {
     private final Identifier id;
@@ -58,9 +61,12 @@ public class TankBlock extends Block implements PolymerTexturedBlock, BlockEntit
     }
 
     @Override
-    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.isOf(newState.getBlock())) {
-            ItemScatterer.onStateReplaced(state, newState, world, pos);
+    protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
+        if (!state.isOf(world.getBlockState(pos).getBlock())) {
+            if (world.getBlockEntity(pos) instanceof TankBlockEntity ent) {
+                ItemScatterer.spawn(world, pos, ent);
+                ItemScatterer.onStateReplaced(state, world, pos);
+            }
             world.removeBlockEntity(pos);
         }
     }
@@ -122,7 +128,7 @@ public class TankBlock extends Block implements PolymerTexturedBlock, BlockEntit
     }
 
     @Override
-    public final ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
+    public final ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state, boolean includeData) {
         if (world.getBlockEntity(pos) instanceof TankBlockEntity t) {
             return t.getAsStack();
         }
@@ -154,11 +160,11 @@ public class TankBlock extends Block implements PolymerTexturedBlock, BlockEntit
     }
 
     @Override
-    public void addTooltip(ItemStack stack, List<Text> tooltip) {
-        tooltip.add(Text.translatable("block.moremechanics.tank.description").formatted(MoreMechanics.getTooltipFormatting()));
+    public void addTooltip(ItemStack stack, Consumer<Text> tooltip) {
+        tooltip.accept(Text.translatable("block.moremechanics.tank.description").formatted(MoreMechanics.getTooltipFormatting()));
         if (stack.contains(MoreMechanics.DataComponentTypes.TANK_CONTENTS)) {
             var info = stack.get(MoreMechanics.DataComponentTypes.TANK_CONTENTS);
-            tooltip.add(Text.translatable("block.minecraft." + Registries.FLUID.getId(info.fluid()).getPath()).append(Text.literal(": " + info.amount() + "mB")).formatted(Formatting.BLUE));
+            tooltip.accept(Text.translatable("block.minecraft." + Registries.FLUID.getId(info.fluid()).getPath()).append(Text.literal(": " + info.amount() + "mB")).formatted(Formatting.BLUE));
         }
     }
 }

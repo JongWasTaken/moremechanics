@@ -21,6 +21,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
@@ -34,6 +35,7 @@ import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class SmartHopperBlock extends HopperBlock implements PolymerTexturedBlock, MoreMechanicsContent, TransparentToChests {
     private final Identifier id;
@@ -50,7 +52,7 @@ public class SmartHopperBlock extends HopperBlock implements PolymerTexturedBloc
     }
 
     @Override
-    public final ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
+    public final ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state, boolean includeData) {
         return new ItemStack(this);
     }
 
@@ -62,15 +64,16 @@ public class SmartHopperBlock extends HopperBlock implements PolymerTexturedBloc
     }
 
     @Override
-    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.isOf(newState.getBlock())) {
-            ItemScatterer.onStateReplaced(state, newState, world, pos);
-            if (world.getBlockEntity(pos) instanceof SmartHopperBlockEntity t) {
-                world.spawnEntity(new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, t.getFilter()));
+    protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
+        if (!state.isOf(world.getBlockState(pos).getBlock())) {
+            if (world.getBlockEntity(pos) instanceof SmartHopperBlockEntity ent) {
+                ItemScatterer.spawn(world, pos, ent);
+                ItemScatterer.onStateReplaced(state, world, pos);
+                world.spawnEntity(new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, ent.getFilter()));
             }
             world.removeBlockEntity(pos);
         }
-        super.onStateReplaced(state, world, pos, newState, moved);
+        super.onStateReplaced(state, world, pos, moved);
     }
 
     @Override
@@ -124,7 +127,7 @@ public class SmartHopperBlock extends HopperBlock implements PolymerTexturedBloc
     }
 
     @Override
-    public void addTooltip(ItemStack stack, List<Text> tooltip) {
-        tooltip.add(Text.translatable("block.moremechanics.smart_hopper.description").formatted(MoreMechanics.getTooltipFormatting()));
+    public void addTooltip(ItemStack stack, Consumer<Text> tooltip) {
+        tooltip.accept(Text.translatable("block.moremechanics.smart_hopper.description").formatted(MoreMechanics.getTooltipFormatting()));
     }
 }

@@ -43,7 +43,7 @@ public class ParticleUtils {
                         world.getRegistryKey(),
                         new ParticleS2CPacket(
                                 particleEffect,
-                                false,
+                                false, false,
                                 pos.getX() + 0.5, pos.getY() + 0.65, pos.getZ() + 0.5,
                                 0, 0, 0,
                                 speed, 1
@@ -76,7 +76,7 @@ public class ParticleUtils {
                                     particles.add(
                                             new ParticleS2CPacket(
                                                     new BlockStateParticleEffect(ParticleTypes.BLOCK, state),
-                                                    false,
+                                                    false, false,
                                                     pos.getX() + p, pos.getY() + q, pos.getZ() + r,
                                                     (float) (g - 0.5), (float) (h - 0.5), (float) (o - 0.5), 1.2f, 0)
                                     );

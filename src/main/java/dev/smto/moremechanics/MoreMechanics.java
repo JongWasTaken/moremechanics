@@ -166,10 +166,10 @@ public class MoreMechanics implements ModInitializer {
 
 		ServerLifecycleEvents.SERVER_STARTED.register(server -> {
 			var state = ModWorldDataSaver.get(server);
-			for (GlobalPos existingChunkLoader : state.existingChunkLoaders) {
+			for (GlobalPos existingChunkLoader : state.getExistingChunkLoaders()) {
 				ChunkLoaderBlock.markChunks(server.getWorld(existingChunkLoader.dimension()), existingChunkLoader.pos());
 			}
-			for (GlobalPos existingPeaceBeacon : state.existingPeaceBeacons) {
+			for (GlobalPos existingPeaceBeacon : state.getExistingPeaceBeacons()) {
 				PeaceBeaconBlock.markChunks(existingPeaceBeacon.dimension(), existingPeaceBeacon.pos());
 			}
 		});

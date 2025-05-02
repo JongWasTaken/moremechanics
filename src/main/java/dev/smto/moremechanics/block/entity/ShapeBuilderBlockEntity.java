@@ -1,7 +1,6 @@
 package dev.smto.moremechanics.block.entity;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.primitives.Doubles;
@@ -10,7 +9,6 @@ import com.google.common.primitives.Ints;
 import java.util.*;
 
 import dev.smto.moremechanics.MoreMechanics;
-import dev.smto.moremechanics.block.ShapeBuilderBlock;
 import dev.smto.moremechanics.util.GuiUtils;
 import dev.smto.moremechanics.util.shape.ShapeUtils;
 import dev.smto.moremechanics.util.shape.generator.ShapeGenerator;
@@ -104,12 +102,12 @@ public class ShapeBuilderBlockEntity extends BlockEntity implements SidedInvento
     public void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(tag, registryLookup);
         //if(tag.contains("mode")) this.selectedShapeType = ShapeType.valueOf(tag.getString("mode"));
-        if(tag.contains("negX")) this.negX = tag.getInt("negX");
-        if(tag.contains("negY")) this.negY = tag.getInt("negY");
-        if(tag.contains("negZ")) this.negZ = tag.getInt("negZ");
-        if(tag.contains("posX")) this.posX = tag.getInt("posX");
-        if(tag.contains("posY")) this.posY = tag.getInt("posY");
-        if(tag.contains("posZ")) this.posZ = tag.getInt("posZ");
+        if(tag.contains("negX")) this.negX = tag.getInt("negX").get();
+        if(tag.contains("negY")) this.negY = tag.getInt("negY").get();
+        if(tag.contains("negZ")) this.negZ = tag.getInt("negZ").get();
+        if(tag.contains("posX")) this.posX = tag.getInt("posX").get();
+        if(tag.contains("posY")) this.posY = tag.getInt("posY").get();
+        if(tag.contains("posZ")) this.posZ = tag.getInt("posZ").get();
     }
 
     @Override

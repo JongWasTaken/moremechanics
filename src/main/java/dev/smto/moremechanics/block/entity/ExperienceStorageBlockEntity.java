@@ -105,7 +105,7 @@ public class ExperienceStorageBlockEntity extends ManagedDisplayBlockEntity impl
                             pos.getX(), pos.getY(), pos.getZ(),
                             10,
                             world.getRegistryKey(),
-                            new ParticleS2CPacket(ParticleTypes.REVERSE_PORTAL, false, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, (float) xv, (float)yv, (float) zv, 0.01f, 1)
+                            new ParticleS2CPacket(ParticleTypes.REVERSE_PORTAL, false, false, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, (float) xv, (float)yv, (float) zv, 0.01f, 1)
                     );
         }
     }
@@ -157,17 +157,17 @@ public class ExperienceStorageBlockEntity extends ManagedDisplayBlockEntity impl
     public void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(tag, registryLookup);
         if(tag.contains("storedExperience")) {
-            this.storedExperience = tag.getInt("storedExperience");
+            this.storedExperience = tag.getInt("storedExperience").get();
         }
         if(tag.contains("direction")) {
-            this.direction = Direction.byId(tag.getInt("direction"));
+            this.direction = Direction.byIndex(tag.getInt("direction").get());
         }
     }
 
     @Override
     public void writeNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         tag.putInt("storedExperience", this.storedExperience);
-        if (this.direction != null) tag.putInt("direction", this.direction.getId());
+        if (this.direction != null) tag.putInt("direction", this.direction.getIndex());
         super.writeNbt(tag, registryLookup);
     }
 

@@ -32,6 +32,7 @@ import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 
 public class PeaceBeaconBlock extends Block implements PolymerTexturedBlock, MoreMechanicsContent {
@@ -57,8 +58,8 @@ public class PeaceBeaconBlock extends Block implements PolymerTexturedBlock, Mor
         if (world instanceof ServerWorld w) {
             var stateLoader = ModWorldDataSaver.get(w.getServer());
             var globalPos = new GlobalPos(world.getRegistryKey(), pos);
-            if (!stateLoader.existingPeaceBeacons.contains(globalPos)) {
-                stateLoader.existingPeaceBeacons.add(globalPos);
+            if (!stateLoader.getExistingPeaceBeacons().contains(globalPos)) {
+                stateLoader.getExistingPeaceBeacons().add(globalPos);
                 stateLoader.markDirty();
             }
             PeaceBeaconBlock.markChunks(w.getRegistryKey(), pos);
@@ -73,7 +74,7 @@ public class PeaceBeaconBlock extends Block implements PolymerTexturedBlock, Mor
     }
 
     @Override
-    public final ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
+    public final ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state, boolean includeData) {
         return new ItemStack(this);
     }
 
@@ -93,8 +94,8 @@ public class PeaceBeaconBlock extends Block implements PolymerTexturedBlock, Mor
     }
 
     @Override
-    public void addTooltip(ItemStack stack, List<Text> tooltip) {
-        tooltip.add(MutableText.of(new TranslatableTextContent("block.moremechanics.peace_beacon.description", null, List.of((double) MoreMechanics.Config.peaceBeaconRadius / 2).toArray(new Double[0]))).formatted(MoreMechanics.getTooltipFormatting()));
+    public void addTooltip(ItemStack stack, Consumer<Text> tooltip) {
+        tooltip.accept(MutableText.of(new TranslatableTextContent("block.moremechanics.peace_beacon.description", null, List.of((double) MoreMechanics.Config.peaceBeaconRadius / 2).toArray(new Double[0]))).formatted(MoreMechanics.getTooltipFormatting()));
     }
 
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
@@ -105,7 +106,7 @@ public class PeaceBeaconBlock extends Block implements PolymerTexturedBlock, Mor
                 world.getRegistryKey(),
                 new ParticleS2CPacket(
                         ParticleTypes.PORTAL,
-                        false,
+                        false, false,
                         pos.getX() + 0.5, pos.getY() + 0.75, pos.getZ() + 0.5,
                         random.nextFloat() * 0.5F, 0, random.nextFloat() * 0.5F,
                         0.01f, 3
@@ -118,12 +119,12 @@ public class PeaceBeaconBlock extends Block implements PolymerTexturedBlock, Mor
     }
 
     @Override
-    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.isOf(newState.getBlock()) && world instanceof ServerWorld w) {
+    protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
+        if (!state.isOf(world.getBlockState(pos).getBlock()) && world instanceof ServerWorld w) {
             var stateLoader = ModWorldDataSaver.get(w.getServer());
             var globalPos = new GlobalPos(w.getRegistryKey(), pos);
-            if (stateLoader.existingPeaceBeacons.contains(globalPos)) {
-                stateLoader.existingPeaceBeacons.remove(globalPos);
+            if (stateLoader.getExistingPeaceBeacons().contains(globalPos)) {
+                stateLoader.getExistingPeaceBeacons().remove(globalPos);
                 stateLoader.markDirty();
             }
             PeaceBeaconBlock.unmarkChunks(w.getRegistryKey(), pos);

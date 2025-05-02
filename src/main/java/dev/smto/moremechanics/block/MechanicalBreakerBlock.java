@@ -4,6 +4,7 @@ import dev.smto.moremechanics.MoreMechanics;
 import dev.smto.moremechanics.api.MoreMechanicsContent;
 import dev.smto.moremechanics.block.entity.ManagedDisplayBlockEntity;
 import dev.smto.moremechanics.block.entity.MechanicalBreakerBlockEntity;
+import dev.smto.moremechanics.block.entity.VacuumHopperBlockEntity;
 import dev.smto.moremechanics.util.ParticleUtils;
 import eu.pb4.polymer.blocks.api.BlockModelType;
 import eu.pb4.polymer.blocks.api.PolymerBlockModel;
@@ -42,6 +43,7 @@ import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class MechanicalBreakerBlock extends Block implements PolymerTexturedBlock, BlockEntityProvider, MoreMechanicsContent {
     public static final EnumProperty<Direction> FACING = Properties.FACING;
@@ -129,16 +131,19 @@ public class MechanicalBreakerBlock extends Block implements PolymerTexturedBloc
     }
 
     @Override
-    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.isOf(newState.getBlock())) {
-            ItemScatterer.onStateReplaced(state, newState, world, pos);
+    protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
+        if (!state.isOf(world.getBlockState(pos).getBlock())) {
+            if (world.getBlockEntity(pos) instanceof MechanicalBreakerBlockEntity ent) {
+                ItemScatterer.spawn(world, pos, ent);
+                ItemScatterer.onStateReplaced(state, world, pos);
+            }
             world.removeBlockEntity(pos);
-            ParticleUtils.createBlockBreakParticles((ServerWorld) world, pos, Blocks.DISPENSER.getDefaultState());
+            ParticleUtils.createBlockBreakParticles(world, pos, Blocks.DISPENSER.getDefaultState());
         }
     }
 
     @Override
-    public final ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
+    public final ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state, boolean includeData) {
         return new ItemStack(this);
     }
 
@@ -178,8 +183,8 @@ public class MechanicalBreakerBlock extends Block implements PolymerTexturedBloc
     }
 
     @Override
-    public void addTooltip(ItemStack stack, List<Text> tooltip) {
-        tooltip.add(Text.translatable("block.moremechanics.mechanical_breaker.description").formatted(MoreMechanics.getTooltipFormatting()));
-        tooltip.add(Text.translatable("block.moremechanics.mechanical_breaker.description.2").formatted(MoreMechanics.getTooltipFormatting()));
+    public void addTooltip(ItemStack stack, Consumer<Text> tooltip) {
+        tooltip.accept(Text.translatable("block.moremechanics.mechanical_breaker.description").formatted(MoreMechanics.getTooltipFormatting()));
+        tooltip.accept(Text.translatable("block.moremechanics.mechanical_breaker.description.2").formatted(MoreMechanics.getTooltipFormatting()));
     }
 }

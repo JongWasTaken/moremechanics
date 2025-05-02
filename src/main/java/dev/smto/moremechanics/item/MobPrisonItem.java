@@ -3,6 +3,7 @@ package dev.smto.moremechanics.item;
 import dev.smto.moremechanics.api.MoreMechanicsContent;
 import eu.pb4.polymer.core.api.item.PolymerItem;
 import net.minecraft.component.type.NbtComponent;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
@@ -28,6 +29,7 @@ import dev.smto.moremechanics.MoreMechanics;
 import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class MobPrisonItem extends Item implements PolymerItem, MoreMechanicsContent {
     private final Identifier id;
@@ -84,7 +86,7 @@ public class MobPrisonItem extends Item implements PolymerItem, MoreMechanicsCon
         nStack.set(MoreMechanics.DataComponentTypes.STORED_ENTITY, NbtComponent.of(entityData));
         entity.discard();
         // stupid workaround around possible polymer bug, the stack does not update properly otherwise (or maybe i am doing something wrong)
-        user.getInventory().setStack(user.getInventory().selectedSlot, nStack);
+        user.getInventory().setStack(user.getInventory().getSelectedSlot(), nStack);
         return ActionResult.SUCCESS_SERVER;
     }
 
@@ -100,13 +102,13 @@ public class MobPrisonItem extends Item implements PolymerItem, MoreMechanicsCon
         var entityData = stack.get(MoreMechanics.DataComponentTypes.STORED_ENTITY).copyNbt();
         if (!entityData.contains("mobId")) {
             stack.remove(MoreMechanics.DataComponentTypes.STORED_ENTITY);
-            user.getInventory().setStack(user.getInventory().selectedSlot, stack);
+            user.getInventory().setStack(user.getInventory().getSelectedSlot(), stack);
             return ActionResult.PASS;
         }
-        var ent = EntityType.get(entityData.getString("mobId")).orElseThrow().create(context.getWorld(), SpawnReason.MOB_SUMMONED);
+        var ent = EntityType.get(entityData.getString("mobId").get()).orElseThrow().create(context.getWorld(), SpawnReason.MOB_SUMMONED);
         if (ent == null) {
             stack.remove(MoreMechanics.DataComponentTypes.STORED_ENTITY);
-            user.getInventory().setStack(user.getInventory().selectedSlot, stack);
+            user.getInventory().setStack(user.getInventory().getSelectedSlot(), stack);
             return ActionResult.PASS;
         }
         // read data first
@@ -116,21 +118,21 @@ public class MobPrisonItem extends Item implements PolymerItem, MoreMechanicsCon
         // and spawn it
         context.getWorld().spawnEntity(ent);
         stack.remove(MoreMechanics.DataComponentTypes.STORED_ENTITY);
-        stack.damage(1, (ServerWorld) context.getWorld(), (ServerPlayerEntity) context.getPlayer(), item -> user.getInventory().setStack(user.getInventory().selectedSlot, ItemStack.EMPTY));
-        user.getInventory().setStack(user.getInventory().selectedSlot, stack);
+        stack.damage(1, (ServerWorld) context.getWorld(), (ServerPlayerEntity) context.getPlayer(), item -> user.getInventory().setStack(user.getInventory().getSelectedSlot(), ItemStack.EMPTY));
+        user.getInventory().setStack(user.getInventory().getSelectedSlot(), stack);
         return ActionResult.SUCCESS;
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        tooltip.add(Text.translatable("item.moremechanics.mob_prison.description").formatted(MoreMechanics.getTooltipFormatting()));
+    public void appendTooltip(ItemStack stack, Item.TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
+        textConsumer.accept(Text.translatable("item.moremechanics.mob_prison.description").formatted(MoreMechanics.getTooltipFormatting()));
         if (stack.contains(MoreMechanics.DataComponentTypes.STORED_ENTITY)) {
             try {
-                tooltip.add(Text.translatable("item.moremechanics.mob_prison.description.full").formatted(Formatting.BLUE).append(Text.literal(" ")).append(EntityType.get(stack.get(MoreMechanics.DataComponentTypes.STORED_ENTITY).copyNbt().getString("mobId")).orElseThrow().getName()).formatted(Formatting.BLUE));
+                textConsumer.accept(Text.translatable("item.moremechanics.mob_prison.description.full").formatted(Formatting.BLUE).append(Text.literal(" ")).append(EntityType.get(stack.get(MoreMechanics.DataComponentTypes.STORED_ENTITY).copyNbt().getString("mobId").get()).orElseThrow().getName()).formatted(Formatting.BLUE));
             } catch (Throwable ignored) {
-                tooltip.add(Text.literal("Possibly invalid data!").formatted(Formatting.ITALIC, Formatting.RED));
+                textConsumer.accept(Text.literal("Possibly invalid data!").formatted(Formatting.ITALIC, Formatting.RED));
             }
-        } else tooltip.add(Text.translatable("item.moremechanics.mob_prison.description.empty").formatted(Formatting.BLUE));
+        } else textConsumer.accept(Text.translatable("item.moremechanics.mob_prison.description.empty").formatted(Formatting.BLUE));
     }
 
     @Override

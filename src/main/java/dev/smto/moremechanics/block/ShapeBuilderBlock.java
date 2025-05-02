@@ -30,6 +30,7 @@ import net.minecraft.world.WorldView;
 import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class ShapeBuilderBlock extends Block implements PolymerTexturedBlock, BlockEntityProvider, MoreMechanicsContent {
     private final Identifier id;
@@ -60,7 +61,7 @@ public class ShapeBuilderBlock extends Block implements PolymerTexturedBlock, Bl
     }
 
     @Override
-    public final ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
+    public final ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state, boolean includeData) {
         return new ItemStack(this);
     }
 
@@ -111,9 +112,9 @@ public class ShapeBuilderBlock extends Block implements PolymerTexturedBlock, Bl
     }
 
     @Override
-    public void addTooltip(ItemStack stack, List<Text> tooltip) {
-        tooltip.add(Text.translatable("block.moremechanics.shape_builder.description").formatted(MoreMechanics.getTooltipFormatting()));
-        tooltip.add(Text.translatable("block.moremechanics.shape_builder.description.2").formatted(MoreMechanics.getTooltipFormatting()));
-        tooltip.add(Text.translatable("block.moremechanics.shape_builder.description.3").formatted(MoreMechanics.getTooltipFormatting()));
+    public void addTooltip(ItemStack stack, Consumer<Text> tooltip) {
+        tooltip.accept(Text.translatable("block.moremechanics.shape_builder.description").formatted(MoreMechanics.getTooltipFormatting()));
+        tooltip.accept(Text.translatable("block.moremechanics.shape_builder.description.2").formatted(MoreMechanics.getTooltipFormatting()));
+        tooltip.accept(Text.translatable("block.moremechanics.shape_builder.description.3").formatted(MoreMechanics.getTooltipFormatting()));
     }
 }
