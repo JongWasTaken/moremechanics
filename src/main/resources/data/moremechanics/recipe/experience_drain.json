@@ -11,7 +11,7 @@
     "R": "minecraft:emerald"
   },
   "result": {
-    "id": "moremechanics:experience_storage",
+    "id": "moremechanics:experience_drain",
     "count": 1
   }
 }
