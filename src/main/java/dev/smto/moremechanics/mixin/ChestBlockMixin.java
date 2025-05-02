@@ -1,6 +1,5 @@
 package dev.smto.moremechanics.mixin;
 
-import dev.smto.moremechanics.MoreMechanics;
 import dev.smto.moremechanics.api.TransparentToChests;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ChestBlock;

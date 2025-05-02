@@ -29,7 +29,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import xyz.nucleoid.packettweaker.PacketContext;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 public class ShapeBuilderBlock extends Block implements PolymerTexturedBlock, BlockEntityProvider, MoreMechanicsContent {

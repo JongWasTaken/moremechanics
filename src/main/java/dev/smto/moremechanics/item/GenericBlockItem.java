@@ -17,7 +17,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import xyz.nucleoid.packettweaker.PacketContext;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 public class GenericBlockItem extends BlockItem implements eu.pb4.polymer.core.api.item.PolymerItem, MoreMechanicsContent {

@@ -1,7 +1,6 @@
 package dev.smto.moremechanics.block.entity;
 
 import dev.smto.moremechanics.MoreMechanics;
-import dev.smto.moremechanics.util.Degrees;
 import dev.smto.moremechanics.util.DisplayTransformations;
 import dev.smto.moremechanics.util.Transformation;
 import net.minecraft.block.BlockState;

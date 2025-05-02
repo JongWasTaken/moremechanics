@@ -1,8 +1,8 @@
 package dev.smto.moremechanics.util.shape;
 
 import dev.smto.moremechanics.util.GuiUtils;
-import net.minecraft.util.Identifier;
 import dev.smto.moremechanics.util.shape.generator.*;
+import net.minecraft.util.Identifier;
 
 public enum ShapeType {
     SPHERE(new ShapeSphereGenerator(ShapeUtils.Octant.ALL), "sphere", GuiUtils.Models.SPHERE),

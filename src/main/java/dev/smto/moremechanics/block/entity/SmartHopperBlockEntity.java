@@ -1,9 +1,5 @@
 package dev.smto.moremechanics.block.entity;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.function.BooleanSupplier;
-
 import dev.smto.moremechanics.MoreMechanics;
 import dev.smto.moremechanics.util.GuiUtils;
 import eu.pb4.sgui.api.ClickType;
@@ -11,12 +7,11 @@ import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import eu.pb4.sgui.api.gui.SlotGuiInterface;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.ChestBlock;
-import net.minecraft.block.HopperBlock;
-import net.minecraft.block.InventoryProvider;
-import net.minecraft.block.entity.*;
+import net.minecraft.block.*;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.ChestBlockEntity;
+import net.minecraft.block.entity.Hopper;
+import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
@@ -42,6 +37,10 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.function.BooleanSupplier;
 
 public class SmartHopperBlockEntity extends LootableContainerBlockEntity implements Hopper {
     public static final int TRANSFER_COOLDOWN = 4;

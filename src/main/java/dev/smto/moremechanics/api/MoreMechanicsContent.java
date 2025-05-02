@@ -1,14 +1,13 @@
 package dev.smto.moremechanics.api;
 
+import dev.smto.moremechanics.MoreMechanics;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import dev.smto.moremechanics.MoreMechanics;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 public interface MoreMechanicsContent {

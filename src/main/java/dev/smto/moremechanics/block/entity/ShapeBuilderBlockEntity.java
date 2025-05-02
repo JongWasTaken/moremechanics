@@ -5,11 +5,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Ints;
-
-import java.util.*;
-
 import dev.smto.moremechanics.MoreMechanics;
 import dev.smto.moremechanics.util.GuiUtils;
+import dev.smto.moremechanics.util.ParticleUtils;
+import dev.smto.moremechanics.util.shape.ShapeType;
 import dev.smto.moremechanics.util.shape.ShapeUtils;
 import dev.smto.moremechanics.util.shape.generator.ShapeGenerator;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
@@ -24,7 +23,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
-import net.minecraft.particle.*;
+import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.ScreenHandlerType;
@@ -39,9 +38,9 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-import dev.smto.moremechanics.util.ParticleUtils;
-import dev.smto.moremechanics.util.shape.ShapeType;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
 
 import static dev.smto.moremechanics.util.shape.ShapeUtils.lengthSq;
 

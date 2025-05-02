@@ -1,5 +1,6 @@
 package dev.smto.moremechanics.item;
 
+import dev.smto.moremechanics.MoreMechanics;
 import dev.smto.moremechanics.api.MoreMechanicsContent;
 import eu.pb4.polymer.core.api.item.PolymerItem;
 import net.minecraft.component.type.NbtComponent;
@@ -25,7 +26,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import dev.smto.moremechanics.MoreMechanics;
 import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.List;

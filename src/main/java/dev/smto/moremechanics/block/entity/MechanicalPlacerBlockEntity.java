@@ -10,7 +10,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SidedInventory;
-import net.minecraft.item.*;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.BuiltinRegistries;
 import net.minecraft.registry.RegistryWrapper;
@@ -22,10 +23,13 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.stream.IntStream;
 
 public class MechanicalPlacerBlockEntity extends BlockEntity implements SidedInventory, NamedScreenHandlerFactory {
 
@@ -82,9 +86,11 @@ public class MechanicalPlacerBlockEntity extends BlockEntity implements SidedInv
         super.markRemoved();
     }
 
+    private final int[] AVAILABLE_SLOTS = IntStream.range(0, 9).toArray();
+
     @Override
     public int[] getAvailableSlots(Direction side) {
-        return new int[9];
+        return this.AVAILABLE_SLOTS;
     }
 
     @Override

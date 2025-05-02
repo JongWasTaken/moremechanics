@@ -1,6 +1,6 @@
 package dev.smto.moremechanics.util;
 
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.Direction;
 
 import java.util.HashMap;
 

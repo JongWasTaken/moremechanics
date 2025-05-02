@@ -2,14 +2,14 @@ package dev.smto.moremechanics.util.shape;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
-
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
+
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 
 public class ShapeUtils {
 

@@ -1,5 +1,6 @@
 package dev.smto.moremechanics.mixin;
 
+import dev.smto.moremechanics.MoreMechanics;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -9,7 +10,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import dev.smto.moremechanics.MoreMechanics;
 
 @Mixin(MobEntity.class)
 public class MobEntityMixin {

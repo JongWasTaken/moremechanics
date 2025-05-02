@@ -1,12 +1,11 @@
 package dev.smto.moremechanics.item;
 
 import dev.smto.moremechanics.MoreMechanics;
+import dev.smto.moremechanics.api.ItemInteractionPrecedence;
+import dev.smto.moremechanics.api.MoreMechanicsContent;
 import eu.pb4.polymer.core.api.item.PolymerItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.WallBlock;
-import net.minecraft.block.enums.WallShape;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.DebugStickStateComponent;
 import net.minecraft.component.type.TooltipDisplayComponent;
@@ -32,11 +31,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
-import dev.smto.moremechanics.api.MoreMechanicsContent;
-import dev.smto.moremechanics.api.ItemInteractionPrecedence;
 import xyz.nucleoid.packettweaker.PacketContext;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class SurvivalDebugStickItem extends DebugStickItem implements PolymerItem, MoreMechanicsContent, ItemInteractionPrecedence {

@@ -11,16 +11,22 @@ import net.minecraft.world.PersistentStateType;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ModWorldDataSaver extends PersistentState {
 
     public static final Codec<ModWorldDataSaver> CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
-                    GlobalPos.CODEC.listOf().optionalFieldOf("existingChunkLoaders", new ArrayList<>()).xmap(list -> (ArrayList<GlobalPos>)list, list -> (List<GlobalPos>)list).forGetter(ModWorldDataSaver::getExistingChunkLoaders),
-                    GlobalPos.CODEC.listOf().optionalFieldOf("existingPeaceBeacons", new ArrayList<>()).xmap(list -> (ArrayList<GlobalPos>)list, list -> (List<GlobalPos>)list).forGetter(ModWorldDataSaver::getExistingPeaceBeacons)
+                    GlobalPos.CODEC.listOf()
+                            .optionalFieldOf("existingChunkLoaders", new ArrayList<>())
+                            .xmap(list -> (ArrayList<GlobalPos>)list, list -> list)
+                            .forGetter(ModWorldDataSaver::getExistingChunkLoaders),
+                    GlobalPos.CODEC.listOf()
+                            .optionalFieldOf("existingPeaceBeacons", new ArrayList<>())
+                            .xmap(list -> (ArrayList<GlobalPos>)list, list -> list)
+                            .forGetter(ModWorldDataSaver::getExistingPeaceBeacons)
             ).apply(instance, ModWorldDataSaver::new)
     );
+
     public static final PersistentStateType<ModWorldDataSaver> STATE_TYPE = new PersistentStateType<>(
             MoreMechanics.MOD_ID, ModWorldDataSaver::new, ModWorldDataSaver.CODEC, null
     );

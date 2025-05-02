@@ -1,7 +1,6 @@
 package dev.smto.moremechanics.util;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.client.particle.BlockDustParticle;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BundleS2CPacket;
@@ -15,7 +14,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.List;

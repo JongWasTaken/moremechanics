@@ -4,7 +4,6 @@ import dev.smto.moremechanics.MoreMechanics;
 import dev.smto.moremechanics.api.MoreMechanicsContent;
 import dev.smto.moremechanics.block.entity.ManagedDisplayBlockEntity;
 import dev.smto.moremechanics.block.entity.MechanicalPlacerBlockEntity;
-import dev.smto.moremechanics.block.entity.VacuumHopperBlockEntity;
 import dev.smto.moremechanics.util.ParticleUtils;
 import eu.pb4.polymer.blocks.api.BlockModelType;
 import eu.pb4.polymer.blocks.api.PolymerBlockModel;
@@ -42,7 +41,6 @@ import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.function.Consumer;
 
 public class MechanicalPlacerBlock extends Block implements PolymerTexturedBlock, BlockEntityProvider, MoreMechanicsContent {

@@ -3,8 +3,6 @@ package dev.smto.moremechanics.block.entity;
 import com.mojang.authlib.GameProfile;
 import dev.smto.moremechanics.MoreMechanics;
 import dev.smto.moremechanics.block.MechanicalBreakerBlock;
-import dev.smto.moremechanics.util.DisplayTransformations;
-import dev.smto.moremechanics.util.Transformation;
 import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -16,10 +14,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SidedInventory;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.Generic3x3ContainerScreenHandler;
@@ -29,12 +25,14 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.stream.IntStream;
 
 public class MechanicalBreakerBlockEntity extends BlockEntity implements SidedInventory, NamedScreenHandlerFactory {
 
@@ -115,9 +113,11 @@ public class MechanicalBreakerBlockEntity extends BlockEntity implements SidedIn
         super.markRemoved();
     }
 
+    private final int[] AVAILABLE_SLOTS = IntStream.range(0, 9).toArray();
+
     @Override
     public int[] getAvailableSlots(Direction side) {
-        return new int[9];
+        return this.AVAILABLE_SLOTS;
     }
 
     @Override
@@ -127,7 +127,7 @@ public class MechanicalBreakerBlockEntity extends BlockEntity implements SidedIn
 
     @Override
     public boolean canExtract(int slot, ItemStack stack, Direction dir) {
-        return !(stack.getItem() instanceof BlockItem);
+        return false;
     }
 
     @Override

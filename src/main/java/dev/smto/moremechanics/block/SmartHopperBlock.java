@@ -4,7 +4,6 @@ import dev.smto.moremechanics.MoreMechanics;
 import dev.smto.moremechanics.api.MoreMechanicsContent;
 import dev.smto.moremechanics.api.TransparentToChests;
 import dev.smto.moremechanics.block.entity.SmartHopperBlockEntity;
-import dev.smto.moremechanics.block.entity.TankBlockEntity;
 import eu.pb4.polymer.blocks.api.BlockModelType;
 import eu.pb4.polymer.blocks.api.PolymerBlockModel;
 import eu.pb4.polymer.blocks.api.PolymerBlockResourceUtils;
@@ -25,7 +24,9 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
-import net.minecraft.util.*;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -34,7 +35,6 @@ import net.minecraft.world.WorldView;
 import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.function.Consumer;
 
 public class SmartHopperBlock extends HopperBlock implements PolymerTexturedBlock, MoreMechanicsContent, TransparentToChests {

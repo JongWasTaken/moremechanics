@@ -2,8 +2,8 @@ package dev.smto.moremechanics.block;
 
 import dev.smto.moremechanics.MoreMechanics;
 import dev.smto.moremechanics.api.MoreMechanicsContent;
-import dev.smto.moremechanics.block.entity.ManagedDisplayBlockEntity;
 import dev.smto.moremechanics.block.entity.ExperienceDrainBlockEntity;
+import dev.smto.moremechanics.block.entity.ManagedDisplayBlockEntity;
 import dev.smto.moremechanics.util.ParticleUtils;
 import eu.pb4.polymer.blocks.api.PolymerTexturedBlock;
 import net.minecraft.block.*;
@@ -32,7 +32,6 @@ import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 public class ExperienceDrainBlock extends Block implements PolymerTexturedBlock, BlockEntityProvider, MoreMechanicsContent {
