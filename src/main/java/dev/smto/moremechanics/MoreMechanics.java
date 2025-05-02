@@ -144,29 +144,25 @@ public class MoreMechanics implements ModInitializer {
 				LeveledCauldronBlock.decrementFluidLevel(state, world, pos);
 				if (!player.isCreative()) stack.decrement(1);
 				player.giveOrDropStack(new ItemStack(net.minecraft.item.Items.MUD, 1));
-				return ActionResult.SUCCESS;
+				return ActionResult.SUCCESS_SERVER;
 			} else return ActionResult.PASS;
 		});
 
-        MoreMechanics.CONCRETE_POWDER_CONVERSION_MAP.forEach((concretePowder, concrete) -> {
-			CauldronBehavior.WATER_CAULDRON_BEHAVIOR.map().put(concretePowder, (BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack) -> {
-				if (!world.isClient) {
-					LeveledCauldronBlock.decrementFluidLevel(state, world, pos);
-					if (!player.isCreative()) stack.decrement(1);
-					player.giveOrDropStack(new ItemStack(concrete, 1));
-					return ActionResult.SUCCESS;
-				} else return ActionResult.PASS;
-			});
-		});
+        MoreMechanics.CONCRETE_POWDER_CONVERSION_MAP.forEach((concretePowder, concrete) -> CauldronBehavior.WATER_CAULDRON_BEHAVIOR.map().put(concretePowder, (BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack) -> {
+            if (!world.isClient) {
+                LeveledCauldronBlock.decrementFluidLevel(state, world, pos);
+                if (!player.isCreative()) stack.decrement(1);
+                player.giveOrDropStack(new ItemStack(concrete, 1));
+                return ActionResult.SUCCESS_SERVER;
+            } else return ActionResult.PASS;
+        }));
 
-		PolymerItemGroupUtils.registerPolymerItemGroup(Identifier.of(MoreMechanics.MOD_ID,"items"), PolymerItemGroupUtils.builder()
+		PolymerItemGroupUtils.registerPolymerItemGroup(Identifier.of(MoreMechanics.MOD_ID, "items"), PolymerItemGroupUtils.builder()
 				.icon(() -> new ItemStack(Items.PEACE_BEACON))
 				.displayName(Text.of("MoreMechanics"))
-				.entries((context, entries) -> {
-					groupedItems.forEach(entries::add);
-				}).build());
+				.entries((context, entries) -> groupedItems.forEach(entries::add)).build());
 
-		CommandRegistrationCallback.EVENT.register((dispatcher, x, environment) -> Commands.register(dispatcher));
+		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> Commands.register(dispatcher, registryAccess));
 
 		ServerLifecycleEvents.SERVER_STARTED.register(server -> {
 			var state = ModWorldDataSaver.get(server);

@@ -1,6 +1,7 @@
 package dev.smto.moremechanics;
 
 import com.mojang.brigadier.CommandDispatcher;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
@@ -15,7 +16,7 @@ import static net.minecraft.server.command.CommandManager.literal;
 
 public class Commands {
     public static CommandDispatcher<ServerCommandSource> CACHED_DISPATCHER = new CommandDispatcher<ServerCommandSource>();
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+    public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess) {
         Commands.CACHED_DISPATCHER = dispatcher;
         dispatcher.register(literal(MoreMechanics.MOD_ID)
             .executes(context -> {
