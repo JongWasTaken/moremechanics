@@ -71,14 +71,14 @@ public class MechanicalPlacerBlockEntity extends BlockEntity implements SidedInv
     @Override
     public void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(tag, registryLookup);
-        Inventories.readNbt(tag, this.inventory, BuiltinRegistries.createWrapperLookup());
+        Inventories.readNbt(tag, this.inventory, registryLookup);
 
     }
 
     @Override
     public void writeNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         super.writeNbt(tag, registryLookup);
-        Inventories.writeNbt(tag, this.inventory, BuiltinRegistries.createWrapperLookup());
+        Inventories.writeNbt(tag, this.inventory, registryLookup);
     }
 
     @Override
