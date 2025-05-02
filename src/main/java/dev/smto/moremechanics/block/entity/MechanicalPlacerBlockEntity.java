@@ -27,6 +27,8 @@ import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.stream.IntStream;
+
 public class MechanicalPlacerBlockEntity extends BlockEntity implements SidedInventory, NamedScreenHandlerFactory {
 
     protected DefaultedList<ItemStack> inventory = DefaultedList.ofSize(9, ItemStack.EMPTY);
@@ -82,9 +84,11 @@ public class MechanicalPlacerBlockEntity extends BlockEntity implements SidedInv
         super.markRemoved();
     }
 
+    private final int[] AVAILABLE_SLOTS = IntStream.range(0, 9).toArray();
+
     @Override
     public int[] getAvailableSlots(Direction side) {
-        return new int[9];
+        return this.AVAILABLE_SLOTS;
     }
 
     @Override

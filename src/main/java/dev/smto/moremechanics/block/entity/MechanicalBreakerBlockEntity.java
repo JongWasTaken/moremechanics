@@ -35,6 +35,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.stream.IntStream;
 
 public class MechanicalBreakerBlockEntity extends BlockEntity implements SidedInventory, NamedScreenHandlerFactory {
 
@@ -115,9 +116,11 @@ public class MechanicalBreakerBlockEntity extends BlockEntity implements SidedIn
         super.markRemoved();
     }
 
+    private final int[] AVAILABLE_SLOTS = IntStream.range(0, 9).toArray();
+
     @Override
     public int[] getAvailableSlots(Direction side) {
-        return new int[9];
+        return this.AVAILABLE_SLOTS;
     }
 
     @Override
